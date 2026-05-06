@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\MemberController;
+use App\Http\Controllers\MembershipBillingController;
 use App\Http\Controllers\MembershipTypeController;
 use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
@@ -22,6 +23,9 @@ Route::middleware('auth')->group(function () {
     Route::resource('members', MemberController::class);
 
     Route::resource('products', ProductController::class);
+
+    Route::get('membership-billing', [MembershipBillingController::class, 'index'])->name('membership-billing.index');
+    Route::post('membership-billing', [MembershipBillingController::class, 'store'])->name('membership-billing.store');
 
     Route::resource('invoices', InvoiceController::class);
     Route::patch('invoices/{invoice}/mark-paid', [InvoiceController::class, 'markPaid'])->name('invoices.mark-paid');
