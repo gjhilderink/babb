@@ -1,4 +1,8 @@
-﻿<!DOCTYPE html>
+﻿@php
+    $siteLogo = \App\Models\Setting::get('logo');
+    $siteBg   = \App\Models\Setting::get('background');
+@endphp
+<!DOCTYPE html>
 <html lang="nl">
 <head>
     <meta charset="UTF-8">
@@ -48,7 +52,8 @@
         .border-bb-red-600 { border-color: #cc1c1c; }
     </style>
 </head>
-<body class="bg-gray-100 min-h-screen">
+<body class="bg-gray-100 min-h-screen"@if($siteBg) style="background-image: url('{{ asset($siteBg) }}'); background-size: cover; background-attachment: fixed; background-position: center;"@endif>
+@if($siteBg)<div class="fixed inset-0 bg-gray-900 bg-opacity-60 -z-10"></div>@endif
 
 <div class="h-1 w-full flex">
     <div class="w-1/2 bg-bb-red-600"></div>
@@ -59,9 +64,12 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16 items-center">
             {{-- Logo --}}
-            <a href="{{ route('dashboard') }}" class="text-white font-bold text-lg tracking-wide flex items-center gap-2 shrink-0">
-                <span class="text-bb-green-500">BABB</span>
-                <span class="text-gray-400 font-normal text-sm">Portaal</span>
+            <a href="{{ route('dashboard') }}" class="flex items-center gap-2 shrink-0">
+                @if($siteLogo)
+                    <img src="{{ asset($siteLogo) }}" alt="Logo" class="h-9 w-auto max-w-[160px] object-contain">
+                @else
+                    <span class="text-white font-bold text-lg tracking-wide"><span class="text-bb-green-500">BABB</span> <span class="text-gray-400 font-normal text-sm">Portaal</span></span>
+                @endif
             </a>
 
             {{-- Desktop nav --}}
@@ -100,6 +108,10 @@
                 <a href="{{ route('users.index') }}"
                    class="px-3 py-2 rounded text-sm font-medium transition-colors {{ request()->routeIs('users*') ? 'bg-bb-red-700 text-white' : 'text-gray-300 hover:text-white hover:bg-bb-red-700' }}">
                     Gebruikers
+                </a>
+                <a href="{{ route('settings.edit') }}"
+                   class="px-3 py-2 rounded text-sm font-medium transition-colors {{ request()->routeIs('settings*') ? 'bg-bb-red-700 text-white' : 'text-gray-300 hover:text-white hover:bg-bb-red-700' }}">
+                    Instellingen
                 </a>
                 @endif
             </div>
@@ -172,6 +184,10 @@
             <a href="{{ route('users.index') }}" @click="open=false"
                class="block px-3 py-2 rounded text-sm font-medium {{ request()->routeIs('users*') ? 'bg-bb-red-700 text-white' : 'text-gray-300 hover:text-white hover:bg-bb-red-700' }}">
                 Gebruikers
+            </a>
+            <a href="{{ route('settings.edit') }}" @click="open=false"
+               class="block px-3 py-2 rounded text-sm font-medium {{ request()->routeIs('settings*') ? 'bg-bb-red-700 text-white' : 'text-gray-300 hover:text-white hover:bg-bb-red-700' }}">
+                Instellingen
             </a>
             @endif
         </div>

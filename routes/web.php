@@ -9,6 +9,7 @@ use App\Http\Controllers\MemberController;
 use App\Http\Controllers\MembershipBillingController;
 use App\Http\Controllers\MembershipTypeController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\SettingController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -46,5 +47,7 @@ Route::middleware('auth')->group(function () {
 
     Route::middleware('role:admin')->group(function () {
         Route::resource('users', UserController::class)->except('show');
+        Route::get('settings',  [SettingController::class, 'edit'])->name('settings.edit');
+        Route::put('settings',  [SettingController::class, 'update'])->name('settings.update');
     });
 });
