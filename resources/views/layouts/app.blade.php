@@ -19,6 +19,10 @@
                        class="text-sm font-medium {{ request()->routeIs('dashboard') ? 'text-indigo-600' : 'text-gray-600 hover:text-gray-900' }}">
                         Dashboard
                     </a>
+                    <a href="{{ route('membership-types.index') }}"
+                       class="text-sm font-medium {{ request()->routeIs('membership-types.*') ? 'text-indigo-600' : 'text-gray-600 hover:text-gray-900' }}">
+                        Pakketten
+                    </a>
                     <a href="{{ route('members.index') }}"
                        class="text-sm font-medium {{ request()->routeIs('members.*') ? 'text-indigo-600' : 'text-gray-600 hover:text-gray-900' }}">
                         Leden
