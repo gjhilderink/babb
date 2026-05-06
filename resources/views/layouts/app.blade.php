@@ -28,6 +28,39 @@
     </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <style>
+        /* Brand green */
+        .bg-bb-green-50  { background-color: #f0f8e8; }
+        .bg-bb-green-100 { background-color: #dff0c4; }
+        .bg-bb-green-400 { background-color: #7bc43a; }
+        .bg-bb-green-500 { background-color: #6ab52a; }
+        .bg-bb-green-600 { background-color: #5ea31f; }
+        .bg-bb-green-700 { background-color: #4d8a18; }
+        .bg-bb-green-800 { background-color: #3d6e13; }
+        .hover\:bg-bb-green-50:hover  { background-color: #f0f8e8; }
+        .hover\:bg-bb-green-600:hover { background-color: #5ea31f; }
+        .hover\:bg-bb-green-700:hover { background-color: #4d8a18; }
+        .hover\:bg-bb-green-800:hover { background-color: #3d6e13; }
+        .text-bb-green-500 { color: #6ab52a; }
+        .text-bb-green-600 { color: #5ea31f; }
+        .text-bb-green-700 { color: #4d8a18; }
+        .text-bb-green-800 { color: #3d6e13; }
+        .border-bb-green-500 { border-color: #6ab52a; }
+        .border-bb-green-600 { border-color: #5ea31f; }
+        .ring-bb-green-600  { --tw-ring-color: #5ea31f; }
+        .focus\:ring-bb-green-600:focus { --tw-ring-color: #5ea31f; box-shadow: 0 0 0 3px rgba(94,163,31,.35); }
+        /* Brand red */
+        .bg-bb-red-500  { background-color: #e02020; }
+        .bg-bb-red-600  { background-color: #cc1c1c; }
+        .bg-bb-red-700  { background-color: #b01818; }
+        .hover\:bg-bb-red-700:hover { background-color: #b01818; }
+        .text-bb-red-500 { color: #e02020; }
+        .text-bb-red-600 { color: #cc1c1c; }
+        .text-bb-red-700 { color: #b01818; }
+        .border-bb-red-600 { border-color: #cc1c1c; }
+        /* Active nav item */
+        .bg-bb-green-700 { background-color: #4d8a18; }
+    </style>
 </head>
 <body class="bg-gray-100 min-h-screen">
 
