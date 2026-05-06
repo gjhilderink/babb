@@ -17,7 +17,7 @@
             + Nieuwe factuur
         </a>
         <a href="{{ route('members.edit', $member) }}"
-           class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-2 rounded-lg">
+           class="bg-bb-green-600 hover:bg-bb-green-700 text-white text-sm font-medium px-4 py-2 rounded-lg">
             Bewerken
         </a>
     </div>
@@ -48,7 +48,7 @@
         <div class="bg-white rounded-xl shadow-sm border border-gray-200">
             <div class="px-5 py-4 border-b border-gray-100 flex justify-between items-center">
                 <h2 class="font-semibold text-gray-800">Facturen</h2>
-                <a href="{{ route('invoices.create', ['member_id' => $member->id]) }}" class="text-xs text-indigo-600 hover:underline">+ Nieuwe factuur</a>
+                <a href="{{ route('invoices.create', ['member_id' => $member->id]) }}" class="text-xs text-bb-green-600 hover:underline">+ Nieuwe factuur</a>
             </div>
             <table class="min-w-full divide-y divide-gray-100 text-sm">
                 <thead class="bg-gray-50">
@@ -63,7 +63,7 @@
                     @forelse ($member->invoices as $invoice)
                     <tr>
                         <td class="px-4 py-3">
-                            <a href="{{ route('invoices.show', $invoice) }}" class="text-indigo-700 hover:underline">{{ $invoice->invoice_number }}</a>
+                            <a href="{{ route('invoices.show', $invoice) }}" class="text-bb-green-700 hover:underline">{{ $invoice->invoice_number }}</a>
                         </td>
                         <td class="px-4 py-3 text-gray-600">{{ $invoice->issue_date->format('d-m-Y') }}</td>
                         <td class="px-4 py-3 font-medium">&euro; {{ number_format($invoice->total, 2, ',', '.') }}</td>

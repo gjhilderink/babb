@@ -26,7 +26,7 @@
     </div>
     <div class="flex gap-2">
         <a href="{{ route('events.edit', $event) }}"
-           class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-2 rounded-lg">
+           class="bg-bb-green-600 hover:bg-bb-green-700 text-white text-sm font-medium px-4 py-2 rounded-lg">
             Bewerken
         </a>
         <form method="POST" action="{{ route('events.destroy', $event) }}"

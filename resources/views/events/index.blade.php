@@ -5,7 +5,7 @@
 <div class="flex justify-between items-center mb-6">
     <h1 class="text-2xl font-bold text-gray-900">Evenementen</h1>
     <a href="{{ route('events.create') }}"
-       class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-2 rounded-lg">
+       class="bg-bb-green-600 hover:bg-bb-green-700 text-white text-sm font-medium px-4 py-2 rounded-lg">
         + Nieuw evenement
     </a>
 </div>
@@ -36,14 +36,14 @@
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div class="flex gap-4 items-start">
             {{-- Datum blok --}}
-            <div class="min-w-16 text-center bg-indigo-50 border border-indigo-100 rounded-lg px-3 py-2">
-                <div class="text-xs text-indigo-400 font-medium uppercase">{{ $event->event_date->translatedFormat('M') }}</div>
-                <div class="text-2xl font-bold text-indigo-700 leading-none">{{ $event->event_date->format('d') }}</div>
-                <div class="text-xs text-indigo-400">{{ $event->event_date->format('Y') }}</div>
+            <div class="min-w-16 text-center bg-gray-50 border border-bb-green-100 rounded-lg px-3 py-2">
+                <div class="text-xs text-bb-green-500 font-medium uppercase">{{ $event->event_date->translatedFormat('M') }}</div>
+                <div class="text-2xl font-bold text-bb-green-700 leading-none">{{ $event->event_date->format('d') }}</div>
+                <div class="text-xs text-bb-green-500">{{ $event->event_date->format('Y') }}</div>
             </div>
             <div>
                 <div class="flex items-center gap-2 mb-1">
-                    <a href="{{ route('events.show', $event) }}" class="text-lg font-semibold text-gray-900 hover:text-indigo-700">
+                    <a href="{{ route('events.show', $event) }}" class="text-lg font-semibold text-gray-900 hover:text-bb-green-700">
                         {{ $event->title }}
                     </a>
                     <span class="px-2 py-0.5 rounded-full text-xs font-medium {{ $statusColors[$event->status] }}">
@@ -73,7 +73,7 @@
                 Bekijken
             </a>
             <a href="{{ route('events.edit', $event) }}"
-               class="text-sm bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg">
+               class="text-sm bg-bb-green-600 hover:bg-bb-green-700 text-white px-3 py-1.5 rounded-lg">
                 Bewerken
             </a>
         </div>
@@ -81,7 +81,7 @@
     @empty
     <div class="bg-white rounded-xl border border-gray-200 p-10 text-center text-gray-400">
         Nog geen evenementen.
-        <a href="{{ route('events.create') }}" class="text-indigo-600 hover:underline ml-1">Maak het eerste evenement aan.</a>
+        <a href="{{ route('events.create') }}" class="text-bb-green-600 hover:underline ml-1">Maak het eerste evenement aan.</a>
     </div>
     @endforelse
 </div>

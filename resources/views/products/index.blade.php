@@ -5,7 +5,7 @@
 <div class="flex justify-between items-center mb-6">
     <h1 class="text-2xl font-bold text-gray-900">Producten</h1>
     <a href="{{ route('products.create') }}"
-       class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-2 rounded-lg">
+       class="bg-bb-green-600 hover:bg-bb-green-700 text-white text-sm font-medium px-4 py-2 rounded-lg">
         + Nieuw product
     </a>
 </div>
@@ -42,7 +42,7 @@
             @forelse ($products as $product)
             <tr class="hover:bg-gray-50">
                 <td class="px-4 py-3 font-medium text-gray-900">
-                    <a href="{{ route('products.show', $product) }}" class="text-indigo-700 hover:underline">{{ $product->name }}</a>
+                    <a href="{{ route('products.show', $product) }}" class="text-bb-green-700 hover:underline">{{ $product->name }}</a>
                 </td>
                 <td class="px-4 py-3 text-gray-500 font-mono text-xs">{{ $product->sku ?? '—' }}</td>
                 <td class="px-4 py-3 text-gray-600">{{ $product->category ?? '—' }}</td>
@@ -54,7 +54,7 @@
                     </span>
                 </td>
                 <td class="px-4 py-3 text-right">
-                    <a href="{{ route('products.edit', $product) }}" class="text-xs text-indigo-600 hover:underline">Bewerken</a>
+                    <a href="{{ route('products.edit', $product) }}" class="text-xs text-bb-green-600 hover:underline">Bewerken</a>
                 </td>
             </tr>
             @empty

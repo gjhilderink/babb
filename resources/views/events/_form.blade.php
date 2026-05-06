@@ -5,25 +5,25 @@
         <div class="md:col-span-2">
             <label class="block text-sm font-medium text-gray-700 mb-1">Naam <span class="text-red-500">*</span></label>
             <input type="text" name="title" value="{{ old('title', $event->title ?? '') }}"
-                   class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                   class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-bb-green-600"
                    placeholder="bijv. Nieuwjaarsborrel 2026">
         </div>
         <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Startdatum en -tijd <span class="text-red-500">*</span></label>
             <input type="datetime-local" name="event_date"
                    value="{{ old('event_date', isset($event) ? $event->event_date?->format('Y-m-d\TH:i') : '') }}"
-                   class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
+                   class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-bb-green-600">
         </div>
         <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Einddatum en -tijd</label>
             <input type="datetime-local" name="event_end"
                    value="{{ old('event_end', isset($event) ? $event->event_end?->format('Y-m-d\TH:i') : '') }}"
-                   class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
+                   class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-bb-green-600">
         </div>
         <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Locatie</label>
             <input type="text" name="location" value="{{ old('location', $event->location ?? '') }}"
-                   class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                   class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-bb-green-600"
                    placeholder="bijv. Raadzaal, Amsterdam">
         </div>
         <div>
@@ -38,7 +38,7 @@
             <label class="block text-sm font-medium text-gray-700 mb-1">Max. deelnemers</label>
             <input type="number" name="max_attendees" min="1"
                    value="{{ old('max_attendees', $event->max_attendees ?? '') }}"
-                   class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                   class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-bb-green-600"
                    placeholder="Leeg = onbeperkt">
         </div>
         <div>
@@ -47,20 +47,20 @@
                 <span class="absolute left-3 top-2 text-gray-400 text-sm">&euro;</span>
                 <input type="number" name="budget" step="0.01" min="0"
                        value="{{ old('budget', $event->budget ?? '') }}"
-                       class="w-full border border-gray-300 rounded-lg pl-7 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                       class="w-full border border-gray-300 rounded-lg pl-7 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-bb-green-600"
                        placeholder="0,00">
             </div>
         </div>
         <div class="md:col-span-2">
             <label class="block text-sm font-medium text-gray-700 mb-1">Beschrijving</label>
             <textarea name="description" rows="3"
-                      class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                      class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-bb-green-600"
                       placeholder="Waar gaat het evenement over?">{{ old('description', $event->description ?? '') }}</textarea>
         </div>
         <div class="md:col-span-2">
             <label class="block text-sm font-medium text-gray-700 mb-1">Notities</label>
             <textarea name="notes" rows="2"
-                      class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                      class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-bb-green-600"
                       placeholder="Interne notities…">{{ old('notes', $event->notes ?? '') }}</textarea>
         </div>
     </div>
@@ -70,7 +70,7 @@
 <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6" x-data="taskForm()">
     <div class="flex justify-between items-center mb-4">
         <h2 class="font-semibold text-gray-800">Wat moet er geregeld worden?</h2>
-        <button type="button" @click="add()" class="text-sm text-indigo-600 hover:text-indigo-800 font-medium">+ Taak toevoegen</button>
+        <button type="button" @click="add()" class="text-sm text-bb-green-600 hover:text-bb-green-800 font-medium">+ Taak toevoegen</button>
     </div>
 
     <div class="space-y-3">
@@ -114,7 +114,7 @@
 <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6" x-data="costForm()">
     <div class="flex justify-between items-center mb-4">
         <h2 class="font-semibold text-gray-800">Kosten</h2>
-        <button type="button" @click="add()" class="text-sm text-indigo-600 hover:text-indigo-800 font-medium">+ Kostenpost toevoegen</button>
+        <button type="button" @click="add()" class="text-sm text-bb-green-600 hover:text-bb-green-800 font-medium">+ Kostenpost toevoegen</button>
     </div>
 
     <div class="space-y-3">

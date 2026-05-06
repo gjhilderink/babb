@@ -5,7 +5,7 @@
 <div class="flex justify-between items-center mb-6">
     <h1 class="text-2xl font-bold text-gray-900">Facturen</h1>
     <a href="{{ route('invoices.create') }}"
-       class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-2 rounded-lg">
+       class="bg-bb-green-600 hover:bg-bb-green-700 text-white text-sm font-medium px-4 py-2 rounded-lg">
         + Nieuwe factuur
     </a>
 </div>
@@ -40,7 +40,7 @@
             @forelse ($invoices as $invoice)
             <tr class="hover:bg-gray-50 {{ $invoice->isOverdue() ? 'bg-red-50' : '' }}">
                 <td class="px-4 py-3 font-mono text-xs">
-                    <a href="{{ route('invoices.show', $invoice) }}" class="text-indigo-700 hover:underline font-medium">{{ $invoice->invoice_number }}</a>
+                    <a href="{{ route('invoices.show', $invoice) }}" class="text-bb-green-700 hover:underline font-medium">{{ $invoice->invoice_number }}</a>
                 </td>
                 <td class="px-4 py-3 text-gray-800">{{ $invoice->member->full_name }}</td>
                 <td class="px-4 py-3 text-gray-600">{{ $invoice->issue_date->format('d-m-Y') }}</td>
@@ -59,7 +59,7 @@
                     </span>
                 </td>
                 <td class="px-4 py-3 text-right">
-                    <a href="{{ route('invoices.show', $invoice) }}" class="text-xs text-indigo-600 hover:underline">Bekijken</a>
+                    <a href="{{ route('invoices.show', $invoice) }}" class="text-xs text-bb-green-600 hover:underline">Bekijken</a>
                 </td>
             </tr>
             @empty

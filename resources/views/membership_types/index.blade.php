@@ -5,7 +5,7 @@
 <div class="flex justify-between items-center mb-6">
     <h1 class="text-2xl font-bold text-gray-900">Lidmaatschapspakketten</h1>
     <a href="{{ route('membership-types.create') }}"
-       class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-2 rounded-lg">
+       class="bg-bb-green-600 hover:bg-bb-green-700 text-white text-sm font-medium px-4 py-2 rounded-lg">
         + Nieuw pakket
     </a>
 </div>
@@ -27,7 +27,7 @@
                 </span>
             </div>
 
-            <div class="text-2xl font-bold text-indigo-700 mb-1">
+            <div class="text-2xl font-bold text-bb-green-700 mb-1">
                 &euro; {{ number_format($type->price_per_year, 2, ',', '.') }}
                 <span class="text-sm font-normal text-gray-400">/ jaar</span>
             </div>
@@ -56,7 +56,7 @@
             <span class="text-sm text-gray-500">{{ $type->members_count }} {{ $type->members_count === 1 ? 'lid' : 'leden' }}</span>
             <div class="flex gap-3">
                 <a href="{{ route('membership-types.edit', $type) }}"
-                   class="text-sm text-indigo-600 hover:underline">Bewerken</a>
+                   class="text-sm text-bb-green-600 hover:underline">Bewerken</a>
                 @if ($type->members_count === 0)
                 <form method="POST" action="{{ route('membership-types.destroy', $type) }}"
                       onsubmit="return confirm('Weet je zeker dat je dit pakket wilt verwijderen?')">
@@ -70,7 +70,7 @@
     @empty
     <div class="col-span-3 bg-white rounded-xl border border-gray-200 p-8 text-center text-gray-400">
         Nog geen pakketten aangemaakt.
-        <a href="{{ route('membership-types.create') }}" class="text-indigo-600 hover:underline ml-1">Maak het eerste pakket aan.</a>
+        <a href="{{ route('membership-types.create') }}" class="text-bb-green-600 hover:underline ml-1">Maak het eerste pakket aan.</a>
     </div>
     @endforelse
 </div>

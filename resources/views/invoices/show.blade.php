@@ -27,7 +27,7 @@
             </button>
         </form>
         <a href="{{ route('invoices.edit', $invoice) }}"
-           class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-2 rounded-lg">
+           class="bg-bb-green-600 hover:bg-bb-green-700 text-white text-sm font-medium px-4 py-2 rounded-lg">
             Bewerken
         </a>
         @endif
@@ -49,7 +49,7 @@
             <dl class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm mb-6">
                 <div>
                     <dt class="text-gray-500 mb-1">Lid</dt>
-                    <dd><a href="{{ route('members.show', $invoice->member) }}" class="font-medium text-indigo-700 hover:underline">{{ $invoice->member->full_name }}</a></dd>
+                    <dd><a href="{{ route('members.show', $invoice->member) }}" class="font-medium text-bb-green-700 hover:underline">{{ $invoice->member->full_name }}</a></dd>
                     @if ($invoice->member->company_name)
                         <dd class="text-gray-500 text-xs">{{ $invoice->member->company_name }}</dd>
                     @endif

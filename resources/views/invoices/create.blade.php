@@ -91,7 +91,7 @@
                 </template>
 
                 <button type="button" @click="addItem()"
-                        class="mt-2 text-sm text-indigo-600 hover:text-indigo-800 font-medium">
+                        class="mt-2 text-sm text-bb-green-600 hover:text-bb-green-800 font-medium">
                     + Regel toevoegen
                 </button>
             </div>
@@ -117,7 +117,7 @@
                 </dl>
             </div>
             <button type="submit"
-                    class="w-full bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-5 py-3 rounded-lg">
+                    class="w-full bg-bb-green-600 hover:bg-bb-green-700 text-white text-sm font-medium px-5 py-3 rounded-lg">
                 Factuur aanmaken
             </button>
             <a href="{{ route('invoices.index') }}" class="block text-center text-sm text-gray-500 hover:text-gray-700">Annuleren</a>

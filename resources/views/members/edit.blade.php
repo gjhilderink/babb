@@ -12,7 +12,7 @@
     @method('PUT')
     @include('members._form')
     <div class="mt-6 flex gap-3">
-        <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-5 py-2 rounded-lg">
+        <button type="submit" class="bg-bb-green-600 hover:bg-bb-green-700 text-white text-sm font-medium px-5 py-2 rounded-lg">
             Opslaan
         </button>
         <a href="{{ route('members.show', $member) }}" class="text-sm text-gray-600 hover:text-gray-800 px-4 py-2">Annuleren</a>

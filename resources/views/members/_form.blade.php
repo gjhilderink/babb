@@ -2,42 +2,42 @@
     <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">Voornaam <span class="text-red-500">*</span></label>
         <input type="text" name="first_name" value="{{ old('first_name', $member->first_name ?? '') }}"
-               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
+               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-bb-green-600">
     </div>
     <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">Achternaam <span class="text-red-500">*</span></label>
         <input type="text" name="last_name" value="{{ old('last_name', $member->last_name ?? '') }}"
-               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
+               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-bb-green-600">
     </div>
     <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">E-mailadres <span class="text-red-500">*</span></label>
         <input type="email" name="email" value="{{ old('email', $member->email ?? '') }}"
-               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
+               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-bb-green-600">
     </div>
     <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">Telefoonnummer</label>
         <input type="text" name="phone" value="{{ old('phone', $member->phone ?? '') }}"
-               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
+               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-bb-green-600">
     </div>
     <div class="md:col-span-2">
         <label class="block text-sm font-medium text-gray-700 mb-1">Bedrijfsnaam</label>
         <input type="text" name="company_name" value="{{ old('company_name', $member->company_name ?? '') }}"
-               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
+               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-bb-green-600">
     </div>
     <div class="md:col-span-2">
         <label class="block text-sm font-medium text-gray-700 mb-1">Adres</label>
         <input type="text" name="address" value="{{ old('address', $member->address ?? '') }}"
-               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
+               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-bb-green-600">
     </div>
     <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">Postcode</label>
         <input type="text" name="postal_code" value="{{ old('postal_code', $member->postal_code ?? '') }}"
-               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
+               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-bb-green-600">
     </div>
     <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">Stad</label>
         <input type="text" name="city" value="{{ old('city', $member->city ?? '') }}"
-               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
+               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-bb-green-600">
     </div>
     <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">Lidmaatschapstype</label>
@@ -61,16 +61,16 @@
     <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">Startdatum lidmaatschap</label>
         <input type="date" name="membership_start" value="{{ old('membership_start', isset($member) ? $member->membership_start?->format('Y-m-d') : '') }}"
-               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
+               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-bb-green-600">
     </div>
     <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">Einddatum lidmaatschap</label>
         <input type="date" name="membership_end" value="{{ old('membership_end', isset($member) ? $member->membership_end?->format('Y-m-d') : '') }}"
-               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
+               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-bb-green-600">
     </div>
     <div class="md:col-span-2">
         <label class="block text-sm font-medium text-gray-700 mb-1">Notities</label>
         <textarea name="notes" rows="3"
-                  class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">{{ old('notes', $member->notes ?? '') }}</textarea>
+                  class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-bb-green-600">{{ old('notes', $member->notes ?? '') }}</textarea>
     </div>
 </div>
