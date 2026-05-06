@@ -33,6 +33,16 @@
                     </a>
                 </div>
             </div>
+            <div class="flex items-center gap-4">
+                <span class="text-sm text-gray-500">{{ auth()->user()->name }}</span>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit"
+                            class="text-sm text-gray-500 hover:text-gray-800 border border-gray-300 rounded-lg px-3 py-1.5">
+                        Uitloggen
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
 </nav>
