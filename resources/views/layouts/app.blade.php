@@ -79,6 +79,10 @@
                    class="px-3 py-2 rounded text-sm font-medium transition-colors {{ request()->routeIs('members*') ? 'bg-bb-green-700 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700' }}">
                     Leden
                 </a>
+                <a href="{{ route('leads.index') }}"
+                   class="px-3 py-2 rounded text-sm font-medium transition-colors {{ request()->routeIs('leads*') ? 'bg-bb-green-700 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700' }}">
+                    Leads
+                </a>
                 <a href="{{ route('events.index') }}"
                    class="px-3 py-2 rounded text-sm font-medium transition-colors {{ request()->routeIs('events*') ? 'bg-bb-green-700 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700' }}">
                     Evenementen
@@ -147,6 +151,10 @@
                class="block px-3 py-2 rounded text-sm font-medium {{ request()->routeIs('members*') ? 'bg-bb-green-700 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700' }}">
                 Leden
             </a>
+            <a href="{{ route('leads.index') }}" @click="open=false"
+               class="block px-3 py-2 rounded text-sm font-medium {{ request()->routeIs('leads*') ? 'bg-bb-green-700 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700' }}">
+                Leads
+            </a>
             <a href="{{ route('events.index') }}" @click="open=false"
                class="block px-3 py-2 rounded text-sm font-medium {{ request()->routeIs('events*') ? 'bg-bb-green-700 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700' }}">
                 Evenementen
@@ -208,3 +216,4 @@
 
 </body>
 </html>
+
