@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="nl">
 <head>
     <meta charset="UTF-8">
@@ -40,32 +40,63 @@
 <nav class="bg-gray-900 shadow-lg">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16 items-center">
-            <div class="flex items-center gap-8">
+            <div class="flex items-center gap-6">
                 <a href="{{ route('dashboard') }}" class="text-white font-bold text-lg tracking-wide flex items-center gap-2">
                     <span class="text-bb-green-500">BABB</span>
                     <span class="text-gray-400 font-normal text-sm">Portaal</span>
                 </a>
                 <div class="flex gap-1">
-                    @foreach ([
-                        'dashboard'              => ['route' => 'dashboard',              'label' => 'Dashboard'],
-                        'membership-types'       => ['route' => 'membership-types.index', 'label' => 'Pakketten'],
-                        'members'                => ['route' => 'members.index',          'label' => 'Leden'],
-                        'events'                 => ['route' => 'events.index',           'label' => 'Evenementen'],
-                        'invoices'               => ['route' => 'invoices.index',         'label' => 'Facturen'],
-                        'membership-billing'     => ['route' => 'membership-billing.index','label' => 'Factureren'],
-                    ] as $key => $item)
-                    <a href="{{ route($item['route']) }}"
+                    <a href="{{ route('dashboard') }}"
                        class="px-3 py-2 rounded text-sm font-medium transition-colors
-                              {{ request()->routeIs($key.'*') || request()->routeIs($item['route'])
-                                 ? 'bg-bb-green-700 text-white'
-                                 : 'text-gray-300 hover:text-white hover:bg-gray-700' }}">
-                        {{ $item['label'] }}
+                              {{ request()->routeIs('dashboard') ? 'bg-bb-green-700 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700' }}">
+                        Dashboard
                     </a>
-                    @endforeach
+                    @if (auth()->user()->isAdminOrBestuur())
+                    <a href="{{ route('membership-types.index') }}"
+                       class="px-3 py-2 rounded text-sm font-medium transition-colors
+                              {{ request()->routeIs('membership-types*') ? 'bg-bb-green-700 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700' }}">
+                        Pakketten
+                    </a>
+                    <a href="{{ route('members.index') }}"
+                       class="px-3 py-2 rounded text-sm font-medium transition-colors
+                              {{ request()->routeIs('members*') ? 'bg-bb-green-700 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700' }}">
+                        Leden
+                    </a>
+                    <a href="{{ route('events.index') }}"
+                       class="px-3 py-2 rounded text-sm font-medium transition-colors
+                              {{ request()->routeIs('events*') ? 'bg-bb-green-700 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700' }}">
+                        Evenementen
+                    </a>
+                    <a href="{{ route('invoices.index') }}"
+                       class="px-3 py-2 rounded text-sm font-medium transition-colors
+                              {{ request()->routeIs('invoices*') ? 'bg-bb-green-700 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700' }}">
+                        Facturen
+                    </a>
+                    <a href="{{ route('membership-billing.index') }}"
+                       class="px-3 py-2 rounded text-sm font-medium transition-colors
+                              {{ request()->routeIs('membership-billing*') ? 'bg-bb-green-700 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700' }}">
+                        Factureren
+                    </a>
+                    @endif
+                    @if (auth()->user()->isAdmin())
+                    <a href="{{ route('users.index') }}"
+                       class="px-3 py-2 rounded text-sm font-medium transition-colors
+                              {{ request()->routeIs('users*') ? 'bg-bb-red-700 text-white' : 'text-gray-300 hover:text-white hover:bg-bb-red-700' }}">
+                        Gebruikers
+                    </a>
+                    @endif
                 </div>
             </div>
             <div class="flex items-center gap-3">
-                <span class="text-sm text-gray-400">{{ auth()->user()->name }}</span>
+                <span class="text-xs text-gray-400 hidden sm:block">
+                    {{ auth()->user()->name }}
+                    <span class="ml-1 px-1.5 py-0.5 rounded text-xs
+                        {{ auth()->user()->isAdmin() ? 'bg-bb-red-700 text-white' : '' }}
+                        {{ auth()->user()->isBestuur() ? 'bg-bb-green-700 text-white' : '' }}
+                        {{ auth()->user()->isGebruiker() ? 'bg-gray-600 text-gray-300' : '' }}">
+                        {{ auth()->user()->roleName() }}
+                    </span>
+                </span>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
                     <button type="submit"

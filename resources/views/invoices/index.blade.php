@@ -1,5 +1,5 @@
-@extends('layouts.app')
-@section('title', 'Facturen — BABB Portaal')
+﻿@extends('layouts.app')
+@section('title', 'Facturen â€” BABB Portaal')
 
 @section('content')
 <div class="flex justify-between items-center mb-6">
@@ -11,7 +11,7 @@
 </div>
 
 <form method="GET" class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-6 flex flex-wrap gap-3">
-    <input type="text" name="search" value="{{ request('search') }}" placeholder="Zoek op factuurnummer of lid…"
+    <input type="text" name="search" value="{{ request('search') }}" placeholder="Zoek op factuurnummer of lidâ€¦"
            class="flex-1 min-w-48 border border-gray-300 rounded-lg px-3 py-2 text-sm">
     <select name="status" class="border border-gray-300 rounded-lg px-3 py-2 text-sm">
         <option value="">Alle statussen</option>
@@ -19,7 +19,7 @@
             <option value="{{ $val }}" @selected(request('status') === $val)>{{ $label }}</option>
         @endforeach
     </select>
-    <button type="submit" class="bg-gray-700 hover:bg-gray-800 text-white text-sm px-4 py-2 rounded-lg">Zoeken</button>
+    <button type="submit" class="bg-bb-green-600 hover:bg-bb-green-700 text-white text-sm px-4 py-2 rounded-lg">Zoeken</button>
     <a href="{{ route('invoices.index') }}" class="text-sm text-gray-500 px-3 py-2 hover:text-gray-800">Wis filters</a>
 </form>
 
@@ -72,3 +72,4 @@
     <div class="px-4 py-3 border-t border-gray-100">{{ $invoices->links() }}</div>
 </div>
 @endsection
+

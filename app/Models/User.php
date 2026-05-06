@@ -13,7 +13,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'is_admin',
+        'role',
     ];
 
     protected $hidden = [
@@ -22,7 +22,36 @@ class User extends Authenticatable
     ];
 
     protected $casts = [
-        'password'  => 'hashed',
-        'is_admin'  => 'boolean',
+        'password' => 'hashed',
     ];
+
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    public function isBestuur(): bool
+    {
+        return $this->role === 'bestuur';
+    }
+
+    public function isGebruiker(): bool
+    {
+        return $this->role === 'gebruiker';
+    }
+
+    public function isAdminOrBestuur(): bool
+    {
+        return in_array($this->role, ['admin', 'bestuur']);
+    }
+
+    public function roleName(): string
+    {
+        return match($this->role) {
+            'admin'     => 'Beheerder',
+            'bestuur'   => 'Bestuur',
+            'gebruiker' => 'Gebruiker',
+            default     => $this->role,
+        };
+    }
 }

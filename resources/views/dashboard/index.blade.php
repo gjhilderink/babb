@@ -1,4 +1,4 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 @section('title', 'Dashboard — BABB Portaal')
 
 @section('content')
@@ -6,6 +6,7 @@
     <h1 class="text-2xl font-bold text-gray-900">Dashboard</h1>
 </div>
 
+@if (auth()->user()->isAdminOrBestuur())
 {{-- KPI cards --}}
 <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
@@ -82,10 +83,10 @@
                 <div class="flex items-center gap-3 mt-1 text-gray-400 text-xs">
                     <span>{{ $event->event_date->format('d-m-Y H:i') }}</span>
                     @if ($event->location)
-                        <span>· {{ $event->location }}</span>
+                        <span>. {{ $event->location }}</span>
                     @endif
                     @if ($event->openTasksCount() > 0)
-                        <span class="text-orange-500">· {{ $event->openTasksCount() }} open {{ $event->openTasksCount() === 1 ? 'taak' : 'taken' }}</span>
+                        <span class="text-orange-500">. {{ $event->openTasksCount() }} open {{ $event->openTasksCount() === 1 ? 'taak' : 'taken' }}</span>
                     @endif
                 </div>
             </li>
@@ -116,4 +117,37 @@
         </ul>
     </div>
 </div>
+
+@else
+{{-- Gebruiker: events only --}}
+<div class="bg-white rounded-xl shadow-sm border border-gray-200 max-w-2xl">
+    <div class="px-5 py-4 border-b border-gray-100">
+        <h2 class="font-semibold text-gray-800">Aankomende evenementen</h2>
+    </div>
+    <ul class="divide-y divide-gray-100">
+        @forelse ($upcomingEvents as $event)
+        <li class="px-5 py-4 text-sm">
+            <div class="flex justify-between items-start gap-2 mb-1">
+                <span class="font-medium text-gray-900 leading-snug">{{ $event->title }}</span>
+                <span class="px-2 py-0.5 rounded-full text-xs font-medium shrink-0
+                    {{ $event->status === 'bevestigd' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-500' }}">
+                    {{ ucfirst($event->status) }}
+                </span>
+            </div>
+            <div class="text-gray-500 text-xs flex items-center gap-3">
+                <span>{{ $event->event_date->format('d-m-Y H:i') }}</span>
+                @if ($event->location)
+                    <span>. {{ $event->location }}</span>
+                @endif
+            </div>
+            @if ($event->description)
+                <div class="mt-1 text-gray-600 text-xs">{{ Str::limit($event->description, 120) }}</div>
+            @endif
+        </li>
+        @empty
+        <li class="px-5 py-6 text-sm text-gray-400 text-center">Geen aankomende evenementen.</li>
+        @endforelse
+    </ul>
+</div>
+@endif
 @endsection

@@ -1,4 +1,4 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 @section('title', $invoice->invoice_number . ' — BABB Portaal')
 
 @section('content')
@@ -16,16 +16,18 @@
     </div>
     <div class="flex gap-2">
         <a href="{{ route('invoices.pdf', $invoice) }}"
-           class="border border-gray-300 hover:bg-gray-50 text-gray-700 text-sm font-medium px-4 py-2 rounded-lg">
+           class="border border-gray-400 hover:bg-gray-100 text-gray-700 text-sm font-medium px-4 py-2 rounded-lg">
             PDF
         </a>
         @if ($invoice->status === 'draft')
+        @if(auth()->user()->isAdmin())
         <form method="POST" action="{{ route('invoices.mark-sent', $invoice) }}" class="inline">
             @csrf @method('PATCH')
-            <button class="border border-blue-400 hover:bg-blue-50 text-blue-700 text-sm font-medium px-4 py-2 rounded-lg">
+            <button class="border border-blue-500 bg-blue-50 hover:bg-blue-100 text-blue-700 text-sm font-medium px-4 py-2 rounded-lg">
                 Markeer als verstuurd
             </button>
         </form>
+        @endif
         <a href="{{ route('invoices.edit', $invoice) }}"
            class="bg-bb-green-600 hover:bg-bb-green-700 text-white text-sm font-medium px-4 py-2 rounded-lg">
             Bewerken
@@ -44,7 +46,6 @@
 
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
     <div class="lg:col-span-2 space-y-6">
-        {{-- Invoice details --}}
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
             <dl class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm mb-6">
                 <div>
@@ -70,7 +71,6 @@
                 @endif
             </dl>
 
-            {{-- Line items table --}}
             <table class="min-w-full divide-y divide-gray-200 text-sm">
                 <thead class="bg-gray-50">
                     <tr>
@@ -122,3 +122,4 @@
     </div>
 </div>
 @endsection
+

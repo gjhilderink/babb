@@ -11,6 +11,24 @@ class DashboardController extends Controller
 {
     public function index(): View
     {
+        $user = auth()->user();
+
+        $upcomingEvents = Event::with('tasks')
+            ->whereIn('status', ['concept', 'bevestigd'])
+            ->where('event_date', '>=', now())
+            ->orderBy('event_date')
+            ->limit(5)
+            ->get();
+
+        if ($user->isGebruiker()) {
+            return view('dashboard.index', [
+                'upcomingEvents'      => $upcomingEvents,
+                'stats'               => null,
+                'recentInvoices'      => collect(),
+                'expiringMemberships' => collect(),
+            ]);
+        }
+
         $stats = [
             'total_members'    => Member::count(),
             'active_members'   => Member::where('status', 'active')->count(),
@@ -20,26 +38,15 @@ class DashboardController extends Controller
             'revenue_ytd'      => Invoice::where('status', 'paid')
                 ->whereYear('paid_at', now()->year)
                 ->sum('total'),
-            'outstanding'      => Invoice::whereIn('status', ['sent'])
-                ->sum('total'),
+            'outstanding'      => Invoice::whereIn('status', ['sent'])->sum('total'),
         ];
 
-        $recentInvoices = Invoice::with('member')
-            ->latest()
-            ->limit(5)
-            ->get();
+        $recentInvoices = Invoice::with('member')->latest()->limit(5)->get();
 
         $expiringMemberships = Member::with('membershipType')
             ->where('status', 'active')
             ->whereBetween('membership_end', [today(), today()->addDays(30)])
             ->orderBy('membership_end')
-            ->limit(5)
-            ->get();
-
-        $upcomingEvents = Event::with('tasks')
-            ->whereIn('status', ['concept', 'bevestigd'])
-            ->where('event_date', '>=', now())
-            ->orderBy('event_date')
             ->limit(5)
             ->get();
 

@@ -1,5 +1,5 @@
-@extends('layouts.app')
-@section('title', 'Producten — BABB Portaal')
+﻿@extends('layouts.app')
+@section('title', 'Producten â€” BABB Portaal')
 
 @section('content')
 <div class="flex justify-between items-center mb-6">
@@ -11,17 +11,17 @@
 </div>
 
 <form method="GET" class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-6 flex flex-wrap gap-3">
-    <input type="text" name="search" value="{{ request('search') }}" placeholder="Zoek op naam of SKU…"
+    <input type="text" name="search" value="{{ request('search') }}" placeholder="Zoek op naam of SKUâ€¦"
            class="flex-1 min-w-48 border border-gray-300 rounded-lg px-3 py-2 text-sm">
     @if ($categories->isNotEmpty())
     <select name="category" class="border border-gray-300 rounded-lg px-3 py-2 text-sm">
-        <option value="">Alle categorieën</option>
+        <option value="">Alle categorieÃ«n</option>
         @foreach ($categories as $cat)
             <option value="{{ $cat }}" @selected(request('category') === $cat)>{{ $cat }}</option>
         @endforeach
     </select>
     @endif
-    <button type="submit" class="bg-gray-700 hover:bg-gray-800 text-white text-sm px-4 py-2 rounded-lg">Zoeken</button>
+    <button type="submit" class="bg-bb-green-600 hover:bg-bb-green-700 text-white text-sm px-4 py-2 rounded-lg">Zoeken</button>
     <a href="{{ route('products.index') }}" class="text-sm text-gray-500 px-3 py-2 hover:text-gray-800">Wis filters</a>
 </form>
 
@@ -44,8 +44,8 @@
                 <td class="px-4 py-3 font-medium text-gray-900">
                     <a href="{{ route('products.show', $product) }}" class="text-bb-green-700 hover:underline">{{ $product->name }}</a>
                 </td>
-                <td class="px-4 py-3 text-gray-500 font-mono text-xs">{{ $product->sku ?? '—' }}</td>
-                <td class="px-4 py-3 text-gray-600">{{ $product->category ?? '—' }}</td>
+                <td class="px-4 py-3 text-gray-500 font-mono text-xs">{{ $product->sku ?? 'â€”' }}</td>
+                <td class="px-4 py-3 text-gray-600">{{ $product->category ?? 'â€”' }}</td>
                 <td class="px-4 py-3 text-right font-medium">&euro; {{ number_format($product->price, 2, ',', '.') }}</td>
                 <td class="px-4 py-3 text-right text-gray-600">{{ $product->tax_rate }}%</td>
                 <td class="px-4 py-3">
@@ -67,3 +67,4 @@
     <div class="px-4 py-3 border-t border-gray-100">{{ $products->links() }}</div>
 </div>
 @endsection
+

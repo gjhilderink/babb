@@ -1,5 +1,5 @@
-@extends('layouts.app')
-@section('title', 'Evenementen — BABB Portaal')
+﻿@extends('layouts.app')
+@section('title', 'Evenementen â€” BABB Portaal')
 
 @section('content')
 <div class="flex justify-between items-center mb-6">
@@ -11,7 +11,7 @@
 </div>
 
 <form method="GET" class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-6 flex flex-wrap gap-3">
-    <input type="text" name="search" value="{{ request('search') }}" placeholder="Zoek op naam…"
+    <input type="text" name="search" value="{{ request('search') }}" placeholder="Zoek op naamâ€¦"
            class="flex-1 min-w-48 border border-gray-300 rounded-lg px-3 py-2 text-sm">
     <select name="status" class="border border-gray-300 rounded-lg px-3 py-2 text-sm">
         <option value="">Alle statussen</option>
@@ -19,7 +19,7 @@
             <option value="{{ $val }}" @selected(request('status') === $val)>{{ $label }}</option>
         @endforeach
     </select>
-    <button type="submit" class="bg-gray-700 hover:bg-gray-800 text-white text-sm px-4 py-2 rounded-lg">Zoeken</button>
+    <button type="submit" class="bg-bb-green-600 hover:bg-bb-green-700 text-white text-sm px-4 py-2 rounded-lg">Zoeken</button>
     <a href="{{ route('events.index') }}" class="text-sm text-gray-500 px-3 py-2 hover:text-gray-800">Wis filters</a>
 </form>
 
@@ -52,14 +52,14 @@
                 </div>
                 <div class="flex flex-wrap gap-4 text-sm text-gray-500">
                     @if ($event->location)
-                        <span>📍 {{ $event->location }}</span>
+                        <span>ðŸ“ {{ $event->location }}</span>
                     @endif
-                    <span>🕐 {{ $event->event_date->format('H:i') }}</span>
+                    <span>ðŸ• {{ $event->event_date->format('H:i') }}</span>
                     @if ($event->tasks_count > 0)
-                        <span>✅ {{ $event->openTasksCount() }} open {{ $event->openTasksCount() === 1 ? 'taak' : 'taken' }}</span>
+                        <span>âœ… {{ $event->openTasksCount() }} open {{ $event->openTasksCount() === 1 ? 'taak' : 'taken' }}</span>
                     @endif
                     @if ($event->costs->count() > 0)
-                        <span>💶 &euro; {{ number_format($event->totalCosts(), 2, ',', '.') }}</span>
+                        <span>ðŸ’¶ &euro; {{ number_format($event->totalCosts(), 2, ',', '.') }}</span>
                     @endif
                 </div>
                 @if ($event->description)
@@ -69,7 +69,7 @@
         </div>
         <div class="flex gap-2 shrink-0">
             <a href="{{ route('events.show', $event) }}"
-               class="text-sm border border-gray-300 hover:bg-gray-50 text-gray-700 px-3 py-1.5 rounded-lg">
+               class="text-sm border border-bb-green-600 hover:bg-bb-green-50 text-bb-green-700 font-medium px-3 py-1.5 rounded-lg">
                 Bekijken
             </a>
             <a href="{{ route('events.edit', $event) }}"
@@ -90,3 +90,4 @@
     <div class="mt-4">{{ $events->links() }}</div>
 @endif
 @endsection
+
