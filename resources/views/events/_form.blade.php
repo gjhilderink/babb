@@ -156,18 +156,51 @@
     </div>
 </div>
 
+@php
+    $initialTasks = old('tasks');
+    if ($initialTasks === null) {
+        $initialTasks = [];
+        if (isset($event)) {
+            foreach ($event->tasks as $t) {
+                $initialTasks[] = [
+                    'description' => $t->description,
+                    'assigned_to' => $t->assigned_to ?? '',
+                    'status'      => $t->status,
+                    'due_date'    => $t->due_date ? $t->due_date->format('Y-m-d') : '',
+                ];
+            }
+        }
+    }
+
+    $initialCosts = old('costs');
+    if ($initialCosts === null) {
+        $initialCosts = [];
+        if (isset($event)) {
+            foreach ($event->costs as $c) {
+                $initialCosts[] = [
+                    'description' => $c->description,
+                    'amount'      => $c->amount,
+                    'category'    => $c->category ?? '',
+                    'paid_by'     => $c->paid_by ?? '',
+                    'paid_at'     => $c->paid_at ? $c->paid_at->format('Y-m-d') : '',
+                ];
+            }
+        }
+    }
+@endphp
+
 <script>
 function taskForm() {
     return {
-        tasks: @json(old('tasks', isset($event) ? $event->tasks->map(fn($t) => ['description' => $t->description, 'assigned_to' => $t->assigned_to ?? '', 'status' => $t->status, 'due_date' => $t->due_date?->format('Y-m-d') ?? ''])->toArray() : [])),
-        add()  { this.tasks.push({ description: '', assigned_to: '', status: 'open', due_date: '' }); },
+        tasks: @json($initialTasks),
+        add()     { this.tasks.push({ description: '', assigned_to: '', status: 'open', due_date: '' }); },
         remove(i) { this.tasks.splice(i, 1); },
     };
 }
 function costForm() {
     return {
-        costs: @json(old('costs', isset($event) ? $event->costs->map(fn($c) => ['description' => $c->description, 'amount' => $c->amount, 'category' => $c->category ?? '', 'paid_by' => $c->paid_by ?? '', 'paid_at' => $c->paid_at?->format('Y-m-d') ?? ''])->toArray() : [])),
-        add()  { this.costs.push({ description: '', amount: '', category: '', paid_by: '', paid_at: '' }); },
+        costs: @json($initialCosts),
+        add()     { this.costs.push({ description: '', amount: '', category: '', paid_by: '', paid_at: '' }); },
         remove(i) { this.costs.splice(i, 1); },
         totalFormatted() {
             const t = this.costs.reduce((s, c) => s + (parseFloat(c.amount) || 0), 0);
