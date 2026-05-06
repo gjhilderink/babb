@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Event;
 use App\Models\Invoice;
+use App\Models\Lead;
 use App\Models\Member;
 use Illuminate\View\View;
 
@@ -26,6 +27,7 @@ class DashboardController extends Controller
                 'stats'               => null,
                 'recentInvoices'      => collect(),
                 'expiringMemberships' => collect(),
+                'recentLeads'         => collect(),
             ]);
         }
 
@@ -50,6 +52,12 @@ class DashboardController extends Controller
             ->limit(5)
             ->get();
 
-        return view('dashboard.index', compact('stats', 'recentInvoices', 'expiringMemberships', 'upcomingEvents'));
+        $recentLeads = Lead::with(['assignedTo'])
+            ->whereNotIn('status', ['gewonnen', 'verloren'])
+            ->latest()
+            ->limit(5)
+            ->get();
+
+        return view('dashboard.index', compact('stats', 'recentInvoices', 'expiringMemberships', 'upcomingEvents', 'recentLeads'));
     }
 }

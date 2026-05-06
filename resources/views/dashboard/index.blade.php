@@ -118,6 +118,42 @@
     </div>
 </div>
 
+{{-- Leads widget --}}
+@if ($recentLeads->isNotEmpty())
+<div class="mt-6 bg-white rounded-xl shadow-sm border border-gray-200">
+    <div class="px-5 py-4 border-b border-gray-100 flex justify-between items-center">
+        <h2 class="font-semibold text-gray-800">Actieve leads</h2>
+        <a href="{{ route('leads.index') }}" class="text-xs text-bb-green-600 hover:underline">Alle leads</a>
+    </div>
+    <ul class="divide-y divide-gray-100">
+        @foreach ($recentLeads as $lead)
+        <li class="px-5 py-3 flex flex-wrap justify-between items-center gap-2 text-sm">
+            <div class="flex items-center gap-3">
+                <span class="px-2 py-0.5 rounded-full text-xs font-medium {{ $lead->statusColor() }}">
+                    {{ $lead->statusLabel() }}
+                </span>
+                <a href="{{ route('leads.show', $lead) }}" class="font-medium text-bb-green-700 hover:underline">
+                    {{ $lead->full_name }}
+                </a>
+                @if ($lead->company_name)
+                    <span class="text-gray-400 text-xs hidden sm:inline">{{ $lead->company_name }}</span>
+                @endif
+            </div>
+            <div class="flex items-center gap-3">
+                @if ($lead->assignedTo)
+                    <span class="text-xs text-gray-500">{{ $lead->assignedTo->name }}</span>
+                @endif
+                <a href="{{ route('leads.convert-form', $lead) }}"
+                   class="text-xs bg-bb-green-600 hover:bg-bb-green-700 text-white px-2.5 py-1 rounded-lg font-medium">
+                    Omzetten
+                </a>
+            </div>
+        </li>
+        @endforeach
+    </ul>
+</div>
+@endif
+
 @else
 {{-- Gebruiker: events only --}}
 <div class="bg-white rounded-xl shadow-sm border border-gray-200 max-w-2xl">
