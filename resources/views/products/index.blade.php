@@ -1,5 +1,5 @@
-﻿@extends('layouts.app')
-@section('title', 'Producten â€” BABB Portaal')
+@extends('layouts.app')
+@section('title', 'Producten — BABB Portaal')
 
 @section('content')
 <div class="flex justify-between items-center mb-6">
@@ -11,11 +11,11 @@
 </div>
 
 <form method="GET" class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-6 flex flex-wrap gap-3">
-    <input type="text" name="search" value="{{ request('search') }}" placeholder="Zoek op naam of SKUâ€¦"
+    <input type="text" name="search" value="{{ request('search') }}" placeholder="Zoek op naam of SKU..."
            class="flex-1 min-w-48 border border-gray-300 rounded-lg px-3 py-2 text-sm">
     @if ($categories->isNotEmpty())
     <select name="category" class="border border-gray-300 rounded-lg px-3 py-2 text-sm">
-        <option value="">Alle categorieÃ«n</option>
+        <option value="">Alle categorieën</option>
         @foreach ($categories as $cat)
             <option value="{{ $cat }}" @selected(request('category') === $cat)>{{ $cat }}</option>
         @endforeach
@@ -44,8 +44,8 @@
                 <td class="px-4 py-3 font-medium text-gray-900">
                     <a href="{{ route('products.show', $product) }}" class="text-bb-green-700 hover:underline">{{ $product->name }}</a>
                 </td>
-                <td class="px-4 py-3 text-gray-500 font-mono text-xs">{{ $product->sku ?? 'â€”' }}</td>
-                <td class="px-4 py-3 text-gray-600">{{ $product->category ?? 'â€”' }}</td>
+                <td class="px-4 py-3 text-gray-500 font-mono text-xs">{{ $product->sku ?? '—' }}</td>
+                <td class="px-4 py-3 text-gray-600">{{ $product->category ?? '—' }}</td>
                 <td class="px-4 py-3 text-right font-medium">&euro; {{ number_format($product->price, 2, ',', '.') }}</td>
                 <td class="px-4 py-3 text-right text-gray-600">{{ $product->tax_rate }}%</td>
                 <td class="px-4 py-3">
@@ -67,4 +67,5 @@
     <div class="px-4 py-3 border-t border-gray-100">{{ $products->links() }}</div>
 </div>
 @endsection
+
 

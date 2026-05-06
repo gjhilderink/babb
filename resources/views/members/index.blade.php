@@ -1,5 +1,5 @@
-﻿@extends('layouts.app')
-@section('title', 'Leden â€” BABB Portaal')
+@extends('layouts.app')
+@section('title', 'Leden — BABB Portaal')
 
 @section('content')
 <div class="flex justify-between items-center mb-6">
@@ -11,7 +11,7 @@
 </div>
 
 <form method="GET" class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-6 flex flex-wrap gap-3">
-    <input type="text" name="search" value="{{ request('search') }}" placeholder="Zoek op naam, e-mail of bedrijfâ€¦"
+    <input type="text" name="search" value="{{ request('search') }}" placeholder="Zoek op naam, e-mail of bedrijf..."
            class="flex-1 min-w-48 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-bb-green-600">
     <select name="status" class="border border-gray-300 rounded-lg px-3 py-2 text-sm">
         <option value="">Alle statussen</option>
@@ -49,8 +49,8 @@
                     <a href="{{ route('members.show', $member) }}" class="text-bb-green-700 hover:underline">{{ $member->full_name }}</a>
                 </td>
                 <td class="px-4 py-3 text-gray-600">{{ $member->email }}</td>
-                <td class="px-4 py-3 text-gray-600">{{ $member->company_name ?? 'â€”' }}</td>
-                <td class="px-4 py-3 text-gray-600">{{ $member->membershipType?->name ?? 'â€”' }}</td>
+                <td class="px-4 py-3 text-gray-600">{{ $member->company_name ?? '—' }}</td>
+                <td class="px-4 py-3 text-gray-600">{{ $member->membershipType?->name ?? '—' }}</td>
                 <td class="px-4 py-3">
                     <span class="px-2 py-0.5 rounded-full text-xs font-medium
                         {{ $member->status === 'active' ? 'bg-green-100 text-green-700' : '' }}
@@ -59,7 +59,7 @@
                         {{ ucfirst($member->status) }}
                     </span>
                 </td>
-                <td class="px-4 py-3 text-gray-600">{{ $member->membership_end?->format('d-m-Y') ?? 'â€”' }}</td>
+                <td class="px-4 py-3 text-gray-600">{{ $member->membership_end?->format('d-m-Y') ?? '—' }}</td>
                 <td class="px-4 py-3 text-right">
                     <a href="{{ route('members.edit', $member) }}" class="text-xs text-bb-green-600 hover:underline">Bewerken</a>
                 </td>
@@ -76,4 +76,5 @@
     </div>
 </div>
 @endsection
+
 
