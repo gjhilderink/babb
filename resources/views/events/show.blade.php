@@ -184,10 +184,52 @@
                     <dt class="text-gray-500">Taken gereed</dt>
                     <dd class="font-medium text-green-600">{{ $event->tasks->where('status','gereed')->count() }}</dd>
                 </div>
-                <div class="flex justify-between pt-2 border-t border-gray-100">
-                    <dt class="text-gray-500">Totale kosten</dt>
-                    <dd class="font-bold">&euro; {{ number_format($event->totalCosts(), 2, ',', '.') }}</dd>
+            </dl>
+        </div>
+
+        {{-- Budget vs. kosten --}}
+        @php
+            $totalCosts = $event->totalCosts();
+            $budget     = (float) $event->budget;
+            $resterend  = $budget - $totalCosts;
+            $pct        = $budget > 0 ? min(100, round($totalCosts / $budget * 100)) : 0;
+            $overBudget = $budget > 0 && $totalCosts > $budget;
+        @endphp
+
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+            <h3 class="font-semibold text-gray-800 mb-3 text-sm">Budget</h3>
+            <dl class="space-y-2 text-sm">
+                @if ($event->budget)
+                <div class="flex justify-between">
+                    <dt class="text-gray-500">Begroting</dt>
+                    <dd class="font-medium">&euro; {{ number_format($budget, 2, ',', '.') }}</dd>
                 </div>
+                @endif
+                <div class="flex justify-between">
+                    <dt class="text-gray-500">Werkelijke kosten</dt>
+                    <dd class="font-medium">&euro; {{ number_format($totalCosts, 2, ',', '.') }}</dd>
+                </div>
+                @if ($event->budget)
+                <div class="flex justify-between pt-2 border-t border-gray-100">
+                    <dt class="text-gray-500">{{ $overBudget ? 'Overschrijding' : 'Resterend' }}</dt>
+                    <dd class="font-bold {{ $overBudget ? 'text-red-600' : 'text-green-600' }}">
+                        &euro; {{ number_format(abs($resterend), 2, ',', '.') }}
+                    </dd>
+                </div>
+                {{-- Voortgangsbalk --}}
+                <div class="pt-1">
+                    <div class="flex justify-between text-xs text-gray-400 mb-1">
+                        <span>{{ $pct }}% gebruikt</span>
+                        @if ($overBudget)
+                            <span class="text-red-500 font-medium">Over budget</span>
+                        @endif
+                    </div>
+                    <div class="w-full bg-gray-100 rounded-full h-2">
+                        <div class="h-2 rounded-full {{ $overBudget ? 'bg-red-500' : ($pct > 80 ? 'bg-yellow-400' : 'bg-green-500') }}"
+                             style="width: {{ $pct }}%"></div>
+                    </div>
+                </div>
+                @endif
             </dl>
         </div>
     </div>

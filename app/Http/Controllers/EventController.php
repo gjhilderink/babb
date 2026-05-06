@@ -95,6 +95,7 @@ class EventController extends Controller
             'location'      => 'nullable|string|max:255',
             'status'        => 'required|in:concept,bevestigd,afgerond,geannuleerd',
             'max_attendees' => 'nullable|integer|min:1',
+            'budget'        => 'nullable|numeric|min:0',
             'notes'         => 'nullable|string',
         ]);
     }

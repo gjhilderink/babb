@@ -41,6 +41,16 @@
                    class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
                    placeholder="Leeg = onbeperkt">
         </div>
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Begroting</label>
+            <div class="relative">
+                <span class="absolute left-3 top-2 text-gray-400 text-sm">&euro;</span>
+                <input type="number" name="budget" step="0.01" min="0"
+                       value="{{ old('budget', $event->budget ?? '') }}"
+                       class="w-full border border-gray-300 rounded-lg pl-7 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                       placeholder="0,00">
+            </div>
+        </div>
         <div class="md:col-span-2">
             <label class="block text-sm font-medium text-gray-700 mb-1">Beschrijving</label>
             <textarea name="description" rows="3"

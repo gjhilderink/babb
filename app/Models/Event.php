@@ -18,12 +18,14 @@ class Event extends Model
         'location',
         'status',
         'max_attendees',
+        'budget',
         'notes',
     ];
 
     protected $casts = [
         'event_date' => 'datetime',
         'event_end'  => 'datetime',
+        'budget'     => 'decimal:2',
     ];
 
     public function tasks()
