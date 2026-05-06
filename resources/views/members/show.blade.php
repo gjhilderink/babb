@@ -1,8 +1,8 @@
-@extends('layouts.app')
-@section('title', $member->full_name . ' — BABB Portaal')
+﻿@extends('layouts.app')
+@section('title', $member->full_name . ' â€” BABB Portaal')
 
 @section('content')
-<div class="mb-6 flex items-center justify-between">
+<div class="mb-6 flex flex-wrap items-start justify-between gap-3">
     <div class="flex items-center gap-3">
         <a href="{{ route('members.index') }}" class="text-gray-400 hover:text-gray-700 text-sm">&larr; Leden</a>
         <h1 class="text-2xl font-bold text-gray-900">{{ $member->full_name }}</h1>
@@ -11,7 +11,7 @@
             {{ ucfirst($member->status) }}
         </span>
     </div>
-    <div class="flex gap-2">
+    <div class="flex flex-wrap gap-2">
         <a href="{{ route('invoices.create', ['member_id' => $member->id]) }}"
            class="bg-green-600 hover:bg-green-700 text-white text-sm font-medium px-4 py-2 rounded-lg">
             + Nieuwe factuur
@@ -29,12 +29,12 @@
             <h2 class="font-semibold text-gray-800 mb-4">Gegevens</h2>
             <dl class="grid grid-cols-2 gap-4 text-sm">
                 <div><dt class="text-gray-500">E-mail</dt><dd class="font-medium">{{ $member->email }}</dd></div>
-                <div><dt class="text-gray-500">Telefoon</dt><dd class="font-medium">{{ $member->phone ?? '—' }}</dd></div>
-                <div><dt class="text-gray-500">Bedrijf</dt><dd class="font-medium">{{ $member->company_name ?? '—' }}</dd></div>
-                <div><dt class="text-gray-500">Stad</dt><dd class="font-medium">{{ $member->city ?? '—' }}</dd></div>
-                <div><dt class="text-gray-500">Lidmaatschap</dt><dd class="font-medium">{{ $member->membershipType?->name ?? '—' }}</dd></div>
+                <div><dt class="text-gray-500">Telefoon</dt><dd class="font-medium">{{ $member->phone ?? 'â€”' }}</dd></div>
+                <div><dt class="text-gray-500">Bedrijf</dt><dd class="font-medium">{{ $member->company_name ?? 'â€”' }}</dd></div>
+                <div><dt class="text-gray-500">Stad</dt><dd class="font-medium">{{ $member->city ?? 'â€”' }}</dd></div>
+                <div><dt class="text-gray-500">Lidmaatschap</dt><dd class="font-medium">{{ $member->membershipType?->name ?? 'â€”' }}</dd></div>
                 <div><dt class="text-gray-500">Looptijd</dt><dd class="font-medium">
-                    {{ $member->membership_start?->format('d-m-Y') ?? '—' }} t/m {{ $member->membership_end?->format('d-m-Y') ?? '—' }}
+                    {{ $member->membership_start?->format('d-m-Y') ?? 'â€”' }} t/m {{ $member->membership_end?->format('d-m-Y') ?? 'â€”' }}
                 </dd></div>
             </dl>
             @if ($member->notes)
@@ -50,7 +50,7 @@
                 <h2 class="font-semibold text-gray-800">Facturen</h2>
                 <a href="{{ route('invoices.create', ['member_id' => $member->id]) }}" class="text-xs text-bb-green-600 hover:underline">+ Nieuwe factuur</a>
             </div>
-            <table class="min-w-full divide-y divide-gray-100 text-sm">
+            <div class="overflow-x-auto"><table class="min-w-full divide-y divide-gray-100 text-sm">
                 <thead class="bg-gray-50">
                     <tr>
                         <th class="px-4 py-3 text-left font-semibold text-gray-600">Factuurnummer</th>
@@ -80,8 +80,9 @@
                     <tr><td colspan="4" class="px-4 py-4 text-center text-gray-400">Geen facturen.</td></tr>
                     @endforelse
                 </tbody>
-            </table>
-        </div>
+            </table></div></div>
     </div>
 </div>
 @endsection
+
+

@@ -9,18 +9,8 @@
             theme: {
                 extend: {
                     colors: {
-                        'bb-green': {
-                            400: '#7bc43a',
-                            500: '#6ab52a',
-                            600: '#5ea31f',
-                            700: '#4d8a18',
-                            800: '#3d6e13',
-                        },
-                        'bb-red': {
-                            500: '#e02020',
-                            600: '#cc1c1c',
-                            700: '#b01818',
-                        },
+                        'bb-green': { 400:'#7bc43a', 500:'#6ab52a', 600:'#5ea31f', 700:'#4d8a18', 800:'#3d6e13' },
+                        'bb-red':   { 500:'#e02020', 600:'#cc1c1c', 700:'#b01818' },
                     }
                 }
             }
@@ -29,7 +19,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <style>
-        /* Brand green */
         .bg-bb-green-50  { background-color: #f0f8e8; }
         .bg-bb-green-100 { background-color: #dff0c4; }
         .bg-bb-green-400 { background-color: #7bc43a; }
@@ -45,11 +34,10 @@
         .text-bb-green-600 { color: #5ea31f; }
         .text-bb-green-700 { color: #4d8a18; }
         .text-bb-green-800 { color: #3d6e13; }
+        .border-bb-green-100 { border-color: #dff0c4; }
         .border-bb-green-500 { border-color: #6ab52a; }
         .border-bb-green-600 { border-color: #5ea31f; }
-        .ring-bb-green-600  { --tw-ring-color: #5ea31f; }
         .focus\:ring-bb-green-600:focus { --tw-ring-color: #5ea31f; box-shadow: 0 0 0 3px rgba(94,163,31,.35); }
-        /* Brand red */
         .bg-bb-red-500  { background-color: #e02020; }
         .bg-bb-red-600  { background-color: #cc1c1c; }
         .bg-bb-red-700  { background-color: #b01818; }
@@ -58,70 +46,63 @@
         .text-bb-red-600 { color: #cc1c1c; }
         .text-bb-red-700 { color: #b01818; }
         .border-bb-red-600 { border-color: #cc1c1c; }
-        /* Active nav item */
-        .bg-bb-green-700 { background-color: #4d8a18; }
     </style>
 </head>
 <body class="bg-gray-100 min-h-screen">
 
-{{-- Top accent bar --}}
 <div class="h-1 w-full flex">
     <div class="w-1/2 bg-bb-red-600"></div>
     <div class="w-1/2 bg-bb-green-600"></div>
 </div>
 
-<nav class="bg-gray-900 shadow-lg">
+<nav class="bg-gray-900 shadow-lg" x-data="{ open: false }">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16 items-center">
-            <div class="flex items-center gap-6">
-                <a href="{{ route('dashboard') }}" class="text-white font-bold text-lg tracking-wide flex items-center gap-2">
-                    <span class="text-bb-green-500">BABB</span>
-                    <span class="text-gray-400 font-normal text-sm">Portaal</span>
+            {{-- Logo --}}
+            <a href="{{ route('dashboard') }}" class="text-white font-bold text-lg tracking-wide flex items-center gap-2 shrink-0">
+                <span class="text-bb-green-500">BABB</span>
+                <span class="text-gray-400 font-normal text-sm">Portaal</span>
+            </a>
+
+            {{-- Desktop nav --}}
+            <div class="hidden md:flex gap-1">
+                <a href="{{ route('dashboard') }}"
+                   class="px-3 py-2 rounded text-sm font-medium transition-colors {{ request()->routeIs('dashboard') ? 'bg-bb-green-700 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700' }}">
+                    Dashboard
                 </a>
-                <div class="flex gap-1">
-                    <a href="{{ route('dashboard') }}"
-                       class="px-3 py-2 rounded text-sm font-medium transition-colors
-                              {{ request()->routeIs('dashboard') ? 'bg-bb-green-700 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700' }}">
-                        Dashboard
-                    </a>
-                    @if (auth()->user()->isAdminOrBestuur())
-                    <a href="{{ route('membership-types.index') }}"
-                       class="px-3 py-2 rounded text-sm font-medium transition-colors
-                              {{ request()->routeIs('membership-types*') ? 'bg-bb-green-700 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700' }}">
-                        Pakketten
-                    </a>
-                    <a href="{{ route('members.index') }}"
-                       class="px-3 py-2 rounded text-sm font-medium transition-colors
-                              {{ request()->routeIs('members*') ? 'bg-bb-green-700 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700' }}">
-                        Leden
-                    </a>
-                    <a href="{{ route('events.index') }}"
-                       class="px-3 py-2 rounded text-sm font-medium transition-colors
-                              {{ request()->routeIs('events*') ? 'bg-bb-green-700 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700' }}">
-                        Evenementen
-                    </a>
-                    <a href="{{ route('invoices.index') }}"
-                       class="px-3 py-2 rounded text-sm font-medium transition-colors
-                              {{ request()->routeIs('invoices*') ? 'bg-bb-green-700 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700' }}">
-                        Facturen
-                    </a>
-                    <a href="{{ route('membership-billing.index') }}"
-                       class="px-3 py-2 rounded text-sm font-medium transition-colors
-                              {{ request()->routeIs('membership-billing*') ? 'bg-bb-green-700 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700' }}">
-                        Factureren
-                    </a>
-                    @endif
-                    @if (auth()->user()->isAdmin())
-                    <a href="{{ route('users.index') }}"
-                       class="px-3 py-2 rounded text-sm font-medium transition-colors
-                              {{ request()->routeIs('users*') ? 'bg-bb-red-700 text-white' : 'text-gray-300 hover:text-white hover:bg-bb-red-700' }}">
-                        Gebruikers
-                    </a>
-                    @endif
-                </div>
+                @if (auth()->user()->isAdminOrBestuur())
+                <a href="{{ route('membership-types.index') }}"
+                   class="px-3 py-2 rounded text-sm font-medium transition-colors {{ request()->routeIs('membership-types*') ? 'bg-bb-green-700 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700' }}">
+                    Pakketten
+                </a>
+                <a href="{{ route('members.index') }}"
+                   class="px-3 py-2 rounded text-sm font-medium transition-colors {{ request()->routeIs('members*') ? 'bg-bb-green-700 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700' }}">
+                    Leden
+                </a>
+                <a href="{{ route('events.index') }}"
+                   class="px-3 py-2 rounded text-sm font-medium transition-colors {{ request()->routeIs('events*') ? 'bg-bb-green-700 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700' }}">
+                    Evenementen
+                </a>
+                <a href="{{ route('invoices.index') }}"
+                   class="px-3 py-2 rounded text-sm font-medium transition-colors {{ request()->routeIs('invoices*') ? 'bg-bb-green-700 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700' }}">
+                    Facturen
+                </a>
+                <a href="{{ route('membership-billing.index') }}"
+                   class="px-3 py-2 rounded text-sm font-medium transition-colors {{ request()->routeIs('membership-billing*') ? 'bg-bb-green-700 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700' }}">
+                    Factureren
+                </a>
+                @endif
+                @if (auth()->user()->isAdmin())
+                <a href="{{ route('users.index') }}"
+                   class="px-3 py-2 rounded text-sm font-medium transition-colors {{ request()->routeIs('users*') ? 'bg-bb-red-700 text-white' : 'text-gray-300 hover:text-white hover:bg-bb-red-700' }}">
+                    Gebruikers
+                </a>
+                @endif
             </div>
-            <div class="flex items-center gap-3">
-                <span class="text-xs text-gray-400 hidden sm:block">
+
+            {{-- Desktop user + logout --}}
+            <div class="hidden md:flex items-center gap-3">
+                <span class="text-xs text-gray-400">
                     {{ auth()->user()->name }}
                     <span class="ml-1 px-1.5 py-0.5 rounded text-xs
                         {{ auth()->user()->isAdmin() ? 'bg-bb-red-700 text-white' : '' }}
@@ -132,39 +113,96 @@
                 </span>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-                    <button type="submit"
-                            class="text-sm text-gray-400 hover:text-white border border-gray-600 hover:border-gray-400 rounded px-3 py-1.5 transition-colors">
+                    <button class="text-sm text-gray-400 hover:text-white border border-gray-600 hover:border-gray-400 rounded px-3 py-1.5 transition-colors">
                         Uitloggen
                     </button>
                 </form>
             </div>
+
+            {{-- Mobile hamburger --}}
+            <button @click="open = !open" class="md:hidden text-gray-400 hover:text-white p-2 rounded">
+                <svg x-show="!open" class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+                </svg>
+                <svg x-show="open" class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    {{-- Mobile menu --}}
+    <div x-show="open" x-transition class="md:hidden border-t border-gray-700 bg-gray-900 pb-3">
+        <div class="px-4 pt-3 space-y-1">
+            <a href="{{ route('dashboard') }}" @click="open=false"
+               class="block px-3 py-2 rounded text-sm font-medium {{ request()->routeIs('dashboard') ? 'bg-bb-green-700 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700' }}">
+                Dashboard
+            </a>
+            @if (auth()->user()->isAdminOrBestuur())
+            <a href="{{ route('membership-types.index') }}" @click="open=false"
+               class="block px-3 py-2 rounded text-sm font-medium {{ request()->routeIs('membership-types*') ? 'bg-bb-green-700 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700' }}">
+                Pakketten
+            </a>
+            <a href="{{ route('members.index') }}" @click="open=false"
+               class="block px-3 py-2 rounded text-sm font-medium {{ request()->routeIs('members*') ? 'bg-bb-green-700 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700' }}">
+                Leden
+            </a>
+            <a href="{{ route('events.index') }}" @click="open=false"
+               class="block px-3 py-2 rounded text-sm font-medium {{ request()->routeIs('events*') ? 'bg-bb-green-700 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700' }}">
+                Evenementen
+            </a>
+            <a href="{{ route('invoices.index') }}" @click="open=false"
+               class="block px-3 py-2 rounded text-sm font-medium {{ request()->routeIs('invoices*') ? 'bg-bb-green-700 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700' }}">
+                Facturen
+            </a>
+            <a href="{{ route('membership-billing.index') }}" @click="open=false"
+               class="block px-3 py-2 rounded text-sm font-medium {{ request()->routeIs('membership-billing*') ? 'bg-bb-green-700 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700' }}">
+                Factureren
+            </a>
+            @endif
+            @if (auth()->user()->isAdmin())
+            <a href="{{ route('users.index') }}" @click="open=false"
+               class="block px-3 py-2 rounded text-sm font-medium {{ request()->routeIs('users*') ? 'bg-bb-red-700 text-white' : 'text-gray-300 hover:text-white hover:bg-bb-red-700' }}">
+                Gebruikers
+            </a>
+            @endif
+        </div>
+        <div class="mt-3 px-4 pt-3 border-t border-gray-700 flex items-center justify-between">
+            <span class="text-xs text-gray-400">
+                {{ auth()->user()->name }}
+                <span class="ml-1 px-1.5 py-0.5 rounded text-xs
+                    {{ auth()->user()->isAdmin() ? 'bg-bb-red-700 text-white' : '' }}
+                    {{ auth()->user()->isBestuur() ? 'bg-bb-green-700 text-white' : '' }}
+                    {{ auth()->user()->isGebruiker() ? 'bg-gray-600 text-gray-300' : '' }}">
+                    {{ auth()->user()->roleName() }}
+                </span>
+            </span>
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button class="text-sm text-gray-400 hover:text-white border border-gray-600 rounded px-3 py-1.5">
+                    Uitloggen
+                </button>
+            </form>
         </div>
     </div>
 </nav>
 
-<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
     @if (session('success'))
         <div class="mb-4 rounded-md bg-bb-green-600 bg-opacity-10 border border-bb-green-600 border-opacity-30 px-4 py-3 text-sm text-bb-green-800 flex items-center gap-2">
             <span class="text-bb-green-600">&#10003;</span> {{ session('success') }}
         </div>
     @endif
-
     @if (session('error'))
-        <div class="mb-4 rounded-md bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-800">
-            {{ session('error') }}
-        </div>
+        <div class="mb-4 rounded-md bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-800">{{ session('error') }}</div>
     @endif
-
     @if ($errors->any())
         <div class="mb-4 rounded-md bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-800">
             <ul class="list-disc list-inside space-y-1">
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
+                @foreach ($errors->all() as $error)<li>{{ $error }}</li>@endforeach
             </ul>
         </div>
     @endif
-
     @yield('content')
 </main>
 

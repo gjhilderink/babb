@@ -1,5 +1,5 @@
-@extends('layouts.app')
-@section('title', $event->title . ' — BABB Portaal')
+﻿@extends('layouts.app')
+@section('title', $event->title . ' â€” BABB Portaal')
 
 @section('content')
 @php
@@ -16,7 +16,7 @@
     ];
 @endphp
 
-<div class="mb-6 flex items-center justify-between">
+<div class="mb-6 flex flex-wrap items-start justify-between gap-3">
     <div class="flex items-center gap-3">
         <a href="{{ route('events.index') }}" class="text-gray-400 hover:text-gray-700 text-sm">&larr; Evenementen</a>
         <h1 class="text-2xl font-bold text-gray-900">{{ $event->title }}</h1>
@@ -24,7 +24,7 @@
             {{ ucfirst($event->status) }}
         </span>
     </div>
-    <div class="flex gap-2">
+    <div class="flex flex-wrap gap-2">
         <a href="{{ route('events.edit', $event) }}"
            class="bg-bb-green-600 hover:bg-bb-green-700 text-white text-sm font-medium px-4 py-2 rounded-lg">
             Bewerken
@@ -51,7 +51,7 @@
                     <dt class="text-gray-500 mb-1">Datum</dt>
                     <dd class="font-medium">{{ $event->event_date->format('d-m-Y') }}</dd>
                     <dd class="text-gray-500">{{ $event->event_date->format('H:i') }}
-                        @if ($event->event_end) — {{ $event->event_end->format('H:i') }} @endif
+                        @if ($event->event_end) â€” {{ $event->event_end->format('H:i') }} @endif
                     </dd>
                 </div>
                 @if ($event->location)
@@ -149,11 +149,11 @@
                     @foreach ($event->costs as $cost)
                     <tr>
                         <td class="px-4 py-3 text-gray-800">{{ $cost->description }}</td>
-                        <td class="px-4 py-3 text-gray-500">{{ $cost->category ?? '—' }}</td>
+                        <td class="px-4 py-3 text-gray-500">{{ $cost->category ?? 'â€”' }}</td>
                         <td class="px-4 py-3 text-right font-medium">&euro; {{ number_format($cost->amount, 2, ',', '.') }}</td>
-                        <td class="px-4 py-3 text-gray-600">{{ $cost->paid_by ?? '—' }}</td>
+                        <td class="px-4 py-3 text-gray-600">{{ $cost->paid_by ?? 'â€”' }}</td>
                         <td class="px-4 py-3 text-gray-600">
-                            {{ $cost->paid_at ? $cost->paid_at->format('d-m-Y') : '—' }}
+                            {{ $cost->paid_at ? $cost->paid_at->format('d-m-Y') : 'â€”' }}
                         </td>
                     </tr>
                     @endforeach
@@ -235,3 +235,4 @@
     </div>
 </div>
 @endsection
+

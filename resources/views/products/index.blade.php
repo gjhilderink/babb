@@ -1,8 +1,8 @@
-@extends('layouts.app')
-@section('title', 'Producten — BABB Portaal')
+﻿@extends('layouts.app')
+@section('title', 'Producten â€” BABB Portaal')
 
 @section('content')
-<div class="flex justify-between items-center mb-6">
+<div class="flex flex-wrap justify-between items-center gap-3 mb-6">
     <h1 class="text-2xl font-bold text-gray-900">Producten</h1>
     <a href="{{ route('products.create') }}"
        class="bg-bb-green-600 hover:bg-bb-green-700 text-white text-sm font-medium px-4 py-2 rounded-lg">
@@ -15,7 +15,7 @@
            class="flex-1 min-w-48 border border-gray-300 rounded-lg px-3 py-2 text-sm">
     @if ($categories->isNotEmpty())
     <select name="category" class="border border-gray-300 rounded-lg px-3 py-2 text-sm">
-        <option value="">Alle categorieën</option>
+        <option value="">Alle categorieÃ«n</option>
         @foreach ($categories as $cat)
             <option value="{{ $cat }}" @selected(request('category') === $cat)>{{ $cat }}</option>
         @endforeach
@@ -26,7 +26,7 @@
 </form>
 
 <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-    <table class="min-w-full divide-y divide-gray-200 text-sm">
+    <div class="overflow-x-auto"><table class="min-w-full divide-y divide-gray-200 text-sm">
         <thead class="bg-gray-50">
             <tr>
                 <th class="px-4 py-3 text-left font-semibold text-gray-600">Naam</th>
@@ -44,8 +44,8 @@
                 <td class="px-4 py-3 font-medium text-gray-900">
                     <a href="{{ route('products.show', $product) }}" class="text-bb-green-700 hover:underline">{{ $product->name }}</a>
                 </td>
-                <td class="px-4 py-3 text-gray-500 font-mono text-xs">{{ $product->sku ?? '—' }}</td>
-                <td class="px-4 py-3 text-gray-600">{{ $product->category ?? '—' }}</td>
+                <td class="px-4 py-3 text-gray-500 font-mono text-xs">{{ $product->sku ?? 'â€”' }}</td>
+                <td class="px-4 py-3 text-gray-600">{{ $product->category ?? 'â€”' }}</td>
                 <td class="px-4 py-3 text-right font-medium">&euro; {{ number_format($product->price, 2, ',', '.') }}</td>
                 <td class="px-4 py-3 text-right text-gray-600">{{ $product->tax_rate }}%</td>
                 <td class="px-4 py-3">
@@ -63,9 +63,9 @@
             </tr>
             @endforelse
         </tbody>
-    </table>
-    <div class="px-4 py-3 border-t border-gray-100">{{ $products->links() }}</div>
+    </table></div><div class="px-4 py-3 border-t border-gray-100">{{ $products->links() }}</div>
 </div>
 @endsection
+
 
 

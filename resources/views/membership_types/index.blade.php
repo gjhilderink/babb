@@ -1,8 +1,8 @@
-@extends('layouts.app')
-@section('title', 'Lidmaatschapspakketten — BABB Portaal')
+﻿@extends('layouts.app')
+@section('title', 'Lidmaatschapspakketten â€” BABB Portaal')
 
 @section('content')
-<div class="flex justify-between items-center mb-6">
+<div class="flex flex-wrap justify-between items-center gap-3 mb-6">
     <h1 class="text-2xl font-bold text-gray-900">Lidmaatschapspakketten</h1>
     <a href="{{ route('membership-types.create') }}"
        class="bg-bb-green-600 hover:bg-bb-green-700 text-white text-sm font-medium px-4 py-2 rounded-lg">
@@ -75,3 +75,4 @@
     @endforelse
 </div>
 @endsection
+

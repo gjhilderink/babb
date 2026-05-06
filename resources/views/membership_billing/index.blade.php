@@ -1,5 +1,5 @@
-@extends('layouts.app')
-@section('title', 'Lidmaatschap factureren — BABB Portaal')
+﻿@extends('layouts.app')
+@section('title', 'Lidmaatschap factureren â€” BABB Portaal')
 
 @section('content')
 <div class="mb-6 flex items-center gap-3">
@@ -74,7 +74,7 @@
                             {{ $member->full_name }}
                         </a>
                     </td>
-                    <td class="px-4 py-3 text-gray-500">{{ $member->company_name ?? '—' }}</td>
+                    <td class="px-4 py-3 text-gray-500">{{ $member->company_name ?? 'â€”' }}</td>
                     <td class="px-4 py-3 text-gray-700">{{ $member->membershipType->name }}</td>
                     <td class="px-4 py-3 text-right font-medium">
                         &euro; {{ number_format($member->membershipType->price_per_year, 2, ',', '.') }}
@@ -158,3 +158,4 @@ function billingForm() {
 }
 </script>
 @endsection
+

@@ -1,8 +1,8 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 @section('title', 'Leden — BABB Portaal')
 
 @section('content')
-<div class="flex justify-between items-center mb-6">
+<div class="flex flex-wrap justify-between items-center gap-3 mb-6">
     <h1 class="text-2xl font-bold text-gray-900">Leden</h1>
     <a href="{{ route('members.create') }}"
        class="bg-bb-green-600 hover:bg-bb-green-700 text-white text-sm font-medium px-4 py-2 rounded-lg">
@@ -12,7 +12,7 @@
 
 <form method="GET" class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-6 flex flex-wrap gap-3">
     <input type="text" name="search" value="{{ request('search') }}" placeholder="Zoek op naam, e-mail of bedrijf..."
-           class="flex-1 min-w-48 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-bb-green-600">
+           class="flex-1 min-w-0 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-bb-green-600">
     <select name="status" class="border border-gray-300 rounded-lg px-3 py-2 text-sm">
         <option value="">Alle statussen</option>
         <option value="active" @selected(request('status') === 'active')>Actief</option>
@@ -29,52 +29,84 @@
     <a href="{{ route('members.index') }}" class="text-sm text-gray-500 px-3 py-2 hover:text-gray-800">Wis filters</a>
 </form>
 
-<div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-    <table class="min-w-full divide-y divide-gray-200 text-sm">
-        <thead class="bg-gray-50">
-            <tr>
-                <th class="px-4 py-3 text-left font-semibold text-gray-600">Naam</th>
-                <th class="px-4 py-3 text-left font-semibold text-gray-600">E-mail</th>
-                <th class="px-4 py-3 text-left font-semibold text-gray-600">Bedrijf</th>
-                <th class="px-4 py-3 text-left font-semibold text-gray-600">Lidmaatschap</th>
-                <th class="px-4 py-3 text-left font-semibold text-gray-600">Status</th>
-                <th class="px-4 py-3 text-left font-semibold text-gray-600">Verloopt</th>
-                <th class="px-4 py-3"></th>
-            </tr>
-        </thead>
-        <tbody class="divide-y divide-gray-100">
-            @forelse ($members as $member)
-            <tr class="hover:bg-gray-50">
-                <td class="px-4 py-3 font-medium text-gray-900">
-                    <a href="{{ route('members.show', $member) }}" class="text-bb-green-700 hover:underline">{{ $member->full_name }}</a>
-                </td>
-                <td class="px-4 py-3 text-gray-600">{{ $member->email }}</td>
-                <td class="px-4 py-3 text-gray-600">{{ $member->company_name ?? '—' }}</td>
-                <td class="px-4 py-3 text-gray-600">{{ $member->membershipType?->name ?? '—' }}</td>
-                <td class="px-4 py-3">
-                    <span class="px-2 py-0.5 rounded-full text-xs font-medium
-                        {{ $member->status === 'active' ? 'bg-green-100 text-green-700' : '' }}
-                        {{ $member->status === 'inactive' ? 'bg-gray-100 text-gray-600' : '' }}
-                        {{ $member->status === 'suspended' ? 'bg-red-100 text-red-700' : '' }}">
-                        {{ ucfirst($member->status) }}
-                    </span>
-                </td>
-                <td class="px-4 py-3 text-gray-600">{{ $member->membership_end?->format('d-m-Y') ?? '—' }}</td>
-                <td class="px-4 py-3 text-right">
-                    <a href="{{ route('members.edit', $member) }}" class="text-xs text-bb-green-600 hover:underline">Bewerken</a>
-                </td>
-            </tr>
-            @empty
-            <tr>
-                <td colspan="7" class="px-4 py-8 text-center text-gray-400">Geen leden gevonden.</td>
-            </tr>
-            @endforelse
-        </tbody>
-    </table>
-    <div class="px-4 py-3 border-t border-gray-100">
-        {{ $members->links() }}
+{{-- Mobile cards --}}
+<div class="sm:hidden space-y-3">
+    @forelse ($members as $member)
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+        <div class="flex justify-between items-start gap-2 mb-2">
+            <a href="{{ route('members.show', $member) }}" class="font-semibold text-bb-green-700 hover:underline leading-snug">
+                {{ $member->full_name }}
+            </a>
+            <span class="px-2 py-0.5 rounded-full text-xs font-medium shrink-0
+                {{ $member->status === 'active' ? 'bg-green-100 text-green-700' : '' }}
+                {{ $member->status === 'inactive' ? 'bg-gray-100 text-gray-600' : '' }}
+                {{ $member->status === 'suspended' ? 'bg-red-100 text-red-700' : '' }}">
+                {{ ucfirst($member->status) }}
+            </span>
+        </div>
+        <div class="text-sm text-gray-500 space-y-0.5">
+            @if ($member->company_name)<div>{{ $member->company_name }}</div>@endif
+            <div>{{ $member->email }}</div>
+            @if ($member->membershipType)<div>{{ $member->membershipType->name }}</div>@endif
+        </div>
+        <div class="mt-3 flex gap-3">
+            <a href="{{ route('members.show', $member) }}" class="text-xs text-bb-green-600 font-medium hover:underline">Bekijken</a>
+            <a href="{{ route('members.edit', $member) }}" class="text-xs text-bb-green-600 font-medium hover:underline">Bewerken</a>
+        </div>
     </div>
+    @empty
+    <div class="bg-white rounded-xl border border-gray-200 p-8 text-center text-gray-400">Geen leden gevonden.</div>
+    @endforelse
 </div>
+
+{{-- Desktop table --}}
+<div class="hidden sm:block bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200 text-sm">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-4 py-3 text-left font-semibold text-gray-600">Naam</th>
+                    <th class="px-4 py-3 text-left font-semibold text-gray-600 hidden lg:table-cell">E-mail</th>
+                    <th class="px-4 py-3 text-left font-semibold text-gray-600 hidden md:table-cell">Bedrijf</th>
+                    <th class="px-4 py-3 text-left font-semibold text-gray-600">Lidmaatschap</th>
+                    <th class="px-4 py-3 text-left font-semibold text-gray-600">Status</th>
+                    <th class="px-4 py-3 text-left font-semibold text-gray-600 hidden lg:table-cell">Verloopt</th>
+                    <th class="px-4 py-3"></th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+                @forelse ($members as $member)
+                <tr class="hover:bg-gray-50">
+                    <td class="px-4 py-3 font-medium text-gray-900">
+                        <a href="{{ route('members.show', $member) }}" class="text-bb-green-700 hover:underline">{{ $member->full_name }}</a>
+                    </td>
+                    <td class="px-4 py-3 text-gray-600 hidden lg:table-cell">{{ $member->email }}</td>
+                    <td class="px-4 py-3 text-gray-600 hidden md:table-cell">{{ $member->company_name ?? '—' }}</td>
+                    <td class="px-4 py-3 text-gray-600">{{ $member->membershipType?->name ?? '—' }}</td>
+                    <td class="px-4 py-3">
+                        <span class="px-2 py-0.5 rounded-full text-xs font-medium
+                            {{ $member->status === 'active' ? 'bg-green-100 text-green-700' : '' }}
+                            {{ $member->status === 'inactive' ? 'bg-gray-100 text-gray-600' : '' }}
+                            {{ $member->status === 'suspended' ? 'bg-red-100 text-red-700' : '' }}">
+                            {{ ucfirst($member->status) }}
+                        </span>
+                    </td>
+                    <td class="px-4 py-3 text-gray-600 hidden lg:table-cell">{{ $member->membership_end?->format('d-m-Y') ?? '—' }}</td>
+                    <td class="px-4 py-3 text-right">
+                        <a href="{{ route('members.edit', $member) }}" class="text-xs text-bb-green-600 hover:underline">Bewerken</a>
+                    </td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="7" class="px-4 py-8 text-center text-gray-400">Geen leden gevonden.</td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+    <div class="px-4 py-3 border-t border-gray-100">{{ $members->links() }}</div>
+</div>
+
+{{-- Mobile pagination --}}
+<div class="sm:hidden mt-3">{{ $members->links() }}</div>
 @endsection
-
-

@@ -2,7 +2,7 @@
 @section('title', 'Gebruikers — BABB Portaal')
 
 @section('content')
-<div class="flex justify-between items-center mb-6">
+<div class="flex flex-wrap justify-between items-center gap-3 mb-6">
     <h1 class="text-2xl font-bold text-gray-900">Gebruikers</h1>
     <a href="{{ route('users.create') }}"
        class="bg-bb-green-600 hover:bg-bb-green-700 text-white text-sm font-medium px-4 py-2 rounded-lg">
@@ -11,7 +11,7 @@
 </div>
 
 <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-    <table class="min-w-full divide-y divide-gray-200 text-sm">
+    <div class="overflow-x-auto"><table class="min-w-full divide-y divide-gray-200 text-sm">
         <thead class="bg-gray-50">
             <tr>
                 <th class="px-4 py-3 text-left font-semibold text-gray-600">Naam</th>
@@ -57,6 +57,6 @@
             </tr>
             @endforelse
         </tbody>
-    </table>
-</div>
+    </table></div></div>
 @endsection
+

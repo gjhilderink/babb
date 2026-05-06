@@ -2,7 +2,7 @@
 @section('title', $invoice->invoice_number . ' — BABB Portaal')
 
 @section('content')
-<div class="mb-6 flex items-center justify-between">
+<div class="mb-6 flex flex-wrap items-start justify-between gap-3">
     <div class="flex items-center gap-3">
         <a href="{{ route('invoices.index') }}" class="text-gray-400 hover:text-gray-700 text-sm">&larr; Facturen</a>
         <h1 class="text-2xl font-bold text-gray-900">{{ $invoice->invoice_number }}</h1>
@@ -14,7 +14,7 @@
             {{ ['draft'=>'Concept','sent'=>'Verstuurd','paid'=>'Betaald','overdue'=>'Verlopen','cancelled'=>'Geannuleerd'][$invoice->status] ?? $invoice->status }}
         </span>
     </div>
-    <div class="flex gap-2">
+    <div class="flex flex-wrap gap-2">
         <a href="{{ route('invoices.pdf', $invoice) }}"
            class="border border-gray-400 hover:bg-gray-100 text-gray-700 text-sm font-medium px-4 py-2 rounded-lg">
             PDF
@@ -71,7 +71,7 @@
                 @endif
             </dl>
 
-            <table class="min-w-full divide-y divide-gray-200 text-sm">
+            <div class="overflow-x-auto"><table class="min-w-full divide-y divide-gray-200 text-sm">
                 <thead class="bg-gray-50">
                     <tr>
                         <th class="px-3 py-2 text-left font-semibold text-gray-600">Omschrijving</th>
@@ -111,9 +111,7 @@
                         <td class="px-3 py-3 text-right font-bold text-lg">&euro; {{ number_format($invoice->total, 2, ',', '.') }}</td>
                     </tr>
                 </tfoot>
-            </table>
-
-            @if ($invoice->notes)
+            </table></div>@if ($invoice->notes)
             <div class="mt-4 pt-4 border-t border-gray-100 text-sm text-gray-600">
                 <span class="font-medium text-gray-700">Notities:</span> {{ $invoice->notes }}
             </div>
@@ -122,4 +120,6 @@
     </div>
 </div>
 @endsection
+
+
 
