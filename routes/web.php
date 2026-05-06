@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\EventController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\MemberController;
@@ -23,6 +24,9 @@ Route::middleware('auth')->group(function () {
     Route::resource('members', MemberController::class);
 
     Route::resource('products', ProductController::class);
+
+    Route::resource('events', EventController::class);
+    Route::patch('event-tasks/{task}/status', [EventController::class, 'updateTaskStatus'])->name('event-tasks.status');
 
     Route::get('membership-billing', [MembershipBillingController::class, 'index'])->name('membership-billing.index');
     Route::post('membership-billing', [MembershipBillingController::class, 'store'])->name('membership-billing.store');

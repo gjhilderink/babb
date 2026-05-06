@@ -35,6 +35,10 @@
                        class="text-sm font-medium {{ request()->routeIs('invoices.*') ? 'text-indigo-600' : 'text-gray-600 hover:text-gray-900' }}">
                         Facturen
                     </a>
+                    <a href="{{ route('events.index') }}"
+                       class="text-sm font-medium {{ request()->routeIs('events.*') ? 'text-indigo-600' : 'text-gray-600 hover:text-gray-900' }}">
+                        Evenementen
+                    </a>
                     <a href="{{ route('membership-billing.index') }}"
                        class="text-sm font-medium {{ request()->routeIs('membership-billing.*') ? 'text-indigo-600' : 'text-gray-600 hover:text-gray-900' }}">
                         Factureren
