@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Event;
 use App\Models\Invoice;
 use App\Models\Member;
 use Illuminate\View\View;
@@ -35,6 +36,13 @@ class DashboardController extends Controller
             ->limit(5)
             ->get();
 
-        return view('dashboard.index', compact('stats', 'recentInvoices', 'expiringMemberships'));
+        $upcomingEvents = Event::with('tasks')
+            ->whereIn('status', ['concept', 'bevestigd'])
+            ->where('event_date', '>=', now())
+            ->orderBy('event_date')
+            ->limit(5)
+            ->get();
+
+        return view('dashboard.index', compact('stats', 'recentInvoices', 'expiringMemberships', 'upcomingEvents'));
     }
 }

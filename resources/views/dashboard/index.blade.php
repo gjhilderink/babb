@@ -30,7 +30,7 @@
     </div>
 </div>
 
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
     {{-- Recent invoices --}}
     <div class="bg-white rounded-xl shadow-sm border border-gray-200">
         <div class="px-5 py-4 border-b border-gray-100 flex justify-between items-center">
@@ -57,6 +57,40 @@
             </li>
             @empty
             <li class="px-5 py-4 text-sm text-gray-400">Geen facturen gevonden.</li>
+            @endforelse
+        </ul>
+    </div>
+
+    {{-- Upcoming events --}}
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+        <div class="px-5 py-4 border-b border-gray-100 flex justify-between items-center">
+            <h2 class="font-semibold text-gray-800">Aankomende evenementen</h2>
+            <a href="{{ route('events.index') }}" class="text-xs text-indigo-600 hover:underline">Alle evenementen</a>
+        </div>
+        <ul class="divide-y divide-gray-100">
+            @forelse ($upcomingEvents as $event)
+            <li class="px-5 py-3 text-sm">
+                <div class="flex justify-between items-start gap-2">
+                    <a href="{{ route('events.show', $event) }}" class="font-medium text-indigo-700 hover:underline leading-snug">
+                        {{ $event->title }}
+                    </a>
+                    <span class="px-2 py-0.5 rounded-full text-xs font-medium shrink-0
+                        {{ $event->status === 'bevestigd' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-500' }}">
+                        {{ ucfirst($event->status) }}
+                    </span>
+                </div>
+                <div class="flex items-center gap-3 mt-1 text-gray-400 text-xs">
+                    <span>{{ $event->event_date->format('d-m-Y H:i') }}</span>
+                    @if ($event->location)
+                        <span>· {{ $event->location }}</span>
+                    @endif
+                    @if ($event->openTasksCount() > 0)
+                        <span class="text-orange-500">· {{ $event->openTasksCount() }} open {{ $event->openTasksCount() === 1 ? 'taak' : 'taken' }}</span>
+                    @endif
+                </div>
+            </li>
+            @empty
+            <li class="px-5 py-4 text-sm text-gray-400">Geen aankomende evenementen.</li>
             @endforelse
         </ul>
     </div>
