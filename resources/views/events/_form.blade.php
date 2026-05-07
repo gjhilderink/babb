@@ -82,9 +82,13 @@
                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
                 </div>
                 <div class="col-span-12 md:col-span-3">
-                    <input type="text" :name="`tasks[${i}][assigned_to]`" x-model="task.assigned_to"
-                           placeholder="Wie doet het?"
-                           class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                    <select :name="`tasks[${i}][assigned_to]`" x-model="task.assigned_to"
+                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                        <option value="">— Wie doet het? —</option>
+                        <template x-for="u in users" :key="u.id">
+                            <option :value="u.name" :selected="task.assigned_to === u.name" x-text="u.name"></option>
+                        </template>
+                    </select>
                 </div>
                 <div class="col-span-6 md:col-span-2">
                     <input type="date" :name="`tasks[${i}][due_date]`" x-model="task.due_date"
@@ -203,6 +207,7 @@
 function taskForm() {
     return {
         tasks: @json($initialTasks),
+        users: @json($users->map(fn($u) => ['id' => $u->id, 'name' => $u->name])),
         add()     { this.tasks.push({ description: '', assigned_to: '', status: 'open', due_date: '' }); },
         remove(i) { this.tasks.splice(i, 1); },
     };

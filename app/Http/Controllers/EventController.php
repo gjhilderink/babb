@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Event;
 use App\Models\EventCost;
 use App\Models\EventTask;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -26,7 +27,8 @@ class EventController extends Controller
 
     public function create(): View
     {
-        return view('events.create');
+        $users = User::orderBy('name')->get();
+        return view('events.create', compact('users'));
     }
 
     public function store(Request $request): RedirectResponse
@@ -51,8 +53,9 @@ class EventController extends Controller
     public function edit(Event $event): View
     {
         $event->load(['tasks', 'costs']);
+        $users = User::orderBy('name')->get();
 
-        return view('events.edit', compact('event'));
+        return view('events.edit', compact('event', 'users'));
     }
 
     public function update(Request $request, Event $event): RedirectResponse
