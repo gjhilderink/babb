@@ -49,6 +49,7 @@ Route::middleware('auth')->group(function () {
 
     Route::middleware('role:admin')->group(function () {
         Route::resource('users', UserController::class)->except('show');
+        Route::post('users/{user}/send-welcome', [UserController::class, 'sendWelcome'])->name('users.send-welcome');
         Route::get('settings',  [SettingController::class, 'edit'])->name('settings.edit');
         Route::put('settings',  [SettingController::class, 'update'])->name('settings.update');
     });

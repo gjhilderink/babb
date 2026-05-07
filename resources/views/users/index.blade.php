@@ -40,15 +40,22 @@
                     </span>
                 </td>
                 <td class="px-4 py-3 text-gray-500">{{ $user->created_at->format('d-m-Y') }}</td>
-                <td class="px-4 py-3 text-right flex justify-end gap-3">
-                    <a href="{{ route('users.edit', $user) }}"
-                       class="text-xs text-bb-green-600 hover:underline font-medium">Bewerken</a>
-                    @if ($user->id !== auth()->id())
-                    <form method="POST" action="{{ route('users.destroy', $user) }}" onsubmit="return confirm('Gebruiker verwijderen?')">
-                        @csrf @method('DELETE')
-                        <button class="text-xs text-bb-red-600 hover:underline font-medium">Verwijderen</button>
-                    </form>
-                    @endif
+                <td class="px-4 py-3 text-right whitespace-nowrap">
+                    <div class="flex justify-end gap-3">
+                        <a href="{{ route('users.edit', $user) }}"
+                           class="text-xs text-bb-green-600 hover:underline font-medium">Bewerken</a>
+                        <form method="POST" action="{{ route('users.send-welcome', $user) }}"
+                              onsubmit="return confirm('Welkomstmail sturen naar {{ $user->email }}? Het wachtwoord wordt opnieuw ingesteld.')">
+                            @csrf
+                            <button class="text-xs text-blue-600 hover:underline font-medium">Welkomstmail</button>
+                        </form>
+                        @if ($user->id !== auth()->id())
+                        <form method="POST" action="{{ route('users.destroy', $user) }}" onsubmit="return confirm('Gebruiker verwijderen?')">
+                            @csrf @method('DELETE')
+                            <button class="text-xs text-bb-red-600 hover:underline font-medium">Verwijderen</button>
+                        </form>
+                        @endif
+                    </div>
                 </td>
             </tr>
             @empty

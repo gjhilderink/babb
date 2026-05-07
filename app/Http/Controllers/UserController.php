@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\WelcomeUserMail;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
@@ -67,6 +70,20 @@ class UserController extends Controller
         $user->save();
 
         return redirect()->route('users.index')->with('success', 'Gebruiker bijgewerkt.');
+    }
+
+    public function sendWelcome(User $user): RedirectResponse
+    {
+        $plainPassword = Str::random(10);
+        $user->update(['password' => Hash::make($plainPassword)]);
+
+        Mail::to($user->email)->send(new WelcomeUserMail(
+            user:          $user,
+            plainPassword: $plainPassword,
+            portalUrl:     url('/login'),
+        ));
+
+        return back()->with('success', "Welkomstmail verstuurd naar {$user->email}. Nieuw wachtwoord ingesteld.");
     }
 
     public function destroy(User $user): RedirectResponse
