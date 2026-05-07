@@ -43,9 +43,17 @@
             </div>
             @if ($companyAddress || $companyKvk || $companyVat)
             <div class="company-details">
-                @if ($companyAddress)@foreach(explode("\n", $companyAddress) as $line)<div>{{ trim($line) }}</div>@endforeach@endif
-                @if ($companyKvk)<div>KvK: {{ $companyKvk }}</div>@endif
-                @if ($companyVat)<div>BTW: {{ $companyVat }}</div>@endif
+                @if ($companyAddress)
+                    @foreach(explode("\n", $companyAddress) as $line)
+                        <div>{{ trim($line) }}</div>
+                    @endforeach
+                @endif
+                @if ($companyKvk)
+                    <div>KvK: {{ $companyKvk }}</div>
+                @endif
+                @if ($companyVat)
+                    <div>BTW: {{ $companyVat }}</div>
+                @endif
             </div>
             @endif
         </div>
