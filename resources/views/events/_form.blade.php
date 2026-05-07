@@ -153,6 +153,7 @@
                            title="Betaaldatum">
                 </div>
                 <div class="col-span-1 flex items-center justify-center pt-1">
+                    <input type="hidden" :name="`costs[${i}][receipt_path]`" :value="cost.receipt_path ?? ''">
                     <button type="button" @click="remove(i)" class="text-red-400 hover:text-red-600 text-xl leading-none">&times;</button>
                 </div>
             </div>
@@ -192,11 +193,12 @@
         if (isset($event)) {
             foreach ($event->costs as $c) {
                 $initialCosts[] = [
-                    'description' => $c->description,
-                    'amount'      => $c->amount,
-                    'category'    => $c->category ?? '',
-                    'paid_by'     => $c->paid_by ?? '',
-                    'paid_at'     => $c->paid_at ? $c->paid_at->format('Y-m-d') : '',
+                    'description'  => $c->description,
+                    'amount'       => $c->amount,
+                    'category'     => $c->category ?? '',
+                    'paid_by'      => $c->paid_by ?? '',
+                    'paid_at'      => $c->paid_at ? $c->paid_at->format('Y-m-d') : '',
+                    'receipt_path' => $c->receipt_path ?? '',
                 ];
             }
         }

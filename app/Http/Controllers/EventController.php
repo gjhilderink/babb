@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\DeclaratieMail;
 use App\Models\Event;
 use App\Models\EventCost;
 use App\Models\EventTask;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
 
 class EventController extends Controller
@@ -65,11 +67,60 @@ class EventController extends Controller
         $event->update($data);
 
         $event->tasks()->delete();
+        // Delete only costs whose receipt we are not keeping
         $event->costs()->delete();
         $this->syncTasks($event, $request->input('tasks', []));
         $this->syncCosts($event, $request->input('costs', []));
 
         return redirect()->route('events.show', $event)->with('success', 'Evenement bijgewerkt.');
+    }
+
+    public function uploadReceipt(Request $request, EventCost $cost): RedirectResponse
+    {
+        $request->validate(['receipt' => 'required|file|mimes:pdf,jpg,jpeg,png|max:10240']);
+
+        // Delete old file if present
+        if ($cost->receipt_path && file_exists(public_path($cost->receipt_path))) {
+            unlink(public_path($cost->receipt_path));
+        }
+
+        $file = $request->file('receipt');
+        $dir  = 'uploads/events/receipts';
+        $name = time() . '_' . preg_replace('/[^a-zA-Z0-9._-]/', '_', $file->getClientOriginalName());
+
+        if (!is_dir(public_path($dir))) {
+            mkdir(public_path($dir), 0775, true);
+        }
+        $file->move(public_path($dir), $name);
+
+        $cost->update(['receipt_path' => "{$dir}/{$name}"]);
+
+        return back()->with('success', 'Bijlage opgeslagen.');
+    }
+
+    public function deleteReceipt(EventCost $cost): RedirectResponse
+    {
+        if ($cost->receipt_path && file_exists(public_path($cost->receipt_path))) {
+            unlink(public_path($cost->receipt_path));
+        }
+
+        $cost->update(['receipt_path' => null]);
+
+        return back()->with('success', 'Bijlage verwijderd.');
+    }
+
+    public function mailDeclaratie(Event $event): RedirectResponse
+    {
+        $event->load('costs');
+
+        $hasReceipts = $event->costs->filter(fn ($c) => $c->receipt_path)->isNotEmpty();
+        if (!$hasReceipts) {
+            return back()->with('error', 'Er zijn geen bijlagen om te versturen.');
+        }
+
+        Mail::to('visionair.babb@mailtobasecone.com')->send(new DeclaratieMail($event));
+
+        return back()->with('success', 'Declaratie verstuurd naar visionair.babb@mailtobasecone.com');
     }
 
     public function destroy(Event $event): RedirectResponse
@@ -126,12 +177,13 @@ class EventController extends Controller
                 continue;
             }
             EventCost::create([
-                'event_id'    => $event->id,
-                'description' => $cost['description'],
-                'amount'      => $cost['amount'],
-                'category'    => $cost['category'] ?? null,
-                'paid_by'     => $cost['paid_by'] ?? null,
-                'paid_at'     => $cost['paid_at'] ?: null,
+                'event_id'     => $event->id,
+                'description'  => $cost['description'],
+                'amount'       => $cost['amount'],
+                'category'     => $cost['category'] ?? null,
+                'paid_by'      => $cost['paid_by'] ?? null,
+                'paid_at'      => $cost['paid_at'] ?: null,
+                'receipt_path' => $cost['receipt_path'] ?: null,
             ]);
         }
     }

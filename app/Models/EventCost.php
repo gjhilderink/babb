@@ -16,6 +16,7 @@ class EventCost extends Model
         'category',
         'paid_by',
         'paid_at',
+        'receipt_path',
     ];
 
     protected $casts = [
