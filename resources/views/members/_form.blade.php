@@ -45,6 +45,28 @@
         <input type="text" name="city" value="{{ old('city', $member->city ?? '') }}"
                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-bb-green-600">
     </div>
+    {{-- Privé adres --}}
+    <div class="md:col-span-2 border-t border-gray-100 pt-4 mt-2">
+        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Privé adres</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Straat &amp; huisnummer</label>
+                <input type="text" name="prive_adres" value="{{ old('prive_adres', $member->prive_adres ?? '') }}"
+                       class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-bb-green-600">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Postcode</label>
+                <input type="text" name="prive_postcode" value="{{ old('prive_postcode', $member->prive_postcode ?? '') }}"
+                       class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-bb-green-600">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Stad</label>
+                <input type="text" name="prive_stad" value="{{ old('prive_stad', $member->prive_stad ?? '') }}"
+                       class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-bb-green-600">
+            </div>
+        </div>
+    </div>
+
     <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">Lidmaatschapstype</label>
         <select name="membership_type_id" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">

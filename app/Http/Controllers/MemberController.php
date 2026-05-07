@@ -61,6 +61,9 @@ class MemberController extends Controller
             'membership_end'     => 'nullable|date|after_or_equal:membership_start',
             'status'             => 'required|in:active,inactive,suspended',
             'notes'              => 'nullable|string',
+            'prive_adres'        => 'nullable|string|max:255',
+            'prive_postcode'     => 'nullable|string|max:20',
+            'prive_stad'         => 'nullable|string|max:255',
         ]);
 
         Member::create($data);
