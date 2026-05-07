@@ -17,6 +17,12 @@
         }
     </script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .bg-bb-green-600 { background-color: #5ea31f; }
+        .bg-bb-green-700 { background-color: #4d8a18; }
+        .hover\:bg-bb-green-700:hover { background-color: #4d8a18; }
+        .bg-bb-red-600   { background-color: #cc1c1c; }
+    </style>
 </head>
 <body class="bg-gray-900 min-h-screen flex flex-col items-center justify-center">
 
