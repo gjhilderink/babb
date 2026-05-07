@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- white ball -->
+  <circle cx="50" cy="50" r="48" fill="white" stroke="#222" stroke-width="3"/>
+  <!-- center pentagon -->
+  <polygon points="50,28 63,38 58,53 42,53 37,38" fill="#222"/>
+  <!-- top-left pentagon -->
+  <polygon points="22,28 35,20 41,33 30,41 18,36" fill="#222"/>
+  <!-- top-right pentagon -->
+  <polygon points="78,28 65,20 59,33 70,41 82,36" fill="#222"/>
+  <!-- bottom-left pentagon -->
+  <polygon points="20,65 30,59 42,67 38,80 24,80" fill="#222"/>
+  <!-- bottom-right pentagon -->
+  <polygon points="80,65 70,59 58,67 62,80 76,80" fill="#222"/>
+</svg>
