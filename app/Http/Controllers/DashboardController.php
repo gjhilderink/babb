@@ -21,13 +21,19 @@ class DashboardController extends Controller
             ->limit(5)
             ->get();
 
+        $upcomingEventsBudget = Event::whereIn('status', ['concept', 'bevestigd'])
+            ->where('event_date', '>=', now())
+            ->whereNotNull('budget')
+            ->sum('budget');
+
         if ($user->isGebruiker()) {
             return view('dashboard.index', [
-                'upcomingEvents'      => $upcomingEvents,
-                'stats'               => null,
-                'recentInvoices'      => collect(),
-                'expiringMemberships' => collect(),
-                'recentLeads'         => collect(),
+                'upcomingEvents'       => $upcomingEvents,
+                'upcomingEventsBudget' => $upcomingEventsBudget,
+                'stats'                => null,
+                'recentInvoices'       => collect(),
+                'expiringMemberships'  => collect(),
+                'recentLeads'          => collect(),
             ]);
         }
 
@@ -58,6 +64,6 @@ class DashboardController extends Controller
             ->limit(5)
             ->get();
 
-        return view('dashboard.index', compact('stats', 'recentInvoices', 'expiringMemberships', 'upcomingEvents', 'recentLeads'));
+        return view('dashboard.index', compact('stats', 'recentInvoices', 'expiringMemberships', 'upcomingEvents', 'recentLeads', 'upcomingEventsBudget'));
     }
 }

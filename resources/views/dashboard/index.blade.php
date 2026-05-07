@@ -8,7 +8,7 @@
 
 @if (auth()->user()->isAdminOrBestuur())
 {{-- KPI cards --}}
-<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+<div class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
         <div class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Actieve leden</div>
         <div class="text-3xl font-bold text-gray-900">{{ $stats['active_members'] }}</div>
@@ -28,6 +28,11 @@
         <div class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Omzet dit jaar</div>
         <div class="text-3xl font-bold text-green-700">&euro; {{ number_format($stats['revenue_ytd'], 2, ',', '.') }}</div>
         <div class="text-xs text-gray-400 mt-1">&euro; {{ number_format($stats['outstanding'], 2, ',', '.') }} uitstaand</div>
+    </div>
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+        <div class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Begroting aankomende events</div>
+        <div class="text-3xl font-bold text-blue-700">&euro; {{ number_format($upcomingEventsBudget, 2, ',', '.') }}</div>
+        <div class="text-xs text-gray-400 mt-1">totaal geplande begroting</div>
     </div>
 </div>
 
