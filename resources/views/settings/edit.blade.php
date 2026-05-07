@@ -85,6 +85,17 @@
         <p class="text-xs text-gray-400 mt-1">JPG, PNG of SVG — max. 2 MB</p>
     </div>
 
+    {{-- Factuur footer --}}
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <h2 class="font-semibold text-gray-800 mb-4">Footertekst op facturen</h2>
+        <p class="text-sm text-gray-500 mb-4">
+            Wordt onderaan elke PDF-factuur getoond. Gebruik dit voor bankgegevens, BTW-nummer, KvK-nummer of betalingsinstructies.
+        </p>
+        <textarea name="invoice_footer" rows="4" placeholder="Bijv.: Betaling binnen 14 dagen op IBAN NL00 BANK 0000 0000 00 t.n.v. BABB. BTW-nr: NL000000000B01. KvK: 00000000."
+                  class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-bb-green-600">{{ old('invoice_footer', $invoice_footer) }}</textarea>
+        <p class="text-xs text-gray-400 mt-1">Max. 1000 tekens.</p>
+    </div>
+
     <div>
         <button type="submit" class="bg-bb-green-600 hover:bg-bb-green-700 text-white text-sm font-medium px-6 py-2 rounded-lg">
             Instellingen opslaan

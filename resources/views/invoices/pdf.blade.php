@@ -20,6 +20,7 @@
         tfoot td { font-weight: bold; border-top: 2px solid #e5e7eb; }
         .total-row td { font-size: 14px; background: #f9fafb; }
         .notes { color: #6b7280; font-size: 11px; margin-top: 16px; }
+        .footer { border-top: 1px solid #e5e7eb; margin-top: 32px; padding-top: 12px; color: #6b7280; font-size: 10px; white-space: pre-wrap; }
     </style>
 </head>
 <body>
@@ -91,6 +92,10 @@
 
     @if ($invoice->notes)
     <div class="notes">Notities: {{ $invoice->notes }}</div>
+    @endif
+
+    @if ($invoiceFooter)
+    <div class="footer">{{ $invoiceFooter }}</div>
     @endif
 </body>
 </html>

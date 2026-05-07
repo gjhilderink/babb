@@ -55,7 +55,9 @@ class InvoiceService
             }
         }
 
-        $pdf = Pdf::loadView('invoices.pdf', compact('invoice', 'invoiceLogoBase64'));
+        $invoiceFooter = Setting::get('invoice_footer');
+
+        $pdf = Pdf::loadView('invoices.pdf', compact('invoice', 'invoiceLogoBase64', 'invoiceFooter'));
 
         return $pdf->download("factuur-{$invoice->invoice_number}.pdf");
     }
