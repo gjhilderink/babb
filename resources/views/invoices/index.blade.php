@@ -51,6 +51,16 @@ $statusColor = [
             <span class="text-gray-500">{{ $invoice->issue_date->format('d-m-Y') }}</span>
             <span class="font-semibold">&euro; {{ number_format($invoice->total, 2, ',', '.') }}</span>
         </div>
+        <div class="mt-2 flex gap-3">
+            <a href="{{ route('invoices.show', $invoice) }}" class="text-xs text-bb-green-600 font-medium hover:underline">Bekijken</a>
+            @if ($invoice->status !== 'paid')
+            <form method="POST" action="{{ route('invoices.destroy', $invoice) }}"
+                  onsubmit="return confirm('Factuur {{ $invoice->invoice_number }} verwijderen? Dit kan niet ongedaan worden gemaakt.')">
+                @csrf @method('DELETE')
+                <button type="submit" class="text-xs text-bb-red-600 font-medium hover:underline">Verwijderen</button>
+            </form>
+            @endif
+        </div>
     </div>
     @empty
     <div class="bg-white rounded-xl border border-gray-200 p-8 text-center text-gray-400">Geen facturen gevonden.</div>
@@ -89,8 +99,15 @@ $statusColor = [
                             {{ $statusLabel[$invoice->status] ?? $invoice->status }}
                         </span>
                     </td>
-                    <td class="px-4 py-3 text-right">
-                        <a href="{{ route('invoices.show', $invoice) }}" class="text-xs text-bb-green-600 hover:underline">Bekijken</a>
+                    <td class="px-4 py-3 text-right whitespace-nowrap">
+                        <a href="{{ route('invoices.show', $invoice) }}" class="text-xs text-bb-green-600 hover:underline mr-3">Bekijken</a>
+                        @if ($invoice->status !== 'paid')
+                        <form method="POST" action="{{ route('invoices.destroy', $invoice) }}" class="inline"
+                              onsubmit="return confirm('Factuur {{ $invoice->invoice_number }} verwijderen? Dit kan niet ongedaan worden gemaakt.')">
+                            @csrf @method('DELETE')
+                            <button type="submit" class="text-xs text-bb-red-600 hover:underline">Verwijderen</button>
+                        </form>
+                        @endif
                     </td>
                 </tr>
                 @empty

@@ -33,6 +33,15 @@
             Bewerken
         </a>
         @endif
+        @if ($invoice->status !== 'paid')
+        <form method="POST" action="{{ route('invoices.destroy', $invoice) }}" class="inline"
+              onsubmit="return confirm('Factuur {{ $invoice->invoice_number }} verwijderen? Dit kan niet ongedaan worden gemaakt.')">
+            @csrf @method('DELETE')
+            <button type="submit" class="border border-bb-red-600 text-bb-red-600 hover:bg-bb-red-600 hover:text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">
+                Verwijderen
+            </button>
+        </form>
+        @endif
         @if (in_array($invoice->status, ['sent', 'overdue']))
         <form method="POST" action="{{ route('invoices.mark-paid', $invoice) }}" class="inline">
             @csrf @method('PATCH')
