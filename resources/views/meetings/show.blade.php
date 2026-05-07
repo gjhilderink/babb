@@ -174,22 +174,18 @@ $myNote = $meeting->noteByUser(auth()->id());
                 <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Nieuwe taak toevoegen</p>
                 <form method="POST" action="{{ route('meetings.tasks.store', $meeting) }}">
                     @csrf
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
-                        <div class="md:col-span-2">
-                            <input type="text" name="title" placeholder="Taak omschrijving *"
-                                   class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-bb-green-600">
-                        </div>
-                        <div>
-                            <select name="assigned_to_user_id" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                    <div class="flex flex-col gap-2">
+                        <input type="text" name="title" placeholder="Taak omschrijving *"
+                               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-bb-green-600">
+                        <div class="flex flex-wrap gap-2">
+                            <select name="assigned_to_user_id" class="flex-1 min-w-0 border border-gray-300 rounded-lg px-3 py-2 text-sm">
                                 <option value="">— Toewijzen aan —</option>
                                 @foreach ($users as $u)
                                     <option value="{{ $u->id }}">{{ $u->name }}</option>
                                 @endforeach
                             </select>
-                        </div>
-                        <div class="flex gap-2">
                             <input type="date" name="due_date"
-                                   class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm" title="Deadline">
+                                   class="border border-gray-300 rounded-lg px-3 py-2 text-sm" title="Deadline">
                             <select name="priority" class="border border-gray-300 rounded-lg px-2 py-2 text-sm">
                                 <option value="normaal">Normaal</option>
                                 <option value="hoog">Hoog</option>
