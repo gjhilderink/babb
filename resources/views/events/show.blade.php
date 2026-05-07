@@ -165,29 +165,36 @@
                     @foreach ($event->costs as $cost)
                     <tr>
                         <td class=”px-4 py-3 text-gray-800”>{{ $cost->description }}</td>
-                        <td class=”px-4 py-3 text-gray-500”>{{ $cost->category ?? '&mdash;' }}</td>
+                        <td class=”px-4 py-3 text-gray-500”>{{ $cost->category ?: '—' }}</td>
                         <td class=”px-4 py-3 text-right font-medium”>&euro; {{ number_format($cost->amount, 2, ',', '.') }}</td>
-                        <td class=”px-4 py-3 text-gray-600”>{{ $cost->paid_by ?? '&mdash;' }}</td>
-                        <td class=”px-4 py-3 text-gray-600”>{{ $cost->paid_at ? $cost->paid_at->format('d-m-Y') : '&mdash;' }}</td>
-                        <td class=”px-4 py-3”>
+                        <td class=”px-4 py-3 text-gray-600”>{{ $cost->paid_by ?: '—' }}</td>
+                        <td class=”px-4 py-3 text-gray-600”>{{ $cost->paid_at ? $cost->paid_at->format('d-m-Y') : '—' }}</td>
+                        <td class=”px-4 py-3 min-w-[160px]”>
                             @if ($cost->receipt_path)
                             <div class=”flex items-center gap-2”>
                                 <a href=”{{ asset($cost->receipt_path) }}” target=”_blank”
-                                   class=”text-xs text-blue-600 hover:underline font-medium”>Bekijken</a>
+                                   class=”inline-flex items-center gap-1 text-xs bg-blue-50 text-blue-700 hover:bg-blue-100 font-medium px-2 py-1 rounded”>
+                                    <svg class=”w-3 h-3” fill=”none” stroke=”currentColor” stroke-width=”2” viewBox=”0 0 24 24”><path stroke-linecap=”round” stroke-linejoin=”round” d=”M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13”/></svg>
+                                    Bekijken
+                                </a>
                                 <form method=”POST” action=”{{ route('event-costs.receipt.delete', $cost) }}”
                                       onsubmit=”return confirm('Bijlage verwijderen?')”>
                                     @csrf @method('DELETE')
-                                    <button class=”text-xs text-bb-red-600 hover:underline”>Verwijderen</button>
+                                    <button class=”text-xs text-red-500 hover:text-red-700”>&times; Verwijderen</button>
                                 </form>
                             </div>
                             @else
-                            <form method=”POST” action=”{{ route('event-costs.receipt', $cost) }}”
-                                  enctype=”multipart/form-data” class=”flex items-center gap-2”>
-                                @csrf
-                                <input type=”file” name=”receipt” accept=”.pdf,.jpg,.jpeg,.png”
-                                       class=”text-xs text-gray-500 w-32”
-                                       onchange=”this.form.submit()”>
-                            </form>
+                            <label class=”inline-flex items-center gap-1.5 cursor-pointer text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 px-2 py-1 rounded”>
+                                <svg class=”w-3.5 h-3.5” fill=”none” stroke=”currentColor” stroke-width=”2” viewBox=”0 0 24 24”><path stroke-linecap=”round” stroke-linejoin=”round” d=”M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12”/></svg>
+                                Uploaden
+                                <form method=”POST” action=”{{ route('event-costs.receipt', $cost) }}”
+                                      enctype=”multipart/form-data” id=”receipt-form-{{ $cost->id }}”>
+                                    @csrf
+                                    <input type=”file” name=”receipt” accept=”.pdf,.jpg,.jpeg,.png”
+                                           class=”hidden”
+                                           onchange=”document.getElementById('receipt-form-{{ $cost->id }}').submit()”>
+                                </form>
+                            </label>
                             @endif
                         </td>
                     </tr>
