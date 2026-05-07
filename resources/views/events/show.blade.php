@@ -150,7 +150,7 @@
             @if ($event->costs->isEmpty())
                 <p class="px-5 py-4 text-sm text-gray-400">Geen kosten vastgelegd.</p>
             @else
-            <table class="min-w-full divide-y divide-gray-100 text-sm">
+            <div class="overflow-x-auto"><table class="min-w-full divide-y divide-gray-100 text-sm">
                 <thead class=”bg-gray-50”>
                     <tr>
                         <th class=”px-4 py-2 text-left font-semibold text-gray-600”>Omschrijving</th>
@@ -200,7 +200,7 @@
                         <td colspan=”3”></td>
                     </tr>
                 </tfoot>
-            </table>
+            </table></div>
             @endif
         </div>
 
