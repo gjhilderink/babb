@@ -91,6 +91,11 @@
         <div class="mt-3 flex gap-3">
             <a href="{{ route('members.show', $member) }}" class="text-xs text-bb-green-600 font-medium hover:underline">Bekijken</a>
             <a href="{{ route('members.edit', $member) }}" class="text-xs text-bb-green-600 font-medium hover:underline">Bewerken</a>
+            <form method="POST" action="{{ route('members.destroy', $member) }}"
+                  onsubmit="return confirm('{{ $member->full_name }} verwijderen? Dit kan niet ongedaan worden gemaakt.')">
+                @csrf @method('DELETE')
+                <button type="submit" class="text-xs text-bb-red-600 font-medium hover:underline">Verwijderen</button>
+            </form>
         </div>
     </div>
     @empty
@@ -137,8 +142,13 @@
                         </span>
                     </td>
                     <td class="px-4 py-3 text-gray-600 hidden lg:table-cell">{{ $member->membership_end?->format('d-m-Y') ?? '—' }}</td>
-                    <td class="px-4 py-3 text-right">
-                        <a href="{{ route('members.edit', $member) }}" class="text-xs text-bb-green-600 hover:underline">Bewerken</a>
+                    <td class="px-4 py-3 text-right whitespace-nowrap">
+                        <a href="{{ route('members.edit', $member) }}" class="text-xs text-bb-green-600 hover:underline mr-3">Bewerken</a>
+                        <form method="POST" action="{{ route('members.destroy', $member) }}" class="inline"
+                              onsubmit="return confirm('{{ $member->full_name }} verwijderen? Dit kan niet ongedaan worden gemaakt.')">
+                            @csrf @method('DELETE')
+                            <button type="submit" class="text-xs text-bb-red-600 hover:underline">Verwijderen</button>
+                        </form>
                     </td>
                 </tr>
                 @empty

@@ -58,6 +58,11 @@
                 Lid bekijken
             </a>
             @endif
+            <form method="POST" action="{{ route('leads.destroy', $lead) }}"
+                  onsubmit="return confirm('{{ $lead->full_name }} verwijderen? Dit kan niet ongedaan worden gemaakt.')">
+                @csrf @method('DELETE')
+                <button type="submit" class="text-xs text-bb-red-600 font-medium hover:underline">Verwijderen</button>
+            </form>
         </div>
     </div>
     @empty
@@ -104,7 +109,7 @@
                             {{ $lead->statusLabel() }}
                         </span>
                     </td>
-                    <td class="px-4 py-3 text-right">
+                    <td class="px-4 py-3 text-right whitespace-nowrap">
                         @if (!$lead->isConverted())
                         <a href="{{ route('leads.convert-form', $lead) }}"
                            class="text-xs bg-bb-green-600 hover:bg-bb-green-700 text-white font-medium px-2.5 py-1 rounded-lg mr-2">
@@ -113,7 +118,12 @@
                         @else
                         <a href="{{ route('members.show', $lead->member) }}" class="text-xs text-gray-500 hover:underline mr-2">Lid</a>
                         @endif
-                        <a href="{{ route('leads.edit', $lead) }}" class="text-xs text-bb-green-600 hover:underline">Bewerken</a>
+                        <a href="{{ route('leads.edit', $lead) }}" class="text-xs text-bb-green-600 hover:underline mr-3">Bewerken</a>
+                        <form method="POST" action="{{ route('leads.destroy', $lead) }}" class="inline"
+                              onsubmit="return confirm('{{ $lead->full_name }} verwijderen? Dit kan niet ongedaan worden gemaakt.')">
+                            @csrf @method('DELETE')
+                            <button type="submit" class="text-xs text-bb-red-600 hover:underline">Verwijderen</button>
+                        </form>
                     </td>
                 </tr>
                 @empty
