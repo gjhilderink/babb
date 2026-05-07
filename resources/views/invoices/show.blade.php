@@ -19,7 +19,7 @@
            class="border border-gray-400 hover:bg-gray-100 text-gray-700 text-sm font-medium px-4 py-2 rounded-lg">
             PDF
         </a>
-        @if ($invoice->status === 'draft')
+        @if ($invoice->status === 'draft' && \App\Services\AclService::allowed('invoices.edit'))
         @if(auth()->user()->isAdmin())
         <form method="POST" action="{{ route('invoices.mark-sent', $invoice) }}" class="inline">
             @csrf @method('PATCH')
@@ -33,7 +33,7 @@
             Bewerken
         </a>
         @endif
-        @if ($invoice->status !== 'paid')
+        @if ($invoice->status !== 'paid' && \App\Services\AclService::allowed('invoices.delete'))
         <form method="POST" action="{{ route('invoices.destroy', $invoice) }}" class="inline"
               onsubmit="return confirm('Factuur {{ $invoice->invoice_number }} verwijderen? Dit kan niet ongedaan worden gemaakt.')">
             @csrf @method('DELETE')
@@ -42,7 +42,7 @@
             </button>
         </form>
         @endif
-        @if (in_array($invoice->status, ['sent', 'overdue']))
+        @if (in_array($invoice->status, ['sent', 'overdue']) && \App\Services\AclService::allowed('invoices.edit'))
         <form method="POST" action="{{ route('invoices.mark-paid', $invoice) }}" class="inline">
             @csrf @method('PATCH')
             <button class="bg-green-600 hover:bg-green-700 text-white text-sm font-medium px-4 py-2 rounded-lg">

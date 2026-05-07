@@ -4,10 +4,12 @@
 @section('content')
 <div class="flex flex-wrap justify-between items-center gap-3 mb-6">
     <h1 class="text-2xl font-bold text-gray-900">Facturen</h1>
+    @if(\App\Services\AclService::allowed('invoices.create'))
     <a href="{{ route('invoices.create') }}"
        class="bg-bb-green-600 hover:bg-bb-green-700 text-white text-sm font-medium px-4 py-2 rounded-lg">
         + Nieuwe factuur
     </a>
+    @endif
 </div>
 
 <form method="GET" class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-6 flex flex-wrap gap-3">
@@ -53,7 +55,7 @@ $statusColor = [
         </div>
         <div class="mt-2 flex gap-3">
             <a href="{{ route('invoices.show', $invoice) }}" class="text-xs text-bb-green-600 font-medium hover:underline">Bekijken</a>
-            @if ($invoice->status !== 'paid')
+            @if ($invoice->status !== 'paid' && \App\Services\AclService::allowed('invoices.delete'))
             <form method="POST" action="{{ route('invoices.destroy', $invoice) }}"
                   onsubmit="return confirm('Factuur {{ $invoice->invoice_number }} verwijderen? Dit kan niet ongedaan worden gemaakt.')">
                 @csrf @method('DELETE')
@@ -101,7 +103,7 @@ $statusColor = [
                     </td>
                     <td class="px-4 py-3 text-right whitespace-nowrap">
                         <a href="{{ route('invoices.show', $invoice) }}" class="text-xs text-bb-green-600 hover:underline mr-3">Bekijken</a>
-                        @if ($invoice->status !== 'paid')
+                        @if ($invoice->status !== 'paid' && \App\Services\AclService::allowed('invoices.delete'))
                         <form method="POST" action="{{ route('invoices.destroy', $invoice) }}" class="inline"
                               onsubmit="return confirm('Factuur {{ $invoice->invoice_number }} verwijderen? Dit kan niet ongedaan worden gemaakt.')">
                             @csrf @method('DELETE')
