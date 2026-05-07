@@ -114,8 +114,8 @@
                 <div class="relative" x-data @click.outside="billing=false">
                     <button @click="billing=!billing"
                             class="px-3 py-2 rounded text-sm font-medium transition-colors flex items-center gap-1
-                                {{ request()->routeIs('membership-billing*','invoices*') ? 'bg-bb-green-700 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700' }}">
-                        Factureren
+                                {{ request()->routeIs('membership-billing*','invoices*','afdrachten*') ? 'bg-bb-green-700 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700' }}">
+                        Financieel
                         <svg class="w-3.5 h-3.5 transition-transform" :class="billing ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
                     </button>
                     <div x-show="billing" x-transition
@@ -132,6 +132,10 @@
                             Facturen
                         </a>
                         @endif
+                        <a href="{{ route('afdrachten.index') }}" @click="billing=false"
+                           class="block px-4 py-2 text-sm {{ request()->routeIs('afdrachten*') ? 'text-white bg-bb-green-700' : 'text-gray-300 hover:text-white hover:bg-gray-700' }}">
+                            Afdracht Bonboys
+                        </a>
                     </div>
                 </div>
                 @endif
@@ -241,7 +245,7 @@
                 Taken
             </a>
             @if(\App\Services\AclService::allowed('membership_billing') || \App\Services\AclService::allowed('invoices.view'))
-            <p class="px-3 pt-2 pb-0.5 text-xs font-semibold text-gray-500 uppercase tracking-wide">Factureren</p>
+            <p class="px-3 pt-2 pb-0.5 text-xs font-semibold text-gray-500 uppercase tracking-wide">Financieel</p>
             @if(\App\Services\AclService::allowed('membership_billing'))
             <a href="{{ route('membership-billing.index') }}" @click="open=false"
                class="block px-4 py-2 rounded text-sm font-medium {{ request()->routeIs('membership-billing*') ? 'bg-bb-green-700 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700' }}">
@@ -254,6 +258,10 @@
                 Facturen
             </a>
             @endif
+            <a href="{{ route('afdrachten.index') }}" @click="open=false"
+               class="block px-4 py-2 rounded text-sm font-medium {{ request()->routeIs('afdrachten*') ? 'bg-bb-green-700 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700' }}">
+                Afdracht Bonboys
+            </a>
             @endif
             @endif
             @if (auth()->user()->isAdmin())

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AclController;
+use App\Http\Controllers\AfdrachtenController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\ImpersonateController;
 use App\Http\Controllers\EventController;
@@ -45,6 +46,9 @@ Route::middleware('auth')->group(function () {
 
         Route::get('membership-billing', [MembershipBillingController::class, 'index'])->name('membership-billing.index');
         Route::post('membership-billing', [MembershipBillingController::class, 'store'])->name('membership-billing.store');
+
+        Route::resource('afdrachten', AfdrachtenController::class)->except('show');
+        Route::patch('afdrachten/{afdracht}/status', [AfdrachtenController::class, 'updateStatus'])->name('afdrachten.status');
 
         Route::resource('invoices', InvoiceController::class);
         Route::patch('invoices/{invoice}/mark-paid', [InvoiceController::class, 'markPaid'])->name('invoices.mark-paid');
