@@ -6,6 +6,58 @@
     <h1 class="text-2xl font-bold text-gray-900">Dashboard</h1>
 </div>
 
+{{-- Mijn taken --}}
+@if ($myTasks->isNotEmpty() || $myLeads->isNotEmpty())
+<div class="mb-8 bg-white rounded-xl shadow-sm border border-gray-200">
+    <div class="px-5 py-4 border-b border-gray-100 flex justify-between items-center">
+        <h2 class="font-semibold text-gray-800">Mijn taken</h2>
+        @if ($myTasks->count() + $myLeads->count() > 0)
+        <span class="text-xs bg-orange-100 text-orange-700 font-semibold px-2 py-0.5 rounded-full">
+            {{ $myTasks->count() + $myLeads->count() }} open
+        </span>
+        @endif
+    </div>
+    <ul class="divide-y divide-gray-100">
+        @foreach ($myTasks as $task)
+        <li class="px-5 py-3 flex flex-wrap items-center justify-between gap-2 text-sm">
+            <div class="flex items-center gap-3 min-w-0">
+                <span class="px-2 py-0.5 rounded-full text-xs font-medium shrink-0
+                    {{ $task->status === 'open' ? 'bg-gray-100 text-gray-600' : 'bg-blue-100 text-blue-700' }}">
+                    {{ $task->status === 'open' ? 'Open' : 'Bezig' }}
+                </span>
+                <span class="text-gray-900 truncate">{{ $task->description }}</span>
+                <a href="{{ route('events.show', $task->event) }}" class="text-xs text-gray-400 hover:text-bb-green-600 hover:underline shrink-0">
+                    {{ $task->event->title }}
+                </a>
+            </div>
+            @if ($task->due_date)
+            <span class="text-xs shrink-0 {{ $task->due_date->isPast() ? 'text-bb-red-600 font-semibold' : 'text-gray-500' }}">
+                {{ $task->due_date->format('d-m-Y') }}
+                @if ($task->due_date->isPast())&nbsp;&#9650;@endif
+            </span>
+            @endif
+        </li>
+        @endforeach
+        @foreach ($myLeads as $lead)
+        <li class="px-5 py-3 flex flex-wrap items-center justify-between gap-2 text-sm">
+            <div class="flex items-center gap-3 min-w-0">
+                <span class="px-2 py-0.5 rounded-full text-xs font-medium shrink-0 {{ $lead->statusColor() }}">
+                    {{ $lead->statusLabel() }}
+                </span>
+                <a href="{{ route('leads.show', $lead) }}" class="font-medium text-bb-green-700 hover:underline truncate">
+                    {{ $lead->full_name }}
+                </a>
+                @if ($lead->company_name)
+                <span class="text-xs text-gray-400 hidden sm:inline">{{ $lead->company_name }}</span>
+                @endif
+            </div>
+            <span class="text-xs text-gray-400 shrink-0">Lead</span>
+        </li>
+        @endforeach
+    </ul>
+</div>
+@endif
+
 @if (auth()->user()->isAdminOrBestuur())
 {{-- KPI cards --}}
 <div class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
+use App\Models\EventTask;
 use App\Models\Invoice;
 use App\Models\Lead;
 use App\Models\Member;
@@ -13,6 +14,19 @@ class DashboardController extends Controller
     public function index(): View
     {
         $user = auth()->user();
+
+        $myTasks = EventTask::with('event')
+            ->where('assigned_to', (string) $user->id)
+            ->whereIn('status', ['open', 'bezig'])
+            ->orderBy('due_date')
+            ->limit(10)
+            ->get();
+
+        $myLeads = Lead::where('assigned_to_user_id', $user->id)
+            ->whereNotIn('status', ['gewonnen', 'verloren'])
+            ->orderByRaw("FIELD(status, 'follow_up', 'contact', 'nieuw')")
+            ->limit(10)
+            ->get();
 
         $upcomingEvents = Event::with('tasks')
             ->whereIn('status', ['concept', 'bevestigd'])
@@ -30,6 +44,8 @@ class DashboardController extends Controller
             return view('dashboard.index', [
                 'upcomingEvents'       => $upcomingEvents,
                 'upcomingEventsBudget' => $upcomingEventsBudget,
+                'myTasks'              => $myTasks,
+                'myLeads'              => $myLeads,
                 'stats'                => null,
                 'recentInvoices'       => collect(),
                 'expiringMemberships'  => collect(),
@@ -64,6 +80,6 @@ class DashboardController extends Controller
             ->limit(5)
             ->get();
 
-        return view('dashboard.index', compact('stats', 'recentInvoices', 'expiringMemberships', 'upcomingEvents', 'recentLeads', 'upcomingEventsBudget'));
+        return view('dashboard.index', compact('stats', 'recentInvoices', 'expiringMemberships', 'upcomingEvents', 'recentLeads', 'upcomingEventsBudget', 'myTasks', 'myLeads'));
     }
 }
