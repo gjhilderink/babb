@@ -50,6 +50,10 @@
         .text-bb-red-600 { color: #cc1c1c; }
         .text-bb-red-700 { color: #b01818; }
         .border-bb-red-600 { border-color: #cc1c1c; }
+        .file\:bg-bb-red-600::file-selector-button  { background-color: #cc1c1c; color: #fff; }
+        .hover\:file\:bg-bb-red-700:hover::file-selector-button { background-color: #b01818; }
+        .file\:bg-bb-green-600::file-selector-button { background-color: #5ea31f; color: #fff; }
+        .hover\:file\:bg-bb-green-700:hover::file-selector-button { background-color: #4d8a18; }
     </style>
 </head>
 <body class="bg-gray-100 min-h-screen"@if($siteBg) style="background-image: url('{{ asset($siteBg) }}'); background-size: cover; background-attachment: fixed; background-position: center;"@endif>

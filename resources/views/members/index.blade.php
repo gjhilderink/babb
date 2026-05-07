@@ -41,7 +41,7 @@
     <form method="POST" action="{{ route('members.import') }}" enctype="multipart/form-data" class="flex flex-wrap items-center gap-3">
         @csrf
         <input type="file" name="csv_file" accept=".csv,.txt" required
-               class="text-sm text-gray-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-bb-green-600 file:text-white hover:file:bg-bb-green-700 cursor-pointer">
+               class="text-sm text-gray-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-bb-red-600 file:text-white hover:file:bg-bb-red-700 cursor-pointer">
         <button type="submit"
                 class="bg-bb-green-600 hover:bg-bb-green-700 text-white text-sm font-medium px-4 py-2 rounded-lg">
             Importeren
