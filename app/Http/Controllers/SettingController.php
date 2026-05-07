@@ -15,7 +15,10 @@ class SettingController extends Controller
             'logo'           => Setting::get('logo'),
             'background'     => Setting::get('background'),
             'invoice_logo'   => Setting::get('invoice_logo'),
-            'invoice_footer' => Setting::get('invoice_footer'),
+            'invoice_footer'  => Setting::get('invoice_footer'),
+            'company_address' => Setting::get('company_address'),
+            'company_kvk'     => Setting::get('company_kvk'),
+            'company_vat'     => Setting::get('company_vat'),
         ]);
     }
 
@@ -25,7 +28,10 @@ class SettingController extends Controller
             'logo'           => 'nullable|image|max:2048',
             'background'     => 'nullable|image|max:5120',
             'invoice_logo'   => 'nullable|image|max:2048',
-            'invoice_footer' => 'nullable|string|max:1000',
+            'invoice_footer'  => 'nullable|string|max:1000',
+            'company_address' => 'nullable|string|max:500',
+            'company_kvk'     => 'nullable|string|max:20',
+            'company_vat'     => 'nullable|string|max:30',
         ]);
 
         if ($request->hasFile('logo')) {
@@ -61,7 +67,10 @@ class SettingController extends Controller
             Setting::set('invoice_logo', null);
         }
 
-        Setting::set('invoice_footer', $request->input('invoice_footer') ?: null);
+        Setting::set('invoice_footer',  $request->input('invoice_footer')  ?: null);
+        Setting::set('company_address', $request->input('company_address') ?: null);
+        Setting::set('company_kvk',     $request->input('company_kvk')     ?: null);
+        Setting::set('company_vat',     $request->input('company_vat')     ?: null);
 
         return back()->with('success', 'Instellingen opgeslagen.');
     }

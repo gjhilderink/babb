@@ -85,6 +85,29 @@
         <p class="text-xs text-gray-400 mt-1">JPG, PNG of SVG — max. 2 MB</p>
     </div>
 
+    {{-- Bedrijfsgegevens --}}
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <h2 class="font-semibold text-gray-800 mb-4">Bedrijfsgegevens op facturen</h2>
+        <p class="text-sm text-gray-500 mb-4">Worden rechts bovenin de PDF-factuur getoond, onder het factuurnummer.</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Adres</label>
+                <textarea name="company_address" rows="2"
+                          class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-bb-green-600">{{ old('company_address', $company_address) }}</textarea>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">KvK-nummer</label>
+                <input type="text" name="company_kvk" value="{{ old('company_kvk', $company_kvk) }}"
+                       class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-bb-green-600">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">BTW-nummer</label>
+                <input type="text" name="company_vat" value="{{ old('company_vat', $company_vat) }}"
+                       class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-bb-green-600">
+            </div>
+        </div>
+    </div>
+
     {{-- Factuur footer --}}
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
         <h2 class="font-semibold text-gray-800 mb-4">Footertekst op facturen</h2>

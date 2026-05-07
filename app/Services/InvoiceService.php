@@ -55,9 +55,15 @@ class InvoiceService
             }
         }
 
-        $invoiceFooter = Setting::get('invoice_footer');
+        $invoiceFooter   = Setting::get('invoice_footer');
+        $companyAddress  = Setting::get('company_address');
+        $companyKvk      = Setting::get('company_kvk');
+        $companyVat      = Setting::get('company_vat');
 
-        $pdf = Pdf::loadView('invoices.pdf', compact('invoice', 'invoiceLogoBase64', 'invoiceFooter'));
+        $pdf = Pdf::loadView('invoices.pdf', compact(
+            'invoice', 'invoiceLogoBase64', 'invoiceFooter',
+            'companyAddress', 'companyKvk', 'companyVat'
+        ));
 
         return $pdf->download("factuur-{$invoice->invoice_number}.pdf");
     }

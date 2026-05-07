@@ -5,11 +5,13 @@
     <title>Factuur {{ $invoice->invoice_number }}</title>
     <style>
         body { font-family: DejaVu Sans, sans-serif; font-size: 12px; color: #1f2937; }
-        .header { display: flex; justify-content: space-between; margin-bottom: 32px; }
+        .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 32px; }
         .logo { font-size: 22px; font-weight: bold; color: #4f46e5; }
         .logo img { max-height: 60px; max-width: 200px; }
-        .invoice-meta { text-align: right; }
-        .invoice-meta h2 { font-size: 20px; font-weight: bold; margin: 0 0 8px; }
+        .header-right { text-align: right; }
+        .invoice-meta { margin-bottom: 10px; }
+        .invoice-meta h2 { font-size: 20px; font-weight: bold; margin: 0 0 4px; }
+        .company-details { font-size: 10px; color: #6b7280; line-height: 1.6; }
         .parties { display: flex; justify-content: space-between; margin-bottom: 32px; }
         .party h3 { font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
         table { width: 100%; border-collapse: collapse; margin-bottom: 24px; }
@@ -32,11 +34,20 @@
                 BABB Portaal
             @endif
         </div>
-        <div class="invoice-meta">
-            <h2>FACTUUR</h2>
-            <div>{{ $invoice->invoice_number }}</div>
-            <div>Datum: {{ $invoice->issue_date->format('d-m-Y') }}</div>
-            <div>Vervaldatum: {{ $invoice->due_date->format('d-m-Y') }}</div>
+        <div class="header-right">
+            <div class="invoice-meta">
+                <h2>FACTUUR</h2>
+                <div>{{ $invoice->invoice_number }}</div>
+                <div>Datum: {{ $invoice->issue_date->format('d-m-Y') }}</div>
+                <div>Vervaldatum: {{ $invoice->due_date->format('d-m-Y') }}</div>
+            </div>
+            @if ($companyAddress || $companyKvk || $companyVat)
+            <div class="company-details">
+                @if ($companyAddress)@foreach(explode("\n", $companyAddress) as $line)<div>{{ trim($line) }}</div>@endforeach@endif
+                @if ($companyKvk)<div>KvK: {{ $companyKvk }}</div>@endif
+                @if ($companyVat)<div>BTW: {{ $companyVat }}</div>@endif
+            </div>
+            @endif
         </div>
     </div>
 
