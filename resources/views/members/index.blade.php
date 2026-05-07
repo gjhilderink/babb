@@ -4,10 +4,49 @@
 @section('content')
 <div class="flex flex-wrap justify-between items-center gap-3 mb-6">
     <h1 class="text-2xl font-bold text-gray-900">Leden</h1>
-    <a href="{{ route('members.create') }}"
-       class="bg-bb-green-600 hover:bg-bb-green-700 text-white text-sm font-medium px-4 py-2 rounded-lg">
-        + Nieuw lid
-    </a>
+    <div class="flex flex-wrap items-center gap-2">
+        {{-- Export --}}
+        <a href="{{ route('members.export') }}"
+           class="inline-flex items-center gap-1.5 bg-white border border-gray-300 hover:border-gray-400 text-gray-700 text-sm font-medium px-4 py-2 rounded-lg transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3"/>
+            </svg>
+            Exporteren
+        </a>
+
+        {{-- Import trigger --}}
+        <button type="button" onclick="document.getElementById('import-panel').classList.toggle('hidden')"
+                class="inline-flex items-center gap-1.5 bg-white border border-gray-300 hover:border-gray-400 text-gray-700 text-sm font-medium px-4 py-2 rounded-lg transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 8l5-5 5 5M12 3v12"/>
+            </svg>
+            Importeren
+        </button>
+
+        <a href="{{ route('members.create') }}"
+           class="bg-bb-green-600 hover:bg-bb-green-700 text-white text-sm font-medium px-4 py-2 rounded-lg">
+            + Nieuw lid
+        </a>
+    </div>
+</div>
+
+{{-- Import panel --}}
+<div id="import-panel" class="hidden mb-6 bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+    <h2 class="font-semibold text-gray-800 mb-1">Leden importeren via CSV</h2>
+    <p class="text-xs text-gray-500 mb-3">
+        Upload een CSV-bestand met als kolomkoppen (puntkomma als scheidingsteken):
+        <code class="bg-gray-100 rounded px-1">first_name; last_name; email; phone; company_name; address; postal_code; city; country; membership_type; membership_start; membership_end; status; notes</code><br>
+        Bestaande leden worden bijgewerkt op basis van e-mailadres. Datumformat: dd-mm-jjjj of jjjj-mm-dd.
+    </p>
+    <form method="POST" action="{{ route('members.import') }}" enctype="multipart/form-data" class="flex flex-wrap items-center gap-3">
+        @csrf
+        <input type="file" name="csv_file" accept=".csv,.txt" required
+               class="text-sm text-gray-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-bb-green-600 file:text-white hover:file:bg-bb-green-700 cursor-pointer">
+        <button type="submit"
+                class="bg-bb-green-600 hover:bg-bb-green-700 text-white text-sm font-medium px-4 py-2 rounded-lg">
+            Importeren
+        </button>
+    </form>
 </div>
 
 <form method="GET" class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-6 flex flex-wrap gap-3">
