@@ -103,6 +103,13 @@ class TaskController extends Controller
         return back()->with('success', 'Status bijgewerkt.');
     }
 
+    public function updatePriority(Request $request, Task $task): RedirectResponse
+    {
+        $request->validate(['priority' => 'required|in:laag,normaal,hoog']);
+        $task->update(['priority' => $request->priority]);
+        return back()->with('success', 'Prioriteit bijgewerkt.');
+    }
+
     private function validateTask(Request $request): array
     {
         return $request->validate([

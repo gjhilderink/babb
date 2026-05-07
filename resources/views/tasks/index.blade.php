@@ -84,9 +84,15 @@ $nextStatus     = ['open' => 'bezig', 'bezig' => 'gereed', 'gereed' => 'open'];
                     @endif
                 </td>
                 <td class="px-5 py-3">
-                    <span class="px-2 py-0.5 rounded-full text-xs font-medium {{ $priorityColors[$task->priority] }}">
-                        {{ ucfirst($task->priority) }}
-                    </span>
+                    <form method="POST" action="{{ route('tasks.priority', $task) }}">
+                        @csrf @method('PATCH')
+                        <select name="priority" onchange="this.form.submit()"
+                                class="text-xs font-medium rounded-full px-2 py-0.5 border-0 cursor-pointer focus:outline-none {{ $priorityColors[$task->priority] }}">
+                            <option value="hoog"   @selected($task->priority === 'hoog')>Hoog</option>
+                            <option value="normaal" @selected($task->priority === 'normaal')>Normaal</option>
+                            <option value="laag"   @selected($task->priority === 'laag')>Laag</option>
+                        </select>
+                    </form>
                 </td>
                 <td class="px-5 py-3 {{ $task->due_date && $task->due_date->isPast() && $task->status !== 'gereed' ? 'text-red-600 font-semibold' : 'text-gray-600' }}">
                     {{ $task->due_date ? $task->due_date->format('d-m-Y') : '—' }}
@@ -94,11 +100,12 @@ $nextStatus     = ['open' => 'bezig', 'bezig' => 'gereed', 'gereed' => 'open'];
                 <td class="px-5 py-3">
                     <form method="POST" action="{{ route('tasks.status', $task) }}">
                         @csrf @method('PATCH')
-                        <input type="hidden" name="status" value="{{ $nextStatus[$task->status] }}">
-                        <button type="submit" title="Klik om status te wijzigen"
-                                class="px-2 py-0.5 rounded-full text-xs font-medium cursor-pointer {{ $statusColors[$task->status] }}">
-                            {{ ucfirst($task->status) }}
-                        </button>
+                        <select name="status" onchange="this.form.submit()"
+                                class="text-xs font-medium rounded-full px-2 py-0.5 border-0 cursor-pointer focus:outline-none {{ $statusColors[$task->status] }}">
+                            <option value="open"   @selected($task->status === 'open')>Open</option>
+                            <option value="bezig"  @selected($task->status === 'bezig')>Bezig</option>
+                            <option value="gereed" @selected($task->status === 'gereed')>Gereed</option>
+                        </select>
                     </form>
                 </td>
                 <td class="px-5 py-3 text-right">

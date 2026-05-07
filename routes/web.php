@@ -71,6 +71,7 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('tasks', TaskController::class)->except('show');
     Route::patch('tasks/{task}/status', [TaskController::class, 'updateStatus'])->name('tasks.status');
+    Route::patch('tasks/{task}/priority', [TaskController::class, 'updatePriority'])->name('tasks.priority');
 
     Route::post('impersonate/stop', [ImpersonateController::class, 'stop'])->name('impersonate.stop')->middleware('auth');
 
