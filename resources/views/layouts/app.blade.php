@@ -105,6 +105,10 @@
                     Vergaderingen
                 </a>
                 @endif
+                <a href="{{ route('tasks.index') }}"
+                   class="px-3 py-2 rounded text-sm font-medium transition-colors {{ request()->routeIs('tasks*') ? 'bg-bb-green-700 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700' }}">
+                    Taken
+                </a>
                 @if(\App\Services\AclService::allowed('membership_billing') || \App\Services\AclService::allowed('invoices.view'))
                 <div class="relative" x-data @click.outside="billing=false">
                     <button @click="billing=!billing"
@@ -231,6 +235,10 @@
                 Vergaderingen
             </a>
             @endif
+            <a href="{{ route('tasks.index') }}" @click="open=false"
+               class="block px-3 py-2 rounded text-sm font-medium {{ request()->routeIs('tasks*') ? 'bg-bb-green-700 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700' }}">
+                Taken
+            </a>
             @if(\App\Services\AclService::allowed('membership_billing') || \App\Services\AclService::allowed('invoices.view'))
             <p class="px-3 pt-2 pb-0.5 text-xs font-semibold text-gray-500 uppercase tracking-wide">Factureren</p>
             @if(\App\Services\AclService::allowed('membership_billing'))

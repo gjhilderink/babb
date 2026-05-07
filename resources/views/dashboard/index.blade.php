@@ -8,18 +8,51 @@
 </div>
 
 {{-- Mijn taken --}}
-@if ($myTasks->isNotEmpty() || $myLeads->isNotEmpty())
+@php $totalOpen = $myTasks->count() + $myEventTasks->count() + $myLeads->count(); @endphp
+@if ($totalOpen > 0)
 <div class="mb-8 bg-white rounded-xl shadow-sm border border-gray-200">
     <div class="px-5 py-4 border-b border-gray-100 flex justify-between items-center">
         <h2 class="font-semibold text-gray-800">Mijn taken</h2>
-        @if ($myTasks->count() + $myLeads->count() > 0)
         <span class="text-xs bg-orange-100 text-orange-700 font-semibold px-2 py-0.5 rounded-full">
-            {{ $myTasks->count() + $myLeads->count() }} open
+            {{ $totalOpen }} open
         </span>
-        @endif
     </div>
     <ul class="divide-y divide-gray-100">
+        {{-- Standalone taken --}}
         @foreach ($myTasks as $task)
+        <li class="px-5 py-3 flex flex-wrap items-center justify-between gap-2 text-sm">
+            <div class="flex items-center gap-3 min-w-0">
+                <form method="POST" action="{{ route('tasks.status', $task) }}">
+                    @csrf @method('PATCH')
+                    @php $nextStatus = ['open' => 'bezig', 'bezig' => 'gereed', 'gereed' => 'open']; @endphp
+                    <input type="hidden" name="status" value="{{ $nextStatus[$task->status] }}">
+                    <button type="submit" title="Klik om status te wijzigen"
+                            class="px-2 py-0.5 rounded-full text-xs font-medium cursor-pointer shrink-0 {{ $task->statusColor() }}">
+                        {{ ucfirst($task->status) }}
+                    </button>
+                </form>
+                <div class="min-w-0">
+                    <span class="text-gray-900">{{ $task->title }}</span>
+                    @if ($task->description)
+                    <div class="text-xs text-gray-400 mt-0.5">{{ Str::limit($task->description, 80) }}</div>
+                    @endif
+                </div>
+                <span class="px-1.5 py-0.5 rounded text-xs font-medium shrink-0 {{ $task->priorityColor() }}">
+                    {{ ucfirst($task->priority) }}
+                </span>
+            </div>
+            <div class="flex items-center gap-3 shrink-0">
+                @if ($task->due_date)
+                <span class="text-xs {{ $task->due_date->isPast() ? 'text-bb-red-600 font-semibold' : 'text-gray-500' }}">
+                    {{ $task->due_date->format('d-m-Y') }}@if ($task->due_date->isPast()) &#9650;@endif
+                </span>
+                @endif
+                <a href="{{ route('tasks.edit', $task) }}" class="text-xs text-gray-400 hover:text-bb-green-600">bewerken</a>
+            </div>
+        </li>
+        @endforeach
+        {{-- Evenement taken --}}
+        @foreach ($myEventTasks as $task)
         <li class="px-5 py-3 flex flex-wrap items-center justify-between gap-2 text-sm">
             <div class="flex items-center gap-3 min-w-0">
                 <span class="px-2 py-0.5 rounded-full text-xs font-medium shrink-0
@@ -33,12 +66,12 @@
             </div>
             @if ($task->due_date)
             <span class="text-xs shrink-0 {{ $task->due_date->isPast() ? 'text-bb-red-600 font-semibold' : 'text-gray-500' }}">
-                {{ $task->due_date->format('d-m-Y') }}
-                @if ($task->due_date->isPast())&nbsp;&#9650;@endif
+                {{ $task->due_date->format('d-m-Y') }}@if ($task->due_date->isPast()) &#9650;@endif
             </span>
             @endif
         </li>
         @endforeach
+        {{-- Leads --}}
         @foreach ($myLeads as $lead)
         <li class="px-5 py-3 flex flex-wrap items-center justify-between gap-2 text-sm">
             <div class="flex items-center gap-3 min-w-0">

@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\ImpersonateController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\MeetingController;
+use App\Http\Controllers\TaskController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\LeadController;
@@ -66,6 +67,9 @@ Route::middleware('auth')->group(function () {
         Route::get('acl',  [AclController::class, 'edit'])->name('acl.edit');
         Route::put('acl',  [AclController::class, 'update'])->name('acl.update');
     });
+
+    Route::resource('tasks', TaskController::class)->except('show');
+    Route::patch('tasks/{task}/status', [TaskController::class, 'updateStatus'])->name('tasks.status');
 
     Route::post('impersonate/stop', [ImpersonateController::class, 'stop'])->name('impersonate.stop')->middleware('auth');
 

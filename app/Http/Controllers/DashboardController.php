@@ -7,6 +7,7 @@ use App\Models\EventTask;
 use App\Models\Invoice;
 use App\Models\Lead;
 use App\Models\Member;
+use App\Models\Task;
 use Illuminate\View\View;
 
 class DashboardController extends Controller
@@ -15,9 +16,16 @@ class DashboardController extends Controller
     {
         $user = auth()->user();
 
-        $myTasks = EventTask::with('event')
+        $myEventTasks = EventTask::with('event')
             ->where('assigned_to', $user->name)
             ->whereIn('status', ['open', 'bezig'])
+            ->orderBy('due_date')
+            ->limit(10)
+            ->get();
+
+        $myTasks = Task::where('assigned_to_user_id', $user->id)
+            ->whereIn('status', ['open', 'bezig'])
+            ->orderByRaw("FIELD(priority, 'hoog', 'normaal', 'laag')")
             ->orderBy('due_date')
             ->limit(10)
             ->get();
@@ -45,6 +53,7 @@ class DashboardController extends Controller
                 'upcomingEvents'       => $upcomingEvents,
                 'upcomingEventsBudget' => $upcomingEventsBudget,
                 'myTasks'              => $myTasks,
+                'myEventTasks'         => $myEventTasks,
                 'myLeads'              => $myLeads,
                 'stats'                => null,
                 'recentInvoices'       => collect(),
@@ -80,6 +89,6 @@ class DashboardController extends Controller
             ->limit(5)
             ->get();
 
-        return view('dashboard.index', compact('stats', 'recentInvoices', 'expiringMemberships', 'upcomingEvents', 'recentLeads', 'upcomingEventsBudget', 'myTasks', 'myLeads'));
+        return view('dashboard.index', compact('stats', 'recentInvoices', 'expiringMemberships', 'upcomingEvents', 'recentLeads', 'upcomingEventsBudget', 'myTasks', 'myEventTasks', 'myLeads'));
     }
 }
