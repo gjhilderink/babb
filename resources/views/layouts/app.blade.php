@@ -99,6 +99,10 @@
                    class="px-3 py-2 rounded text-sm font-medium transition-colors {{ request()->routeIs('events*') ? 'bg-bb-green-700 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700' }}">
                     Evenementen
                 </a>
+                <a href="{{ route('meetings.index') }}"
+                   class="px-3 py-2 rounded text-sm font-medium transition-colors {{ request()->routeIs('meetings*') ? 'bg-bb-green-700 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700' }}">
+                    Vergaderingen
+                </a>
                 @if(\App\Services\AclService::allowed('invoices.view'))
                 <a href="{{ route('invoices.index') }}"
                    class="px-3 py-2 rounded text-sm font-medium transition-colors {{ request()->routeIs('invoices*') ? 'bg-bb-green-700 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700' }}">
@@ -205,6 +209,10 @@
             <a href="{{ route('events.index') }}" @click="open=false"
                class="block px-3 py-2 rounded text-sm font-medium {{ request()->routeIs('events*') ? 'bg-bb-green-700 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700' }}">
                 Evenementen
+            </a>
+            <a href="{{ route('meetings.index') }}" @click="open=false"
+               class="block px-3 py-2 rounded text-sm font-medium {{ request()->routeIs('meetings*') ? 'bg-bb-green-700 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700' }}">
+                Vergaderingen
             </a>
             @if(\App\Services\AclService::allowed('invoices.view'))
             <a href="{{ route('invoices.index') }}" @click="open=false"

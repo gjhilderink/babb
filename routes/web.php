@@ -4,6 +4,7 @@ use App\Http\Controllers\AclController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\ImpersonateController;
 use App\Http\Controllers\EventController;
+use App\Http\Controllers\MeetingController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\LeadController;
@@ -34,6 +35,10 @@ Route::middleware('auth')->group(function () {
         Route::post('event-costs/{cost}/receipt', [EventController::class, 'uploadReceipt'])->name('event-costs.receipt');
         Route::delete('event-costs/{cost}/receipt', [EventController::class, 'deleteReceipt'])->name('event-costs.receipt.delete');
         Route::post('events/{event}/mail-declaratie', [EventController::class, 'mailDeclaratie'])->name('events.mail-declaratie');
+
+        Route::resource('meetings', MeetingController::class);
+        Route::post('meetings/{meeting}/notes', [MeetingController::class, 'saveNote'])->name('meetings.notes.save');
+        Route::delete('meetings/{meeting}/notes', [MeetingController::class, 'deleteNote'])->name('meetings.notes.delete');
 
         Route::get('membership-billing', [MembershipBillingController::class, 'index'])->name('membership-billing.index');
         Route::post('membership-billing', [MembershipBillingController::class, 'store'])->name('membership-billing.store');
