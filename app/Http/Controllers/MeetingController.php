@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Meeting;
 use App\Models\MeetingNote;
+use App\Services\AclService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -12,6 +13,8 @@ class MeetingController extends Controller
 {
     public function index(Request $request): View
     {
+        abort_unless(AclService::allowed('meetings.view'), 403);
+
         $meetings = Meeting::with('creator')
             ->withCount('notes')
             ->when($request->status, fn ($q, $s) => $q->where('status', $s))
@@ -25,11 +28,13 @@ class MeetingController extends Controller
 
     public function create(): View
     {
+        abort_unless(AclService::allowed('meetings.manage'), 403);
         return view('meetings.create');
     }
 
     public function store(Request $request): RedirectResponse
     {
+        abort_unless(AclService::allowed('meetings.manage'), 403);
         $data = $this->validateMeeting($request);
         $data['created_by'] = auth()->id();
 
@@ -40,6 +45,7 @@ class MeetingController extends Controller
 
     public function show(Meeting $meeting): View
     {
+        abort_unless(AclService::allowed('meetings.view'), 403);
         $meeting->load(['notes.user', 'creator']);
 
         return view('meetings.show', compact('meeting'));
@@ -47,11 +53,13 @@ class MeetingController extends Controller
 
     public function edit(Meeting $meeting): View
     {
+        abort_unless(AclService::allowed('meetings.manage'), 403);
         return view('meetings.edit', compact('meeting'));
     }
 
     public function update(Request $request, Meeting $meeting): RedirectResponse
     {
+        abort_unless(AclService::allowed('meetings.manage'), 403);
         $meeting->update($this->validateMeeting($request));
 
         return redirect()->route('meetings.show', $meeting)->with('success', 'Vergadering bijgewerkt.');
@@ -59,6 +67,7 @@ class MeetingController extends Controller
 
     public function destroy(Meeting $meeting): RedirectResponse
     {
+        abort_unless(AclService::allowed('meetings.manage'), 403);
         $meeting->delete();
 
         return redirect()->route('meetings.index')->with('success', 'Vergadering verwijderd.');

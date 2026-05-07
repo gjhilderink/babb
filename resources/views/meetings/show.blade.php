@@ -19,6 +19,7 @@ $myNote = $meeting->noteByUser(auth()->id());
             {{ ucfirst($meeting->status) }}
         </span>
     </div>
+    @if(\App\Services\AclService::allowed('meetings.manage'))
     <div class="flex gap-2">
         <a href="{{ route('meetings.edit', $meeting) }}"
            class="bg-bb-green-600 hover:bg-bb-green-700 text-white text-sm font-medium px-4 py-2 rounded-lg">
@@ -33,6 +34,7 @@ $myNote = $meeting->noteByUser(auth()->id());
             </button>
         </form>
     </div>
+    @endif
 </div>
 
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">

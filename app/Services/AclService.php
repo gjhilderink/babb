@@ -30,6 +30,10 @@ class AclService
                 'events.view'   => 'Evenementen inzien',
                 'events.manage' => 'Evenementen aanmaken / bewerken / verwijderen',
             ],
+            'Vergaderingen' => [
+                'meetings.view'   => 'Vergaderingen inzien',
+                'meetings.manage' => 'Vergaderingen aanmaken / bewerken / verwijderen',
+            ],
             'Overig' => [
                 'membership_billing'      => 'Contributies factureren',
                 'membership_types.manage' => 'Pakketten beheren',

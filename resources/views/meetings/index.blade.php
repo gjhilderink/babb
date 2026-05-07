@@ -4,10 +4,12 @@
 @section('content')
 <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
     <h1 class="text-2xl font-bold text-gray-900">Vergadernotities</h1>
+    @if(\App\Services\AclService::allowed('meetings.manage'))
     <a href="{{ route('meetings.create') }}"
        class="bg-bb-green-600 hover:bg-bb-green-700 text-white text-sm font-medium px-4 py-2 rounded-lg">
         + Nieuwe vergadering
     </a>
+    @endif
 </div>
 
 {{-- Filters --}}
