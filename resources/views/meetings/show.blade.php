@@ -126,7 +126,7 @@ $myNote = $meeting->noteByUser(auth()->id());
         @endif
 
         {{-- Taken --}}
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
             <div class="px-5 py-4 border-b border-gray-100 flex justify-between items-center">
                 <h2 class="font-semibold text-gray-800">Taken</h2>
                 <span class="text-xs text-gray-400">
