@@ -125,16 +125,21 @@
     </div>
 </form>
 
+@php
+$editItems = $invoice->items->map(function($i) {
+    return [
+        'description' => $i->description,
+        'quantity'    => $i->quantity,
+        'unit_price'  => $i->unit_price,
+        'tax_rate'    => $i->tax_rate,
+        'product_id'  => $i->product_id ?? '',
+    ];
+})->values();
+@endphp
 <script>
 function invoiceForm() {
     return {
-        items: @json($invoice->items->map(fn($i) => [
-            'description' => $i->description,
-            'quantity'    => $i->quantity,
-            'unit_price'  => $i->unit_price,
-            'tax_rate'    => $i->tax_rate,
-            'product_id'  => $i->product_id ?? '',
-        ])),
+        items: @json($editItems),
         addItem() {
             this.items.push({ description: '', quantity: 1, unit_price: 0, tax_rate: 21, product_id: '' });
         },
