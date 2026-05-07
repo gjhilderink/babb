@@ -14,6 +14,7 @@ class EventTask extends Model
         'description',
         'assigned_to',
         'status',
+        'priority',
         'due_date',
     ];
 

@@ -8,7 +8,7 @@ class Lead extends Model
 {
     protected $fillable = [
         'first_name', 'last_name', 'email', 'phone', 'company_name',
-        'source', 'status', 'notes',
+        'source', 'status', 'priority', 'notes',
         'referred_by_member_id', 'referred_by_name',
         'assigned_to_user_id', 'action_required',
         'member_id', 'converted_at',

@@ -87,6 +87,13 @@ class LeadController extends Controller
         return back()->with('success', 'Lead status bijgewerkt.');
     }
 
+    public function updatePriority(Request $request, Lead $lead): RedirectResponse
+    {
+        $request->validate(['priority' => 'required|in:laag,normaal,hoog']);
+        $lead->update(['priority' => $request->priority]);
+        return back()->with('success', 'Prioriteit bijgewerkt.');
+    }
+
     public function convertForm(Lead $lead): View
     {
         if ($lead->isConverted()) {

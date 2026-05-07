@@ -33,6 +33,7 @@ Route::middleware('auth')->group(function () {
         Route::resource('products', ProductController::class);
         Route::resource('events', EventController::class);
         Route::patch('event-tasks/{task}/status', [EventController::class, 'updateTaskStatus'])->name('event-tasks.status');
+        Route::patch('event-tasks/{task}/priority', [EventController::class, 'updateTaskPriority'])->name('event-tasks.priority');
         Route::post('event-costs/{cost}/receipt', [EventController::class, 'uploadReceipt'])->name('event-costs.receipt');
         Route::delete('event-costs/{cost}/receipt', [EventController::class, 'deleteReceipt'])->name('event-costs.receipt.delete');
         Route::post('events/{event}/mail-declaratie', [EventController::class, 'mailDeclaratie'])->name('events.mail-declaratie');
@@ -58,6 +59,7 @@ Route::middleware('auth')->group(function () {
         Route::get('leads/{lead}/convert',  [LeadController::class, 'convertForm'])->name('leads.convert-form');
         Route::post('leads/{lead}/convert', [LeadController::class, 'convert'])->name('leads.convert');
         Route::patch('leads/{lead}/status', [LeadController::class, 'updateStatus'])->name('leads.status');
+        Route::patch('leads/{lead}/priority', [LeadController::class, 'updatePriority'])->name('leads.priority');
     });
 
     Route::middleware('role:admin')->group(function () {

@@ -143,7 +143,17 @@ $nextStatus     = ['open' => 'bezig', 'bezig' => 'gereed', 'gereed' => 'open'];
                         Lead
                     </a>
                 </td>
-                <td class="px-5 py-3"><span class="text-xs text-gray-400">—</span></td>
+                <td class="px-5 py-3">
+                    <form method="POST" action="{{ route('leads.priority', $lead) }}">
+                        @csrf @method('PATCH')
+                        <select name="priority" onchange="this.form.submit()"
+                                class="text-xs font-medium rounded-full px-2 py-0.5 border-0 cursor-pointer focus:outline-none {{ $priorityColors[$lead->priority ?? 'normaal'] }}">
+                            <option value="hoog"    @selected(($lead->priority ?? 'normaal') === 'hoog')>Hoog</option>
+                            <option value="normaal" @selected(($lead->priority ?? 'normaal') === 'normaal')>Normaal</option>
+                            <option value="laag"    @selected(($lead->priority ?? 'normaal') === 'laag')>Laag</option>
+                        </select>
+                    </form>
+                </td>
                 <td class="px-5 py-3 text-gray-600">—</td>
                 <td class="px-5 py-3">
                     <form method="POST" action="{{ route('leads.status', $lead) }}">
@@ -189,7 +199,15 @@ $nextStatus     = ['open' => 'bezig', 'bezig' => 'gereed', 'gereed' => 'open'];
                     </a>
                 </td>
                 <td class="px-5 py-3">
-                    <span class="text-xs text-gray-400">—</span>
+                    <form method="POST" action="{{ route('event-tasks.priority', $task) }}">
+                        @csrf @method('PATCH')
+                        <select name="priority" onchange="this.form.submit()"
+                                class="text-xs font-medium rounded-full px-2 py-0.5 border-0 cursor-pointer focus:outline-none {{ $priorityColors[$task->priority ?? 'normaal'] }}">
+                            <option value="hoog"    @selected(($task->priority ?? 'normaal') === 'hoog')>Hoog</option>
+                            <option value="normaal" @selected(($task->priority ?? 'normaal') === 'normaal')>Normaal</option>
+                            <option value="laag"    @selected(($task->priority ?? 'normaal') === 'laag')>Laag</option>
+                        </select>
+                    </form>
                 </td>
                 <td class="px-5 py-3 {{ $task->due_date && $task->due_date->isPast() && $task->status !== 'gereed' ? 'text-red-600 font-semibold' : 'text-gray-600' }}">
                     {{ $task->due_date ? $task->due_date->format('d-m-Y') : '—' }}
