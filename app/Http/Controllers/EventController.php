@@ -17,7 +17,7 @@ class EventController extends Controller
             ->with('costs')
             ->when($request->status, fn ($q, $s) => $q->where('status', $s))
             ->when($request->search, fn ($q, $s) => $q->where('title', 'like', "%$s%"))
-            ->orderBy('event_date', 'desc')
+            ->orderBy('event_date', 'asc')
             ->paginate(25)
             ->withQueryString();
 
