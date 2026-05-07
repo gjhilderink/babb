@@ -64,7 +64,7 @@
     <div class="w-1/2 bg-bb-green-600"></div>
 </div>
 
-<nav class="bg-gray-900 shadow-lg" x-data="{ open: false }">
+<nav class="bg-gray-900 shadow-lg" x-data="{ open: false, admin: false }">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16 items-center">
             {{-- Logo --}}
@@ -109,14 +109,36 @@
                 </a>
                 @endif
                 @if (auth()->user()->isAdmin())
-                <a href="{{ route('users.index') }}"
-                   class="px-3 py-2 rounded text-sm font-medium transition-colors {{ request()->routeIs('users*') ? 'bg-bb-red-700 text-white' : 'text-gray-300 hover:text-white hover:bg-bb-red-700' }}">
-                    Gebruikers
-                </a>
-                <a href="{{ route('settings.edit') }}"
-                   class="px-3 py-2 rounded text-sm font-medium transition-colors {{ request()->routeIs('settings*') ? 'bg-bb-red-700 text-white' : 'text-gray-300 hover:text-white hover:bg-bb-red-700' }}">
-                    Instellingen
-                </a>
+                {{-- Beheer dropdown --}}
+                <div class="relative" x-data @click.outside="admin=false">
+                    <button @click="admin=!admin"
+                            class="px-3 py-2 rounded text-sm font-medium transition-colors flex items-center gap-1
+                                {{ request()->routeIs('users*','settings*') ? 'bg-bb-red-700 text-white' : 'text-gray-300 hover:text-white hover:bg-bb-red-700' }}">
+                        Beheer
+                        <svg class="w-3.5 h-3.5 transition-transform" :class="admin ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+                    <div x-show="admin" x-transition
+                         class="absolute right-0 mt-1 w-44 bg-gray-800 rounded-lg shadow-lg border border-gray-700 py-1 z-50">
+                        <a href="{{ route('users.index') }}" @click="admin=false"
+                           class="flex items-center gap-2 px-4 py-2 text-sm {{ request()->routeIs('users*') ? 'text-white bg-bb-red-700' : 'text-gray-300 hover:text-white hover:bg-gray-700' }}">
+                            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197"/></svg>
+                            Gebruikers
+                        </a>
+                        <a href="{{ route('settings.edit') }}" @click="admin=false"
+                           class="flex items-center gap-2 px-4 py-2 text-sm {{ request()->routeIs('settings*') ? 'text-white bg-bb-red-700' : 'text-gray-300 hover:text-white hover:bg-gray-700' }}">
+                            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                            Instellingen
+                        </a>
+                        <div class="border-t border-gray-700 my-1"></div>
+                        <a href="{{ route('handleiding') }}" @click="admin=false"
+                           class="flex items-center gap-2 px-4 py-2 text-sm {{ request()->routeIs('handleiding') ? 'text-white bg-bb-red-700' : 'text-gray-300 hover:text-white hover:bg-gray-700' }}">
+                            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                            Handleiding
+                        </a>
+                    </div>
+                </div>
                 @endif
             </div>
 
@@ -185,14 +207,21 @@
             </a>
             @endif
             @if (auth()->user()->isAdmin())
-            <a href="{{ route('users.index') }}" @click="open=false"
-               class="block px-3 py-2 rounded text-sm font-medium {{ request()->routeIs('users*') ? 'bg-bb-red-700 text-white' : 'text-gray-300 hover:text-white hover:bg-bb-red-700' }}">
-                Gebruikers
-            </a>
-            <a href="{{ route('settings.edit') }}" @click="open=false"
-               class="block px-3 py-2 rounded text-sm font-medium {{ request()->routeIs('settings*') ? 'bg-bb-red-700 text-white' : 'text-gray-300 hover:text-white hover:bg-bb-red-700' }}">
-                Instellingen
-            </a>
+            <div class="pt-1 pb-0.5">
+                <p class="px-3 py-1 text-xs font-semibold text-gray-500 uppercase tracking-wide">Beheer</p>
+                <a href="{{ route('users.index') }}" @click="open=false"
+                   class="block px-3 py-2 rounded text-sm font-medium {{ request()->routeIs('users*') ? 'bg-bb-red-700 text-white' : 'text-gray-300 hover:text-white hover:bg-bb-red-700' }}">
+                    Gebruikers
+                </a>
+                <a href="{{ route('settings.edit') }}" @click="open=false"
+                   class="block px-3 py-2 rounded text-sm font-medium {{ request()->routeIs('settings*') ? 'bg-bb-red-700 text-white' : 'text-gray-300 hover:text-white hover:bg-bb-red-700' }}">
+                    Instellingen
+                </a>
+                <a href="{{ route('handleiding') }}" @click="open=false"
+                   class="block px-3 py-2 rounded text-sm font-medium {{ request()->routeIs('handleiding') ? 'bg-bb-red-700 text-white' : 'text-gray-300 hover:text-white hover:bg-bb-red-700' }}">
+                    Handleiding
+                </a>
+            </div>
             @endif
         </div>
         <div class="mt-3 px-4 pt-3 border-t border-gray-700 flex items-center justify-between">
