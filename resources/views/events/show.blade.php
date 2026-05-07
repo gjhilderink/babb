@@ -1,5 +1,5 @@
 ﻿@extends('layouts.app')
-@section('title', $event->title . ' â€” BABB Portaal')
+@section('title', $event->title . ' – BABB Portaal')
 
 @section('content')
 @php
@@ -148,48 +148,48 @@
                 <p class="px-5 py-4 text-sm text-gray-400">Geen kosten vastgelegd.</p>
             @else
             <div class="overflow-x-auto"><table class="min-w-full divide-y divide-gray-100 text-sm">
-                <thead class=”bg-gray-50”>
+                <thead class="bg-gray-50">
                     <tr>
-                        <th class=”px-4 py-2 text-left font-semibold text-gray-600”>Omschrijving</th>
-                        <th class=”px-4 py-2 text-left font-semibold text-gray-600”>Categorie</th>
-                        <th class=”px-4 py-2 text-right font-semibold text-gray-600”>Bedrag</th>
-                        <th class=”px-4 py-2 text-left font-semibold text-gray-600”>Betaald door</th>
-                        <th class=”px-4 py-2 text-left font-semibold text-gray-600”>Betaaldatum</th>
-                        <th class=”px-4 py-2 text-left font-semibold text-gray-600”>Bijlage</th>
+                        <th class="px-4 py-2 text-left font-semibold text-gray-600">Omschrijving</th>
+                        <th class="px-4 py-2 text-left font-semibold text-gray-600">Categorie</th>
+                        <th class="px-4 py-2 text-right font-semibold text-gray-600">Bedrag</th>
+                        <th class="px-4 py-2 text-left font-semibold text-gray-600">Betaald door</th>
+                        <th class="px-4 py-2 text-left font-semibold text-gray-600">Betaaldatum</th>
+                        <th class="px-4 py-2 text-left font-semibold text-gray-600">Bijlage</th>
                     </tr>
                 </thead>
-                <tbody class=”divide-y divide-gray-100”>
+                <tbody class="divide-y divide-gray-100">
                     @foreach ($event->costs as $cost)
                     <tr>
-                        <td class=”px-4 py-3 text-gray-800”>{{ $cost->description }}</td>
-                        <td class=”px-4 py-3 text-gray-500”>{{ $cost->category ?: '—' }}</td>
-                        <td class=”px-4 py-3 text-right font-medium”>&euro; {{ number_format($cost->amount, 2, ',', '.') }}</td>
-                        <td class=”px-4 py-3 text-gray-600”>{{ $cost->paid_by ?: '—' }}</td>
-                        <td class=”px-4 py-3 text-gray-600”>{{ $cost->paid_at ? $cost->paid_at->format('d-m-Y') : '—' }}</td>
-                        <td class=”px-4 py-3”>
+                        <td class="px-4 py-3 text-gray-800">{{ $cost->description }}</td>
+                        <td class="px-4 py-3 text-gray-500">{{ $cost->category ?: '—' }}</td>
+                        <td class="px-4 py-3 text-right font-medium">&euro; {{ number_format($cost->amount, 2, ',', '.') }}</td>
+                        <td class="px-4 py-3 text-gray-600">{{ $cost->paid_by ?: '—' }}</td>
+                        <td class="px-4 py-3 text-gray-600">{{ $cost->paid_at ? $cost->paid_at->format('d-m-Y') : '—' }}</td>
+                        <td class="px-4 py-3">
                             @if ($cost->receipt_path)
-                            <div class=”flex items-center gap-2 flex-wrap”>
-                                <a href=”{{ asset($cost->receipt_path) }}” target=”_blank”
-                                   class=”text-xs bg-blue-50 text-blue-700 hover:bg-blue-100 font-medium px-2 py-1 rounded”>
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <a href="{{ asset($cost->receipt_path) }}" target="_blank"
+                                   class="text-xs bg-blue-50 text-blue-700 hover:bg-blue-100 font-medium px-2 py-1 rounded">
                                     Bekijken
                                 </a>
-                                <form method=”POST” action=”{{ route('event-costs.receipt.delete', $cost) }}”
-                                      onsubmit=”return confirm('Bijlage verwijderen?')”>
+                                <form method="POST" action="{{ route('event-costs.receipt.delete', $cost) }}"
+                                      onsubmit="return confirm('Bijlage verwijderen?')">
                                     @csrf @method('DELETE')
-                                    <button type=”submit” class=”text-xs text-red-500 hover:text-red-700 px-1”>Verwijderen</button>
+                                    <button type="submit" class="text-xs text-red-500 hover:text-red-700 px-1">Verwijderen</button>
                                 </form>
                             </div>
                             @else
-                            <form method=”POST” action=”{{ route('event-costs.receipt', $cost) }}”
-                                  enctype=”multipart/form-data” id=”receipt-form-{{ $cost->id }}”>
+                            <form method="POST" action="{{ route('event-costs.receipt', $cost) }}"
+                                  enctype="multipart/form-data" id="receipt-form-{{ $cost->id }}">
                                 @csrf
-                                <input type=”file” id=”receipt-{{ $cost->id }}” name=”receipt”
-                                       accept=”.pdf,.jpg,.jpeg,.png”
-                                       style=”display:none”
-                                       onchange=”document.getElementById('receipt-form-{{ $cost->id }}').submit()”>
-                                <button type=”button”
-                                        onclick=”document.getElementById('receipt-{{ $cost->id }}').click()”
-                                        style=”font-size:0.75rem;background:#f3f4f6;color:#374151;font-weight:500;padding:3px 10px;border-radius:6px;border:1px solid #d1d5db;cursor:pointer;white-space:nowrap”>
+                                <input type="file" id="receipt-{{ $cost->id }}" name="receipt"
+                                       accept=".pdf,.jpg,.jpeg,.png"
+                                       style="display:none"
+                                       onchange="document.getElementById('receipt-form-{{ $cost->id }}').submit()">
+                                <button type="button"
+                                        onclick="document.getElementById('receipt-{{ $cost->id }}').click()"
+                                        style="font-size:0.75rem;background:#f3f4f6;color:#374151;font-weight:500;padding:3px 10px;border-radius:6px;border:1px solid #d1d5db;cursor:pointer;white-space:nowrap">
                                     &#8593; Uploaden
                                 </button>
                             </form>
@@ -199,10 +199,10 @@
                     @endforeach
                 </tbody>
                 <tfoot>
-                    <tr class=”bg-gray-50”>
-                        <td colspan=”2” class=”px-4 py-3 font-semibold text-gray-700”>Totaal</td>
-                        <td class=”px-4 py-3 text-right font-bold”>&euro; {{ number_format($event->totalCosts(), 2, ',', '.') }}</td>
-                        <td colspan=”3”></td>
+                    <tr class="bg-gray-50">
+                        <td colspan="2" class="px-4 py-3 font-semibold text-gray-700">Totaal</td>
+                        <td class="px-4 py-3 text-right font-bold">&euro; {{ number_format($event->totalCosts(), 2, ',', '.') }}</td>
+                        <td colspan="3"></td>
                     </tr>
                 </tfoot>
             </table></div>
