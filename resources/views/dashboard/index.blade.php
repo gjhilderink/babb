@@ -2,8 +2,9 @@
 @section('title', 'Dashboard — BABB Portaal')
 
 @section('content')
-<div class="mb-6">
+<div class="mb-6 flex items-baseline gap-3">
     <h1 class="text-2xl font-bold text-gray-900">Dashboard</h1>
+    <span class="text-gray-400 text-sm">Welkom, {{ auth()->user()->name }}</span>
 </div>
 
 {{-- Mijn taken --}}
