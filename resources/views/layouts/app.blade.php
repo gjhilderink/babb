@@ -278,8 +278,8 @@
 
 <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
     @if (session('success'))
-        <div class="mb-4 rounded-md bg-bb-green-600 bg-opacity-10 border border-bb-green-600 border-opacity-30 px-4 py-3 text-sm text-bb-green-800 flex items-center gap-2">
-            <span class="text-bb-green-600">&#10003;</span> {{ session('success') }}
+        <div class="mb-4 rounded-md bg-bb-green-600 px-4 py-3 text-sm text-white flex items-center gap-2">
+            <span>&#10003;</span> {{ session('success') }}
         </div>
     @endif
     @if (session('error'))
