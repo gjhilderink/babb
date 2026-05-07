@@ -24,7 +24,7 @@ class MemberController extends Controller
             ->when($request->status, fn ($q, $s) => $q->where('status', $s))
             ->when($request->membership_type_id, fn ($q, $id) => $q->where('membership_type_id', $id))
             ->orderBy('last_name')
-            ->paginate(25)
+            ->paginate(50)
             ->withQueryString();
 
         $membershipTypes = MembershipType::where('is_active', true)->orderBy('name')->get();
