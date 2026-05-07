@@ -16,7 +16,7 @@ class DashboardController extends Controller
         $user = auth()->user();
 
         $myTasks = EventTask::with('event')
-            ->where('assigned_to', (string) $user->id)
+            ->where('assigned_to', $user->name)
             ->whereIn('status', ['open', 'bezig'])
             ->orderBy('due_date')
             ->limit(10)
