@@ -125,6 +125,88 @@ $myNote = $meeting->noteByUser(auth()->id());
         </div>
         @endif
 
+        {{-- Taken --}}
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+            <div class="px-5 py-4 border-b border-gray-100 flex justify-between items-center">
+                <h2 class="font-semibold text-gray-800">Taken</h2>
+                <span class="text-xs text-gray-400">
+                    {{ $meeting->tasks->where('status','gereed')->count() }} / {{ $meeting->tasks->count() }} gereed
+                </span>
+            </div>
+
+            {{-- Bestaande taken --}}
+            @if ($meeting->tasks->isNotEmpty())
+            @php
+            $statusColors = ['open' => 'bg-gray-100 text-gray-600', 'bezig' => 'bg-blue-100 text-blue-700', 'gereed' => 'bg-green-100 text-green-700'];
+            $nextStatus   = ['open' => 'bezig', 'bezig' => 'gereed', 'gereed' => 'open'];
+            @endphp
+            <ul class="divide-y divide-gray-100">
+                @foreach ($meeting->tasks->sortBy('due_date') as $task)
+                <li class="px-5 py-3 flex items-center gap-3 text-sm">
+                    <form method="POST" action="{{ route('tasks.status', $task) }}">
+                        @csrf @method('PATCH')
+                        <input type="hidden" name="status" value="{{ $nextStatus[$task->status] }}">
+                        <button type="submit" class="px-2 py-0.5 rounded-full text-xs font-medium cursor-pointer {{ $statusColors[$task->status] }}">
+                            {{ ucfirst($task->status) }}
+                        </button>
+                    </form>
+                    <div class="flex-1 min-w-0">
+                        <span class="{{ $task->status === 'gereed' ? 'line-through text-gray-400' : 'text-gray-800' }}">
+                            {{ $task->title }}
+                        </span>
+                    </div>
+                    <div class="flex items-center gap-3 text-xs text-gray-400 shrink-0">
+                        <span class="font-medium text-gray-600">{{ $task->assignedTo->name }}</span>
+                        @if ($task->due_date)
+                        <span class="{{ $task->due_date->isPast() && $task->status !== 'gereed' ? 'text-red-500 font-medium' : '' }}">
+                            {{ $task->due_date->format('d-m-Y') }}
+                        </span>
+                        @endif
+                        <a href="{{ route('tasks.edit', $task) }}" class="text-gray-300 hover:text-bb-green-600">bewerken</a>
+                    </div>
+                </li>
+                @endforeach
+            </ul>
+            @endif
+
+            {{-- Nieuwe taak formulier --}}
+            <div class="px-5 py-4 border-t border-gray-100 bg-gray-50/50">
+                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Nieuwe taak toevoegen</p>
+                <form method="POST" action="{{ route('meetings.tasks.store', $meeting) }}">
+                    @csrf
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+                        <div class="md:col-span-2">
+                            <input type="text" name="title" placeholder="Taak omschrijving *"
+                                   class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-bb-green-600">
+                        </div>
+                        <div>
+                            <select name="assigned_to_user_id" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                                <option value="">— Toewijzen aan —</option>
+                                @foreach ($users as $u)
+                                    <option value="{{ $u->id }}">{{ $u->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="flex gap-2">
+                            <input type="date" name="due_date"
+                                   class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm" title="Deadline">
+                            <select name="priority" class="border border-gray-300 rounded-lg px-2 py-2 text-sm">
+                                <option value="normaal">Normaal</option>
+                                <option value="hoog">Hoog</option>
+                                <option value="laag">Laag</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <button type="submit"
+                                class="bg-bb-green-600 hover:bg-bb-green-700 text-white text-sm font-medium px-4 py-2 rounded-lg">
+                            Taak toevoegen
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
     </div>
 
     {{-- Rechter kolom --}}
@@ -141,6 +223,14 @@ $myNote = $meeting->noteByUser(auth()->id());
                     <dd class="font-medium {{ $myNote ? 'text-green-600' : 'text-gray-400' }}">
                         {{ $myNote ? 'Opgeslagen' : 'Nog niet ingevuld' }}
                     </dd>
+                </div>
+                <div class="flex justify-between pt-2 border-t border-gray-100">
+                    <dt class="text-gray-500">Taken open</dt>
+                    <dd class="font-medium text-red-600">{{ $meeting->tasks->whereIn('status',['open','bezig'])->count() }}</dd>
+                </div>
+                <div class="flex justify-between">
+                    <dt class="text-gray-500">Taken gereed</dt>
+                    <dd class="font-medium text-green-600">{{ $meeting->tasks->where('status','gereed')->count() }}</dd>
                 </div>
             </dl>
         </div>

@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Meeting;
 use App\Models\MeetingNote;
+use App\Models\Task;
+use App\Models\User;
 use App\Services\AclService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -46,9 +48,11 @@ class MeetingController extends Controller
     public function show(Meeting $meeting): View
     {
         abort_unless(AclService::allowed('meetings.view'), 403);
-        $meeting->load(['notes.user', 'creator']);
+        $meeting->load(['notes.user', 'creator', 'tasks.assignedTo']);
 
-        return view('meetings.show', compact('meeting'));
+        $users = User::orderBy('name')->get();
+
+        return view('meetings.show', compact('meeting', 'users'));
     }
 
     public function edit(Meeting $meeting): View
@@ -71,6 +75,28 @@ class MeetingController extends Controller
         $meeting->delete();
 
         return redirect()->route('meetings.index')->with('success', 'Vergadering verwijderd.');
+    }
+
+    public function storeTask(Request $request, Meeting $meeting): RedirectResponse
+    {
+        $data = $request->validate([
+            'title'              => 'required|string|max:255',
+            'assigned_to_user_id' => 'required|exists:users,id',
+            'due_date'           => 'nullable|date',
+            'priority'           => 'required|in:laag,normaal,hoog',
+        ]);
+
+        Task::create([
+            'title'              => $data['title'],
+            'assigned_to_user_id' => $data['assigned_to_user_id'],
+            'due_date'           => $data['due_date'] ?: null,
+            'priority'           => $data['priority'],
+            'meeting_id'         => $meeting->id,
+            'created_by'         => auth()->id(),
+            'status'             => 'open',
+        ]);
+
+        return back()->with('success', 'Taak aangemaakt en gekoppeld aan vergadering.');
     }
 
     public function saveNote(Request $request, Meeting $meeting): RedirectResponse

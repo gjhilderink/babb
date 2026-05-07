@@ -33,20 +33,22 @@
     @endif
 </form>
 
+@php
+$priorityColors = ['hoog' => 'bg-red-100 text-red-700', 'normaal' => 'bg-yellow-100 text-yellow-700', 'laag' => 'bg-gray-100 text-gray-500'];
+$statusColors   = ['open' => 'bg-gray-100 text-gray-600', 'bezig' => 'bg-blue-100 text-blue-700', 'gereed' => 'bg-green-100 text-green-700'];
+$nextStatus     = ['open' => 'bezig', 'bezig' => 'gereed', 'gereed' => 'open'];
+@endphp
+
 <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-    @if ($tasks->isEmpty())
+    @if ($tasks->isEmpty() && $eventTasks->isEmpty())
         <p class="px-6 py-10 text-center text-sm text-gray-400">Geen open taken gevonden.</p>
     @else
-    @php
-    $priorityColors = ['hoog' => 'bg-red-100 text-red-700', 'normaal' => 'bg-yellow-100 text-yellow-700', 'laag' => 'bg-gray-100 text-gray-500'];
-    $statusColors   = ['open' => 'bg-gray-100 text-gray-600', 'bezig' => 'bg-blue-100 text-blue-700', 'gereed' => 'bg-green-100 text-green-700'];
-    $nextStatus     = ['open' => 'bezig', 'bezig' => 'gereed', 'gereed' => 'open'];
-    @endphp
     <table class="min-w-full divide-y divide-gray-100 text-sm">
         <thead class="bg-gray-50">
             <tr>
                 <th class="px-5 py-3 text-left font-semibold text-gray-600">Taak</th>
                 <th class="px-5 py-3 text-left font-semibold text-gray-600">Toegewezen aan</th>
+                <th class="px-5 py-3 text-left font-semibold text-gray-600">Bron</th>
                 <th class="px-5 py-3 text-left font-semibold text-gray-600">Prioriteit</th>
                 <th class="px-5 py-3 text-left font-semibold text-gray-600">Deadline</th>
                 <th class="px-5 py-3 text-left font-semibold text-gray-600">Status</th>
@@ -54,6 +56,7 @@
             </tr>
         </thead>
         <tbody class="divide-y divide-gray-100">
+            {{-- Standalone + meeting tasks --}}
             @foreach ($tasks as $task)
             <tr class="hover:bg-gray-50">
                 <td class="px-5 py-3">
@@ -69,6 +72,16 @@
                         </span>
                         <span class="text-gray-700">{{ $task->assignedTo->name }}</span>
                     </div>
+                </td>
+                <td class="px-5 py-3">
+                    @if ($task->meeting)
+                        <a href="{{ route('meetings.show', $task->meeting) }}"
+                           class="text-xs bg-purple-50 text-purple-700 px-2 py-0.5 rounded font-medium hover:underline">
+                            {{ Str::limit($task->meeting->title, 25) }}
+                        </a>
+                    @else
+                        <span class="text-xs text-gray-400">Algemeen</span>
+                    @endif
                 </td>
                 <td class="px-5 py-3">
                     <span class="px-2 py-0.5 rounded-full text-xs font-medium {{ $priorityColors[$task->priority] }}">
@@ -90,6 +103,44 @@
                 </td>
                 <td class="px-5 py-3 text-right">
                     <a href="{{ route('tasks.edit', $task) }}" class="text-xs text-bb-green-600 hover:underline font-medium">Bewerken</a>
+                </td>
+            </tr>
+            @endforeach
+
+            {{-- Event tasks (read-only) --}}
+            @foreach ($eventTasks as $task)
+            <tr class="hover:bg-gray-50 bg-orange-50/30">
+                <td class="px-5 py-3">
+                    <div class="font-medium text-gray-900">{{ $task->description }}</div>
+                </td>
+                <td class="px-5 py-3">
+                    <span class="text-gray-700">{{ $task->assigned_to ?: '—' }}</span>
+                </td>
+                <td class="px-5 py-3">
+                    <a href="{{ route('events.show', $task->event) }}"
+                       class="text-xs bg-orange-50 text-orange-700 px-2 py-0.5 rounded font-medium hover:underline">
+                        {{ Str::limit($task->event->title, 25) }}
+                    </a>
+                </td>
+                <td class="px-5 py-3">
+                    <span class="text-xs text-gray-400">—</span>
+                </td>
+                <td class="px-5 py-3 {{ $task->due_date && $task->due_date->isPast() && $task->status !== 'gereed' ? 'text-red-600 font-semibold' : 'text-gray-600' }}">
+                    {{ $task->due_date ? $task->due_date->format('d-m-Y') : '—' }}
+                </td>
+                <td class="px-5 py-3">
+                    <form method="POST" action="{{ route('event-tasks.status', $task) }}">
+                        @csrf @method('PATCH')
+                        @php $etNext = ['open' => 'bezig', 'bezig' => 'gereed', 'gereed' => 'open']; @endphp
+                        <input type="hidden" name="status" value="{{ $etNext[$task->status] }}">
+                        <button type="submit" title="Klik om status te wijzigen"
+                                class="px-2 py-0.5 rounded-full text-xs font-medium cursor-pointer {{ $statusColors[$task->status] }}">
+                            {{ ucfirst($task->status) }}
+                        </button>
+                    </form>
+                </td>
+                <td class="px-5 py-3 text-right">
+                    <a href="{{ route('events.show', $task->event) }}" class="text-xs text-gray-400 hover:underline">evenement</a>
                 </td>
             </tr>
             @endforeach

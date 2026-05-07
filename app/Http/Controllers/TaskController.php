@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\EventTask;
 use App\Models\Task;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
@@ -12,19 +13,36 @@ class TaskController extends Controller
 {
     public function index(Request $request): View
     {
-        $tasks = Task::with(['assignedTo', 'creator'])
+        $tasks = Task::with(['assignedTo', 'creator', 'meeting'])
             ->when($request->status, fn ($q, $s) => $q->where('status', $s))
             ->when($request->user_id, fn ($q, $u) => $q->where('assigned_to_user_id', $u))
             ->when($request->search, fn ($q, $s) => $q->where('title', 'like', "%$s%"))
-            ->whereNot('status', 'gereed')
+            ->when(!$request->status, fn ($q) => $q->whereNot('status', 'gereed'))
             ->orderByRaw("FIELD(priority, 'hoog', 'normaal', 'laag')")
             ->orderBy('due_date')
             ->paginate(25)
             ->withQueryString();
 
+        // Event tasks shown as read-only context
+        $userFilter = $request->user_id
+            ? User::find($request->user_id)?->name
+            : null;
+
+        $eventTasksQuery = EventTask::with('event')
+            ->when(!$request->status || in_array($request->status, ['open','bezig']), fn ($q) => $q->whereIn('status', ['open','bezig']))
+            ->when($request->status === 'gereed', fn ($q) => $q->where('status', 'gereed'))
+            ->when($userFilter, fn ($q, $n) => $q->where('assigned_to', $n))
+            ->when($request->search, fn ($q, $s) => $q->where('description', 'like', "%$s%"));
+
+        if (!$request->status) {
+            $eventTasksQuery->whereNot('status', 'gereed');
+        }
+
+        $eventTasks = $eventTasksQuery->orderBy('due_date')->get();
+
         $users = User::orderBy('name')->get();
 
-        return view('tasks.index', compact('tasks', 'users'));
+        return view('tasks.index', compact('tasks', 'users', 'eventTasks'));
     }
 
     public function create(): View

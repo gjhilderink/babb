@@ -40,6 +40,7 @@ Route::middleware('auth')->group(function () {
         Route::resource('meetings', MeetingController::class);
         Route::post('meetings/{meeting}/notes', [MeetingController::class, 'saveNote'])->name('meetings.notes.save');
         Route::delete('meetings/{meeting}/notes', [MeetingController::class, 'deleteNote'])->name('meetings.notes.delete');
+        Route::post('meetings/{meeting}/tasks', [MeetingController::class, 'storeTask'])->name('meetings.tasks.store');
 
         Route::get('membership-billing', [MembershipBillingController::class, 'index'])->name('membership-billing.index');
         Route::post('membership-billing', [MembershipBillingController::class, 'store'])->name('membership-billing.store');

@@ -12,6 +12,7 @@ class Task extends Model
         'description',
         'assigned_to_user_id',
         'created_by',
+        'meeting_id',
         'due_date',
         'status',
         'priority',
@@ -29,6 +30,11 @@ class Task extends Model
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function meeting(): BelongsTo
+    {
+        return $this->belongsTo(Meeting::class);
     }
 
     public function priorityColor(): string

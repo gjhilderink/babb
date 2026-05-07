@@ -31,6 +31,11 @@ class Meeting extends Model
         return $this->hasMany(MeetingNote::class);
     }
 
+    public function tasks(): HasMany
+    {
+        return $this->hasMany(Task::class);
+    }
+
     public function noteByUser(int $userId): ?MeetingNote
     {
         return $this->notes->firstWhere('user_id', $userId);
