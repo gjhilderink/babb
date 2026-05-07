@@ -15,6 +15,12 @@
                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-bb-green-600">
     </div>
     <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Factuur e-mailadres</label>
+        <input type="email" name="factuur_email" value="{{ old('factuur_email', $member->factuur_email ?? '') }}"
+               placeholder="Leeg = zelfde als e-mailadres"
+               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-bb-green-600">
+    </div>
+    <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">Telefoonnummer</label>
         <input type="text" name="phone" value="{{ old('phone', $member->phone ?? '') }}"
                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-bb-green-600">

@@ -14,6 +14,7 @@ class Member extends Model
         'first_name',
         'last_name',
         'email',
+        'factuur_email',
         'phone',
         'company_name',
         'address',
