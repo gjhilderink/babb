@@ -10,7 +10,7 @@ class Lead extends Model
         'first_name', 'last_name', 'email', 'phone', 'company_name',
         'source', 'status', 'notes',
         'referred_by_member_id', 'referred_by_name',
-        'assigned_to_user_id',
+        'assigned_to_user_id', 'action_required',
         'member_id', 'converted_at',
     ];
 

@@ -45,12 +45,14 @@
                 <span class="px-2 py-0.5 rounded-full text-xs font-medium shrink-0 {{ $lead->statusColor() }}">
                     {{ $lead->statusLabel() }}
                 </span>
-                <a href="{{ route('leads.show', $lead) }}" class="font-medium text-bb-green-700 hover:underline truncate">
-                    {{ $lead->full_name }}
-                </a>
-                @if ($lead->company_name)
-                <span class="text-xs text-gray-400 hidden sm:inline">{{ $lead->company_name }}</span>
-                @endif
+                <div class="min-w-0">
+                    <a href="{{ route('leads.show', $lead) }}" class="font-medium text-bb-green-700 hover:underline">
+                        {{ $lead->full_name }}
+                    </a>
+                    @if ($lead->action_required)
+                    <div class="text-xs text-gray-500 mt-0.5">{{ Str::limit($lead->action_required, 80) }}</div>
+                    @endif
+                </div>
             </div>
             <span class="text-xs text-gray-400 shrink-0">Lead</span>
         </li>

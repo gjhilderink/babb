@@ -92,6 +92,12 @@
                         <dd class="text-gray-400">Niet toegewezen</dd>
                     @endif
                 </div>
+                @if ($lead->action_required)
+                <div>
+                    <dt class="text-gray-500 mb-0.5">Wat moet er geregeld worden</dt>
+                    <dd class="text-sm text-gray-700 whitespace-pre-line">{{ $lead->action_required }}</dd>
+                </div>
+                @endif
                 <div>
                     <dt class="text-gray-500 mb-0.5">Aangemeld op</dt>
                     <dd class="font-medium">{{ $lead->created_at->format('d-m-Y') }}</dd>
@@ -113,6 +119,7 @@
                 <input type="hidden" name="referred_by_member_id" value="{{ $lead->referred_by_member_id }}">
                 <input type="hidden" name="referred_by_name"      value="{{ $lead->referred_by_name }}">
                 <input type="hidden" name="assigned_to_user_id"   value="{{ $lead->assigned_to_user_id }}">
+                <input type="hidden" name="action_required"       value="{{ $lead->action_required }}">
                 <select name="status" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm mb-3">
                     @foreach (['nieuw'=>'Nieuw','contact'=>'In contact','follow_up'=>'Follow-up nodig','gewonnen'=>'Gewonnen','verloren'=>'Verloren'] as $val => $label)
                         <option value="{{ $val }}" @selected($lead->status === $val)>{{ $label }}</option>
