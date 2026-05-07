@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Afdracht extends Model
 {
+    protected $table = 'afdrachten';
+
     protected $fillable = [
         'onderwerp', 'bedrag', 'status', 'datum', 'notities', 'created_by',
     ];
