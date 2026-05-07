@@ -1,5 +1,5 @@
-﻿@extends('layouts.app')
-@section('title', $member->full_name . ' â€” BABB Portaal')
+@extends('layouts.app')
+@section('title', $member->full_name . ' - BABB Portaal')
 
 @section('content')
 <div class="mb-6 flex flex-wrap items-start justify-between gap-3">
@@ -29,14 +29,26 @@
             <h2 class="font-semibold text-gray-800 mb-4">Gegevens</h2>
             <dl class="grid grid-cols-2 gap-4 text-sm">
                 <div><dt class="text-gray-500">E-mail</dt><dd class="font-medium">{{ $member->email }}</dd></div>
-                <div><dt class="text-gray-500">Telefoon</dt><dd class="font-medium">{{ $member->phone ?? 'â€”' }}</dd></div>
-                <div><dt class="text-gray-500">Bedrijf</dt><dd class="font-medium">{{ $member->company_name ?? 'â€”' }}</dd></div>
-                <div><dt class="text-gray-500">Stad</dt><dd class="font-medium">{{ $member->city ?? 'â€”' }}</dd></div>
-                <div><dt class="text-gray-500">Lidmaatschap</dt><dd class="font-medium">{{ $member->membershipType?->name ?? 'â€”' }}</dd></div>
+                @if ($member->factuur_email)
+                <div><dt class="text-gray-500">Factuur e-mail</dt><dd class="font-medium">{{ $member->factuur_email }}</dd></div>
+                @endif
+                <div><dt class="text-gray-500">Telefoon</dt><dd class="font-medium">{{ $member->phone ?: '—' }}</dd></div>
+                <div><dt class="text-gray-500">Bedrijf</dt><dd class="font-medium">{{ $member->company_name ?: '—' }}</dd></div>
+                <div><dt class="text-gray-500">Stad</dt><dd class="font-medium">{{ $member->city ?: '—' }}</dd></div>
+                <div><dt class="text-gray-500">Lidmaatschap</dt><dd class="font-medium">{{ $member->membershipType?->name ?: '—' }}</dd></div>
                 <div><dt class="text-gray-500">Looptijd</dt><dd class="font-medium">
-                    {{ $member->membership_start?->format('d-m-Y') ?? 'â€”' }} t/m {{ $member->membership_end?->format('d-m-Y') ?? 'â€”' }}
+                    {{ $member->membership_start?->format('d-m-Y') ?: '—' }} t/m {{ $member->membership_end?->format('d-m-Y') ?: '—' }}
                 </dd></div>
             </dl>
+            @if ($member->prive_adres || $member->prive_postcode || $member->prive_stad)
+            <div class="mt-4 pt-4 border-t border-gray-100">
+                <dt class="text-gray-500 text-sm mb-1 font-medium">Prive adres</dt>
+                <dd class="text-sm text-gray-700">
+                    {{ $member->prive_adres }}<br>
+                    {{ $member->prive_postcode }} {{ $member->prive_stad }}
+                </dd>
+            </div>
+            @endif
             @if ($member->notes)
             <div class="mt-4 pt-4 border-t border-gray-100">
                 <dt class="text-gray-500 text-sm mb-1">Notities</dt>
@@ -84,5 +96,3 @@
     </div>
 </div>
 @endsection
-
-
