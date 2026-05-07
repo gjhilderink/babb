@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AclController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\DashboardController;
@@ -52,6 +53,8 @@ Route::middleware('auth')->group(function () {
         Route::post('users/{user}/send-welcome', [UserController::class, 'sendWelcome'])->name('users.send-welcome');
         Route::get('settings',  [SettingController::class, 'edit'])->name('settings.edit');
         Route::put('settings',  [SettingController::class, 'update'])->name('settings.update');
+        Route::get('acl',  [AclController::class, 'edit'])->name('acl.edit');
+        Route::put('acl',  [AclController::class, 'update'])->name('acl.update');
     });
 
     Route::get('handleiding', fn () => view('handleiding'))->name('handleiding');

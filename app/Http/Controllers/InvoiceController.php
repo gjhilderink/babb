@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Invoice;
 use App\Models\Member;
 use App\Models\Product;
+use App\Services\AclService;
 use App\Services\InvoiceService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -17,6 +18,8 @@ class InvoiceController extends Controller
 
     public function index(Request $request): View
     {
+        abort_unless(AclService::allowed('invoices.view'), 403);
+
         $invoices = Invoice::with('member')
             ->when($request->search, fn ($q, $s) => $q->where('invoice_number', 'like', "%$s%")
                 ->orWhereHas('member', fn ($q) => $q->where('last_name', 'like', "%$s%")
@@ -32,6 +35,8 @@ class InvoiceController extends Controller
 
     public function create(Request $request): View
     {
+        abort_unless(AclService::allowed('invoices.create'), 403);
+
         $members  = Member::where('status', 'active')->orderBy('last_name')->get();
         $products = Product::where('is_active', true)->orderBy('name')->get();
         $member   = $request->member_id ? Member::find($request->member_id) : null;
@@ -41,6 +46,8 @@ class InvoiceController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        abort_unless(AclService::allowed('invoices.create'), 403);
+
         $data = $request->validate([
             'member_id'  => 'required|exists:members,id',
             'issue_date' => 'required|date',
@@ -61,6 +68,8 @@ class InvoiceController extends Controller
 
     public function show(Invoice $invoice): View
     {
+        abort_unless(AclService::allowed('invoices.view'), 403);
+
         $invoice->load(['member', 'items.product']);
 
         return view('invoices.show', compact('invoice'));
@@ -68,6 +77,7 @@ class InvoiceController extends Controller
 
     public function edit(Invoice $invoice): View
     {
+        abort_unless(AclService::allowed('invoices.edit'), 403);
         abort_if($invoice->status === 'paid', 403, 'Een betaalde factuur kan niet bewerkt worden.');
 
         $members  = Member::where('status', 'active')->orderBy('last_name')->get();
@@ -79,6 +89,7 @@ class InvoiceController extends Controller
 
     public function update(Request $request, Invoice $invoice): RedirectResponse
     {
+        abort_unless(AclService::allowed('invoices.edit'), 403);
         abort_if($invoice->status === 'paid', 403, 'Een betaalde factuur kan niet bewerkt worden.');
 
         $data = $request->validate([
@@ -101,6 +112,7 @@ class InvoiceController extends Controller
 
     public function destroy(Invoice $invoice): RedirectResponse
     {
+        abort_unless(AclService::allowed('invoices.delete'), 403);
         abort_if($invoice->status === 'paid', 403, 'Een betaalde factuur kan niet verwijderd worden.');
 
         $invoice->delete();
@@ -110,6 +122,8 @@ class InvoiceController extends Controller
 
     public function markPaid(Invoice $invoice): RedirectResponse
     {
+        abort_unless(AclService::allowed('invoices.edit'), 403);
+
         $invoice->update(['status' => 'paid', 'paid_at' => now()]);
 
         return back()->with('success', 'Factuur gemarkeerd als betaald.');
@@ -126,6 +140,8 @@ class InvoiceController extends Controller
 
     public function pdf(Invoice $invoice): Response
     {
+        abort_unless(AclService::allowed('invoices.view'), 403);
+
         $invoice->load(['member', 'items.product']);
 
         return $this->invoiceService->generatePdf($invoice);
