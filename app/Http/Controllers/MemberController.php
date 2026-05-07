@@ -14,6 +14,10 @@ class MemberController extends Controller
 {
     public function index(Request $request): View
     {
+        $allowed = ['last_name', 'company_name', 'email', 'status', 'membership_end'];
+        $sort    = in_array($request->sort, $allowed) ? $request->sort : 'last_name';
+        $dir     = $request->dir === 'desc' ? 'desc' : 'asc';
+
         $members = Member::with('membershipType')
             ->when($request->search, fn ($q, $s) => $q->where(function ($q) use ($s) {
                 $q->where('first_name', 'like', "%$s%")
@@ -23,13 +27,13 @@ class MemberController extends Controller
             }))
             ->when($request->status, fn ($q, $s) => $q->where('status', $s))
             ->when($request->membership_type_id, fn ($q, $id) => $q->where('membership_type_id', $id))
-            ->orderBy('last_name')
+            ->orderBy($sort, $dir)
             ->paginate(50)
             ->withQueryString();
 
         $membershipTypes = MembershipType::where('is_active', true)->orderBy('name')->get();
 
-        return view('members.index', compact('members', 'membershipTypes'));
+        return view('members.index', compact('members', 'membershipTypes', 'sort', 'dir'));
     }
 
     public function create(): View

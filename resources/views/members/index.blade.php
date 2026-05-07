@@ -49,13 +49,28 @@
     </form>
 </div>
 
+@php
+    $sortUrl = fn(string $col) => route('members.index', array_merge(request()->except(['sort','dir','page']), [
+        'sort' => $col,
+        'dir'  => ($sort === $col && $dir === 'asc') ? 'desc' : 'asc',
+    ]));
+    $sortIcon = function(string $col) use ($sort, $dir): string {
+        if ($sort !== $col) return '<svg class="w-3 h-3 inline ml-0.5 text-gray-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/></svg>';
+        return $dir === 'asc'
+            ? '<svg class="w-3 h-3 inline ml-0.5 text-bb-green-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"/></svg>'
+            : '<svg class="w-3 h-3 inline ml-0.5 text-bb-green-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>';
+    };
+@endphp
+
 <form method="GET" class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-6 flex flex-wrap gap-3">
+    <input type="hidden" name="sort" value="{{ $sort }}">
+    <input type="hidden" name="dir"  value="{{ $dir }}">
     <input type="text" name="search" value="{{ request('search') }}" placeholder="Zoek op naam, e-mail of bedrijf..."
            class="flex-1 min-w-0 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-bb-green-600">
     <select name="status" class="border border-gray-300 rounded-lg px-3 py-2 text-sm">
         <option value="">Alle statussen</option>
-        <option value="active" @selected(request('status') === 'active')>Actief</option>
-        <option value="inactive" @selected(request('status') === 'inactive')>Inactief</option>
+        <option value="active"    @selected(request('status') === 'active')>Actief</option>
+        <option value="inactive"  @selected(request('status') === 'inactive')>Inactief</option>
         <option value="suspended" @selected(request('status') === 'suspended')>Geschorst</option>
     </select>
     <select name="membership_type_id" class="border border-gray-300 rounded-lg px-3 py-2 text-sm">
@@ -115,12 +130,22 @@
         <table class="min-w-full divide-y divide-gray-200 text-sm">
             <thead class="bg-gray-50">
                 <tr>
-                    <th class="px-4 py-3 text-left font-semibold text-gray-600">Naam</th>
-                    <th class="px-4 py-3 text-left font-semibold text-gray-600 hidden lg:table-cell">E-mail</th>
-                    <th class="px-4 py-3 text-left font-semibold text-gray-600 hidden md:table-cell">Bedrijf</th>
+                    <th class="px-4 py-3 text-left font-semibold text-gray-600">
+                        <a href="{{ $sortUrl('last_name') }}" class="hover:text-gray-900 inline-flex items-center gap-1">Naam {!! $sortIcon('last_name') !!}</a>
+                    </th>
+                    <th class="px-4 py-3 text-left font-semibold text-gray-600 hidden lg:table-cell">
+                        <a href="{{ $sortUrl('email') }}" class="hover:text-gray-900 inline-flex items-center gap-1">E-mail {!! $sortIcon('email') !!}</a>
+                    </th>
+                    <th class="px-4 py-3 text-left font-semibold text-gray-600 hidden md:table-cell">
+                        <a href="{{ $sortUrl('company_name') }}" class="hover:text-gray-900 inline-flex items-center gap-1">Bedrijf {!! $sortIcon('company_name') !!}</a>
+                    </th>
                     <th class="px-4 py-3 text-left font-semibold text-gray-600">Lidmaatschap</th>
-                    <th class="px-4 py-3 text-left font-semibold text-gray-600">Status</th>
-                    <th class="px-4 py-3 text-left font-semibold text-gray-600 hidden lg:table-cell">Verloopt</th>
+                    <th class="px-4 py-3 text-left font-semibold text-gray-600">
+                        <a href="{{ $sortUrl('status') }}" class="hover:text-gray-900 inline-flex items-center gap-1">Status {!! $sortIcon('status') !!}</a>
+                    </th>
+                    <th class="px-4 py-3 text-left font-semibold text-gray-600 hidden lg:table-cell">
+                        <a href="{{ $sortUrl('membership_end') }}" class="hover:text-gray-900 inline-flex items-center gap-1">Verloopt {!! $sortIcon('membership_end') !!}</a>
+                    </th>
                     <th class="px-4 py-3"></th>
                 </tr>
             </thead>
