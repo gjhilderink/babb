@@ -40,7 +40,7 @@ $nextStatus     = ['open' => 'bezig', 'bezig' => 'gereed', 'gereed' => 'open'];
 @endphp
 
 <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-    @if ($tasks->isEmpty() && $eventTasks->isEmpty())
+    @if ($tasks->isEmpty() && $eventTasks->isEmpty() && $leads->isEmpty())
         <p class="px-6 py-10 text-center text-sm text-gray-400">Geen open taken gevonden.</p>
     @else
     <table class="min-w-full divide-y divide-gray-100 text-sm">
@@ -103,6 +103,48 @@ $nextStatus     = ['open' => 'bezig', 'bezig' => 'gereed', 'gereed' => 'open'];
                 </td>
                 <td class="px-5 py-3 text-right">
                     <a href="{{ route('tasks.edit', $task) }}" class="text-xs text-bb-green-600 hover:underline font-medium">Bewerken</a>
+                </td>
+            </tr>
+            @endforeach
+
+            {{-- Lead opvolging (read-only) --}}
+            @foreach ($leads as $lead)
+            <tr class="hover:bg-gray-50 bg-blue-50/20">
+                <td class="px-5 py-3">
+                    <div class="font-medium text-gray-900">
+                        <a href="{{ route('leads.show', $lead) }}" class="hover:text-bb-green-700 hover:underline">
+                            {{ $lead->full_name }}
+                        </a>
+                    </div>
+                    <div class="text-xs text-gray-500 mt-0.5">{{ Str::limit($lead->action_required, 80) }}</div>
+                </td>
+                <td class="px-5 py-3">
+                    @if ($lead->assignedTo)
+                    <div class="flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-full bg-bb-green-600 text-white text-xs font-bold flex items-center justify-center shrink-0">
+                            {{ strtoupper(substr($lead->assignedTo->name, 0, 1)) }}
+                        </span>
+                        <span class="text-gray-700">{{ $lead->assignedTo->name }}</span>
+                    </div>
+                    @else
+                        <span class="text-gray-400">—</span>
+                    @endif
+                </td>
+                <td class="px-5 py-3">
+                    <a href="{{ route('leads.show', $lead) }}"
+                       class="text-xs bg-blue-50 text-blue-700 px-2 py-0.5 rounded font-medium hover:underline">
+                        Lead
+                    </a>
+                </td>
+                <td class="px-5 py-3"><span class="text-xs text-gray-400">—</span></td>
+                <td class="px-5 py-3 text-gray-600">—</td>
+                <td class="px-5 py-3">
+                    <span class="px-2 py-0.5 rounded-full text-xs font-medium {{ $lead->statusColor() }}">
+                        {{ $lead->statusLabel() }}
+                    </span>
+                </td>
+                <td class="px-5 py-3 text-right">
+                    <a href="{{ route('leads.show', $lead) }}" class="text-xs text-gray-400 hover:underline">lead</a>
                 </td>
             </tr>
             @endforeach

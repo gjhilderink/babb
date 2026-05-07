@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\EventTask;
+use App\Models\Lead;
 use App\Models\Task;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
@@ -40,9 +41,24 @@ class TaskController extends Controller
 
         $eventTasks = $eventTasksQuery->orderBy('due_date')->get();
 
+        // Leads with action_required shown as read-only tasks
+        $showGereed = $request->status === 'gereed';
+        $leads = Lead::with('assignedTo')
+            ->whereNotNull('action_required')
+            ->when(!$showGereed, fn ($q) => $q->whereNotIn('status', ['gewonnen', 'verloren']))
+            ->when($showGereed, fn ($q) => $q->whereIn('status', ['gewonnen', 'verloren']))
+            ->when($request->user_id, fn ($q, $u) => $q->where('assigned_to_user_id', $u))
+            ->when($request->search, fn ($q, $s) => $q->where(fn ($q2) =>
+                $q2->where('first_name', 'like', "%$s%")
+                   ->orWhere('last_name', 'like', "%$s%")
+                   ->orWhere('action_required', 'like', "%$s%")
+            ))
+            ->orderBy('updated_at', 'desc')
+            ->get();
+
         $users = User::orderBy('name')->get();
 
-        return view('tasks.index', compact('tasks', 'users', 'eventTasks'));
+        return view('tasks.index', compact('tasks', 'users', 'eventTasks', 'leads'));
     }
 
     public function create(): View
