@@ -12,16 +12,18 @@ class SettingController extends Controller
     public function edit(): View
     {
         return view('settings.edit', [
-            'logo'       => Setting::get('logo'),
-            'background' => Setting::get('background'),
+            'logo'         => Setting::get('logo'),
+            'background'   => Setting::get('background'),
+            'invoice_logo' => Setting::get('invoice_logo'),
         ]);
     }
 
     public function update(Request $request): RedirectResponse
     {
         $request->validate([
-            'logo'       => 'nullable|image|max:2048',
-            'background' => 'nullable|image|max:5120',
+            'logo'          => 'nullable|image|max:2048',
+            'background'    => 'nullable|image|max:5120',
+            'invoice_logo'  => 'nullable|image|max:2048',
         ]);
 
         if ($request->hasFile('logo')) {
@@ -44,6 +46,17 @@ class SettingController extends Controller
         if ($request->boolean('remove_background')) {
             $this->deleteFile(Setting::get('background'));
             Setting::set('background', null);
+        }
+
+        if ($request->hasFile('invoice_logo')) {
+            $this->deleteFile(Setting::get('invoice_logo'));
+            $path = $this->storeFile($request->file('invoice_logo'), 'invoice_logo');
+            Setting::set('invoice_logo', $path);
+        }
+
+        if ($request->boolean('remove_invoice_logo')) {
+            $this->deleteFile(Setting::get('invoice_logo'));
+            Setting::set('invoice_logo', null);
         }
 
         return back()->with('success', 'Instellingen opgeslagen.');

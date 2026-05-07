@@ -60,6 +60,31 @@
         <p class="text-xs text-gray-400 mt-1">JPG of PNG — max. 5 MB. Gebruik een rustige afbeelding voor leesbaarheid.</p>
     </div>
 
+    {{-- Factuur logo --}}
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <h2 class="font-semibold text-gray-800 mb-4">Logo op facturen</h2>
+        <p class="text-sm text-gray-500 mb-4">
+            Wordt links bovenin op de PDF-factuur getoond. Aanbevolen: PNG of JPG, max. 400&times;120 px.
+        </p>
+
+        @if ($invoice_logo)
+        <div class="mb-4 flex items-center gap-4">
+            <img src="{{ asset($invoice_logo) }}" alt="Huidig factuurlogo" class="h-12 object-contain bg-gray-50 border border-gray-200 rounded px-3 py-1">
+            <label class="flex items-center gap-2 text-sm text-bb-red-600 cursor-pointer">
+                <input type="checkbox" name="remove_invoice_logo" value="1" class="rounded border-gray-300">
+                Logo verwijderen
+            </label>
+        </div>
+        @endif
+
+        <label class="block text-sm font-medium text-gray-700 mb-1">
+            {{ $invoice_logo ? 'Nieuw factuurlogo uploaden' : 'Factuurlogo uploaden' }}
+        </label>
+        <input type="file" name="invoice_logo" accept="image/*"
+               class="block w-full text-sm text-gray-600 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-bb-red-600 file:text-white hover:file:bg-bb-red-700 cursor-pointer">
+        <p class="text-xs text-gray-400 mt-1">JPG, PNG of SVG — max. 2 MB</p>
+    </div>
+
     <div>
         <button type="submit" class="bg-bb-green-600 hover:bg-bb-green-700 text-white text-sm font-medium px-6 py-2 rounded-lg">
             Instellingen opslaan

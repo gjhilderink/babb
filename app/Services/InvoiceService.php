@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
+use App\Models\Setting;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Response;
 
@@ -44,7 +45,17 @@ class InvoiceService
 
     public function generatePdf(Invoice $invoice): Response
     {
-        $pdf = Pdf::loadView('invoices.pdf', compact('invoice'));
+        $invoiceLogoBase64 = null;
+        $logoPath = Setting::get('invoice_logo');
+        if ($logoPath) {
+            $fullPath = public_path($logoPath);
+            if (file_exists($fullPath)) {
+                $mime = mime_content_type($fullPath);
+                $invoiceLogoBase64 = 'data:' . $mime . ';base64,' . base64_encode(file_get_contents($fullPath));
+            }
+        }
+
+        $pdf = Pdf::loadView('invoices.pdf', compact('invoice', 'invoiceLogoBase64'));
 
         return $pdf->download("factuur-{$invoice->invoice_number}.pdf");
     }

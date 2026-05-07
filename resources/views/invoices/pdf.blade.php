@@ -7,6 +7,7 @@
         body { font-family: DejaVu Sans, sans-serif; font-size: 12px; color: #1f2937; }
         .header { display: flex; justify-content: space-between; margin-bottom: 32px; }
         .logo { font-size: 22px; font-weight: bold; color: #4f46e5; }
+        .logo img { max-height: 60px; max-width: 200px; }
         .invoice-meta { text-align: right; }
         .invoice-meta h2 { font-size: 20px; font-weight: bold; margin: 0 0 8px; }
         .parties { display: flex; justify-content: space-between; margin-bottom: 32px; }
@@ -23,7 +24,13 @@
 </head>
 <body>
     <div class="header">
-        <div class="logo">BABB Portaal</div>
+        <div class="logo">
+            @if ($invoiceLogoBase64)
+                <img src="{{ $invoiceLogoBase64 }}" alt="Logo">
+            @else
+                BABB Portaal
+            @endif
+        </div>
         <div class="invoice-meta">
             <h2>FACTUUR</h2>
             <div>{{ $invoice->invoice_number }}</div>
