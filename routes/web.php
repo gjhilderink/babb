@@ -57,6 +57,7 @@ Route::middleware('auth')->group(function () {
         Route::resource('leads', LeadController::class);
         Route::get('leads/{lead}/convert',  [LeadController::class, 'convertForm'])->name('leads.convert-form');
         Route::post('leads/{lead}/convert', [LeadController::class, 'convert'])->name('leads.convert');
+        Route::patch('leads/{lead}/status', [LeadController::class, 'updateStatus'])->name('leads.status');
     });
 
     Route::middleware('role:admin')->group(function () {

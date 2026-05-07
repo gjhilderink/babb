@@ -80,6 +80,13 @@ class LeadController extends Controller
         return redirect()->route('leads.index')->with('success', 'Lead verwijderd.');
     }
 
+    public function updateStatus(Request $request, Lead $lead): RedirectResponse
+    {
+        $request->validate(['status' => 'required|in:nieuw,contact,follow_up,gewonnen,verloren']);
+        $lead->update(['status' => $request->status]);
+        return back()->with('success', 'Lead status bijgewerkt.');
+    }
+
     public function convertForm(Lead $lead): View
     {
         if ($lead->isConverted()) {

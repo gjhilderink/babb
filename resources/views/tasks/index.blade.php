@@ -146,9 +146,17 @@ $nextStatus     = ['open' => 'bezig', 'bezig' => 'gereed', 'gereed' => 'open'];
                 <td class="px-5 py-3"><span class="text-xs text-gray-400">—</span></td>
                 <td class="px-5 py-3 text-gray-600">—</td>
                 <td class="px-5 py-3">
-                    <span class="px-2 py-0.5 rounded-full text-xs font-medium {{ $lead->statusColor() }}">
-                        {{ $lead->statusLabel() }}
-                    </span>
+                    <form method="POST" action="{{ route('leads.status', $lead) }}">
+                        @csrf @method('PATCH')
+                        <select name="status" onchange="this.form.submit()"
+                                class="text-xs font-medium rounded-full px-2 py-0.5 border-0 cursor-pointer focus:outline-none {{ $lead->statusColor() }}">
+                            <option value="nieuw"      @selected($lead->status === 'nieuw')>Nieuw</option>
+                            <option value="contact"    @selected($lead->status === 'contact')>In contact</option>
+                            <option value="follow_up"  @selected($lead->status === 'follow_up')>Follow-up</option>
+                            <option value="gewonnen"   @selected($lead->status === 'gewonnen')>Gewonnen</option>
+                            <option value="verloren"   @selected($lead->status === 'verloren')>Verloren</option>
+                        </select>
+                    </form>
                 </td>
                 <td class="px-5 py-3 text-right">
                     <a href="{{ route('leads.show', $lead) }}" class="text-xs text-gray-400 hover:underline">lead</a>
@@ -189,12 +197,12 @@ $nextStatus     = ['open' => 'bezig', 'bezig' => 'gereed', 'gereed' => 'open'];
                 <td class="px-5 py-3">
                     <form method="POST" action="{{ route('event-tasks.status', $task) }}">
                         @csrf @method('PATCH')
-                        @php $etNext = ['open' => 'bezig', 'bezig' => 'gereed', 'gereed' => 'open']; @endphp
-                        <input type="hidden" name="status" value="{{ $etNext[$task->status] }}">
-                        <button type="submit" title="Klik om status te wijzigen"
-                                class="px-2 py-0.5 rounded-full text-xs font-medium cursor-pointer {{ $statusColors[$task->status] }}">
-                            {{ ucfirst($task->status) }}
-                        </button>
+                        <select name="status" onchange="this.form.submit()"
+                                class="text-xs font-medium rounded-full px-2 py-0.5 border-0 cursor-pointer focus:outline-none {{ $statusColors[$task->status] }}">
+                            <option value="open"   @selected($task->status === 'open')>Open</option>
+                            <option value="bezig"  @selected($task->status === 'bezig')>Bezig</option>
+                            <option value="gereed" @selected($task->status === 'gereed')>Gereed</option>
+                        </select>
                     </form>
                 </td>
                 <td class="px-5 py-3 text-right">
