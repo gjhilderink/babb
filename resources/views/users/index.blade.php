@@ -18,6 +18,7 @@
                 <th class="px-4 py-3 text-left font-semibold text-gray-600">E-mailadres</th>
                 <th class="px-4 py-3 text-left font-semibold text-gray-600">Rol</th>
                 <th class="px-4 py-3 text-left font-semibold text-gray-600">Aangemaakt</th>
+                <th class="px-4 py-3 text-left font-semibold text-gray-600">Laatste login</th>
                 <th class="px-4 py-3"></th>
             </tr>
         </thead>
@@ -40,6 +41,9 @@
                     </span>
                 </td>
                 <td class="px-4 py-3 text-gray-500">{{ $user->created_at->format('d-m-Y') }}</td>
+                <td class="px-4 py-3 text-gray-500">
+                    {{ $user->last_login_at ? $user->last_login_at->format('d-m-Y H:i') : '—' }}
+                </td>
                 <td class="px-4 py-3 text-right whitespace-nowrap">
                     <div class="flex justify-end gap-3">
                         <a href="{{ route('users.edit', $user) }}"
