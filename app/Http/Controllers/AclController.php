@@ -24,10 +24,12 @@ class AclController extends Controller
         $allKeys = AclService::allKeys();
         $roles   = ['bestuur', 'gebruiker'];
 
+        $aclInput = $request->input('acl', []);
+
         $acl = [];
         foreach ($roles as $role) {
             foreach ($allKeys as $key) {
-                $acl[$role][$key] = (bool) $request->input("acl.{$role}.{$key}", false);
+                $acl[$role][$key] = isset($aclInput[$role][$key]);
             }
         }
 
