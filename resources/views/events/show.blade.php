@@ -183,14 +183,15 @@
                             <form method=”POST” action=”{{ route('event-costs.receipt', $cost) }}”
                                   enctype=”multipart/form-data” id=”receipt-form-{{ $cost->id }}”>
                                 @csrf
-                                <label for=”receipt-{{ $cost->id }}”
-                                       class=”cursor-pointer text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium px-3 py-1.5 rounded border border-gray-300 inline-block”>
-                                    Bestand kiezen
-                                </label>
                                 <input type=”file” id=”receipt-{{ $cost->id }}” name=”receipt”
                                        accept=”.pdf,.jpg,.jpeg,.png”
-                                       style=”position:absolute;width:1px;height:1px;overflow:hidden;opacity:0”
+                                       style=”display:none”
                                        onchange=”document.getElementById('receipt-form-{{ $cost->id }}').submit()”>
+                                <button type=”button”
+                                        onclick=”document.getElementById('receipt-{{ $cost->id }}').click()”
+                                        style=”font-size:0.75rem;background:#f3f4f6;color:#374151;font-weight:500;padding:3px 10px;border-radius:6px;border:1px solid #d1d5db;cursor:pointer;white-space:nowrap”>
+                                    &#8593; Uploaden
+                                </button>
                             </form>
                             @endif
                         </td>
