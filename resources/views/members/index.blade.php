@@ -100,6 +100,12 @@
 
 {{-- Desktop table --}}
 <div class="hidden sm:block bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+<div class="px-4 py-2 border-b border-gray-100 text-xs text-gray-500">
+    {{ $members->total() }} {{ $members->total() === 1 ? 'lid' : 'leden' }} gevonden
+    @if ($members->total() > $members->perPage())
+        &mdash; pagina {{ $members->currentPage() }} van {{ $members->lastPage() }}
+    @endif
+</div>
     <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200 text-sm">
             <thead class="bg-gray-50">
