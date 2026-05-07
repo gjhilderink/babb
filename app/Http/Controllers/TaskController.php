@@ -41,10 +41,10 @@ class TaskController extends Controller
 
         $eventTasks = $eventTasksQuery->orderBy('due_date')->get();
 
-        // Leads with action_required shown as read-only tasks
+        // Leads assigned to someone = opvolging taak for that person
         $showGereed = $request->status === 'gereed';
         $leads = Lead::with('assignedTo')
-            ->whereNotNull('action_required')
+            ->whereNotNull('assigned_to_user_id')
             ->when(!$showGereed, fn ($q) => $q->whereNotIn('status', ['gewonnen', 'verloren']))
             ->when($showGereed, fn ($q) => $q->whereIn('status', ['gewonnen', 'verloren']))
             ->when($request->user_id, fn ($q, $u) => $q->where('assigned_to_user_id', $u))
