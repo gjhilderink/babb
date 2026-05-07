@@ -156,7 +156,16 @@ $nextStatus     = ['open' => 'bezig', 'bezig' => 'gereed', 'gereed' => 'open'];
                     <div class="font-medium text-gray-900">{{ $task->description }}</div>
                 </td>
                 <td class="px-5 py-3">
-                    <span class="text-gray-700">{{ $task->assigned_to ?: '—' }}</span>
+                    @if ($task->assigned_to)
+                    <div class="flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-full bg-bb-green-600 text-white text-xs font-bold flex items-center justify-center shrink-0">
+                            {{ strtoupper(substr($task->assigned_to, 0, 1)) }}
+                        </span>
+                        <span class="text-gray-700">{{ $task->assigned_to }}</span>
+                    </div>
+                    @else
+                        <span class="text-gray-400">—</span>
+                    @endif
                 </td>
                 <td class="px-5 py-3">
                     <a href="{{ route('events.show', $task->event) }}"

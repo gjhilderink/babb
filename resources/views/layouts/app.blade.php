@@ -88,7 +88,7 @@
                     Pakketten
                 </a>
                 <a href="{{ route('members.index') }}"
-                   class="px-3 py-2 rounded text-sm font-medium transition-colors {{ request()->routeIs('members*') ? 'bg-bb-green-700 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700' }}">
+                   class="px-3 py-2 rounded text-sm font-medium transition-colors {{ request()->routeIs('members.*') ? 'bg-bb-green-700 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700' }}">
                     Leden
                 </a>
                 <a href="{{ route('leads.index') }}"
@@ -218,7 +218,7 @@
                 Pakketten
             </a>
             <a href="{{ route('members.index') }}" @click="open=false"
-               class="block px-3 py-2 rounded text-sm font-medium {{ request()->routeIs('members*') ? 'bg-bb-green-700 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700' }}">
+               class="block px-3 py-2 rounded text-sm font-medium {{ request()->routeIs('members.*') ? 'bg-bb-green-700 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700' }}">
                 Leden
             </a>
             <a href="{{ route('leads.index') }}" @click="open=false"
