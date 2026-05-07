@@ -51,7 +51,7 @@
                     <dt class="text-gray-500 mb-1">Datum</dt>
                     <dd class="font-medium">{{ $event->event_date->format('d-m-Y') }}</dd>
                     <dd class="text-gray-500">{{ $event->event_date->format('H:i') }}
-                        @if ($event->event_end) â€” {{ $event->event_end->format('H:i') }} @endif
+                        @if ($event->event_end) – {{ $event->event_end->format('H:i') }} @endif
                     </dd>
                 </div>
                 @if ($event->location)
@@ -184,17 +184,18 @@
                                 </form>
                             </div>
                             @else
-                            <label class=”inline-flex items-center gap-1.5 cursor-pointer text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 px-2 py-1 rounded”>
-                                <svg class=”w-3.5 h-3.5” fill=”none” stroke=”currentColor” stroke-width=”2” viewBox=”0 0 24 24”><path stroke-linecap=”round” stroke-linejoin=”round” d=”M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12”/></svg>
-                                Uploaden
-                                <form method=”POST” action=”{{ route('event-costs.receipt', $cost) }}”
-                                      enctype=”multipart/form-data” id=”receipt-form-{{ $cost->id }}”>
-                                    @csrf
-                                    <input type=”file” name=”receipt” accept=”.pdf,.jpg,.jpeg,.png”
-                                           class=”hidden”
-                                           onchange=”document.getElementById('receipt-form-{{ $cost->id }}').submit()”>
-                                </form>
-                            </label>
+                            <form method=”POST” action=”{{ route('event-costs.receipt', $cost) }}”
+                                  enctype=”multipart/form-data” id=”receipt-form-{{ $cost->id }}”>
+                                @csrf
+                                <label for=”receipt-{{ $cost->id }}”
+                                       class=”inline-flex items-center gap-1.5 cursor-pointer text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 px-2 py-1.5 rounded whitespace-nowrap”>
+                                    <svg class=”w-3.5 h-3.5 shrink-0” fill=”none” stroke=”currentColor” stroke-width=”2” viewBox=”0 0 24 24”><path stroke-linecap=”round” stroke-linejoin=”round” d=”M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12”/></svg>
+                                    Uploaden
+                                </label>
+                                <input type=”file” id=”receipt-{{ $cost->id }}” name=”receipt”
+                                       accept=”.pdf,.jpg,.jpeg,.png” class=”hidden”
+                                       onchange=”document.getElementById('receipt-form-{{ $cost->id }}').submit()”>
+                            </form>
                             @endif
                         </td>
                     </tr>
