@@ -103,16 +103,16 @@
                    class="px-3 py-2 rounded text-sm font-medium transition-colors {{ request()->routeIs('meetings*') ? 'bg-bb-green-700 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700' }}">
                     Vergaderingen
                 </a>
-                @if(\App\Services\AclService::allowed('invoices.view'))
-                <a href="{{ route('invoices.index') }}"
-                   class="px-3 py-2 rounded text-sm font-medium transition-colors {{ request()->routeIs('invoices*') ? 'bg-bb-green-700 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700' }}">
-                    Facturen
-                </a>
-                @endif
                 @if(\App\Services\AclService::allowed('membership_billing'))
                 <a href="{{ route('membership-billing.index') }}"
                    class="px-3 py-2 rounded text-sm font-medium transition-colors {{ request()->routeIs('membership-billing*') ? 'bg-bb-green-700 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700' }}">
                     Factureren
+                </a>
+                @endif
+                @if(\App\Services\AclService::allowed('invoices.view'))
+                <a href="{{ route('invoices.index') }}"
+                   class="px-3 py-2 rounded text-sm font-medium transition-colors {{ request()->routeIs('invoices*') ? 'bg-bb-green-700 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700' }}">
+                    Facturen
                 </a>
                 @endif
                 @endif
@@ -214,16 +214,16 @@
                class="block px-3 py-2 rounded text-sm font-medium {{ request()->routeIs('meetings*') ? 'bg-bb-green-700 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700' }}">
                 Vergaderingen
             </a>
-            @if(\App\Services\AclService::allowed('invoices.view'))
-            <a href="{{ route('invoices.index') }}" @click="open=false"
-               class="block px-3 py-2 rounded text-sm font-medium {{ request()->routeIs('invoices*') ? 'bg-bb-green-700 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700' }}">
-                Facturen
-            </a>
-            @endif
             @if(\App\Services\AclService::allowed('membership_billing'))
             <a href="{{ route('membership-billing.index') }}" @click="open=false"
                class="block px-3 py-2 rounded text-sm font-medium {{ request()->routeIs('membership-billing*') ? 'bg-bb-green-700 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700' }}">
                 Factureren
+            </a>
+            @endif
+            @if(\App\Services\AclService::allowed('invoices.view'))
+            <a href="{{ route('invoices.index') }}" @click="open=false"
+               class="block px-3 py-2 rounded text-sm font-medium {{ request()->routeIs('invoices*') ? 'bg-bb-green-700 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700' }}">
+                Facturen
             </a>
             @endif
             @endif
