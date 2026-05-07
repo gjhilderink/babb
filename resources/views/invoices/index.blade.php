@@ -1,5 +1,5 @@
 ﻿@extends('layouts.app')
-@section('title', 'Facturen — BABB Portaal')
+@section('title', 'Facturen &mdash; BABB Portaal')
 
 @section('content')
 <div class="flex flex-wrap justify-between items-center gap-3 mb-6">

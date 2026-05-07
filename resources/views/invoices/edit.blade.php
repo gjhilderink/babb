@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Factuur bewerken — BABB Portaal')
+@section('title', 'Factuur bewerken &mdash; BABB Portaal')
 
 @section('content')
 <div class="mb-6 flex items-center gap-3">
@@ -18,10 +18,10 @@
                     <div class="md:col-span-2">
                         <label class="block text-sm font-medium text-gray-700 mb-1">Lid <span class="text-red-500">*</span></label>
                         <select name="member_id" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
-                            <option value="">— Selecteer lid —</option>
+                            <option value="">&mdash; Selecteer lid &mdash;</option>
                             @foreach ($members as $m)
                                 <option value="{{ $m->id }}" @selected(old('member_id', $invoice->member_id) == $m->id)>
-                                    {{ $m->full_name }}{{ $m->company_name ? ' — '.$m->company_name : '' }}
+                                    {{ $m->full_name }}{{ $m->company_name ? ' &mdash; '.$m->company_name : '' }}
                                 </option>
                             @endforeach
                         </select>
@@ -53,7 +53,7 @@
                         <div class="col-span-12 md:col-span-5">
                             <select :name="`items[${index}][product_id]`" class="w-full border border-gray-300 rounded-lg px-2 py-2 text-sm"
                                     @change="fillFromProduct(index, $event)">
-                                <option value="">— Vrije regel —</option>
+                                <option value="">&mdash; Vrije regel &mdash;</option>
                                 @foreach ($products as $p)
                                     <option value="{{ $p->id }}" data-price="{{ $p->price }}" data-tax="{{ $p->tax_rate }}" data-name="{{ $p->name }}">
                                         {{ $p->name }} (€ {{ number_format($p->price, 2, ',', '.') }})

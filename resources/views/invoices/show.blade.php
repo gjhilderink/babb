@@ -1,5 +1,5 @@
 ﻿@extends('layouts.app')
-@section('title', $invoice->invoice_number . ' — BABB Portaal')
+@section('title', $invoice->invoice_number . ' &mdash; BABB Portaal')
 
 @section('content')
 <div class="mb-6 flex flex-wrap items-start justify-between gap-3">
