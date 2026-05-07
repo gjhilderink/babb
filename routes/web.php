@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AclController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\ImpersonateController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InvoiceController;
@@ -51,11 +52,14 @@ Route::middleware('auth')->group(function () {
     Route::middleware('role:admin')->group(function () {
         Route::resource('users', UserController::class)->except('show');
         Route::post('users/{user}/send-welcome', [UserController::class, 'sendWelcome'])->name('users.send-welcome');
+        Route::post('users/{user}/impersonate', [ImpersonateController::class, 'start'])->name('users.impersonate');
         Route::get('settings',  [SettingController::class, 'edit'])->name('settings.edit');
         Route::put('settings',  [SettingController::class, 'update'])->name('settings.update');
         Route::get('acl',  [AclController::class, 'edit'])->name('acl.edit');
         Route::put('acl',  [AclController::class, 'update'])->name('acl.update');
     });
+
+    Route::post('impersonate/stop', [ImpersonateController::class, 'stop'])->name('impersonate.stop')->middleware('auth');
 
     Route::get('handleiding', fn () => view('handleiding'))->name('handleiding');
 });

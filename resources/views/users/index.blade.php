@@ -49,6 +49,13 @@
                             @csrf
                             <button class="text-xs text-blue-600 hover:underline font-medium">Welkomstmail</button>
                         </form>
+                        @if (!$user->isAdmin() && !session('impersonator_id'))
+                        <form method="POST" action="{{ route('users.impersonate', $user) }}"
+                              onsubmit="return confirm('Inloggen als {{ $user->name }}?')">
+                            @csrf
+                            <button class="text-xs text-purple-600 hover:underline font-medium">Login als</button>
+                        </form>
+                        @endif
                         @if ($user->id !== auth()->id())
                         <form method="POST" action="{{ route('users.destroy', $user) }}" onsubmit="return confirm('Gebruiker verwijderen?')">
                             @csrf @method('DELETE')
