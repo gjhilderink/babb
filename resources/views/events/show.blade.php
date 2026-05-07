@@ -137,11 +137,8 @@
                           onsubmit="return confirm('Declaratie mailen naar visionair.babb@mailtobasecone.com?')">
                         @csrf
                         <button type="submit"
-                                class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium px-3 py-1.5 rounded-lg flex items-center gap-1">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                            </svg>
-                            Declaratie mailen
+                                class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium px-3 py-1.5 rounded-lg">
+                            ✉ Declaratie mailen
                         </button>
                     </form>
                     @endif
@@ -169,18 +166,17 @@
                         <td class=”px-4 py-3 text-right font-medium”>&euro; {{ number_format($cost->amount, 2, ',', '.') }}</td>
                         <td class=”px-4 py-3 text-gray-600”>{{ $cost->paid_by ?: '—' }}</td>
                         <td class=”px-4 py-3 text-gray-600”>{{ $cost->paid_at ? $cost->paid_at->format('d-m-Y') : '—' }}</td>
-                        <td class=”px-4 py-3 min-w-[160px]”>
+                        <td class=”px-4 py-3”>
                             @if ($cost->receipt_path)
-                            <div class=”flex items-center gap-2”>
+                            <div class=”flex items-center gap-2 flex-wrap”>
                                 <a href=”{{ asset($cost->receipt_path) }}” target=”_blank”
-                                   class=”inline-flex items-center gap-1 text-xs bg-blue-50 text-blue-700 hover:bg-blue-100 font-medium px-2 py-1 rounded”>
-                                    <svg class=”w-3 h-3” fill=”none” stroke=”currentColor” stroke-width=”2” viewBox=”0 0 24 24”><path stroke-linecap=”round” stroke-linejoin=”round” d=”M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13”/></svg>
+                                   class=”text-xs bg-blue-50 text-blue-700 hover:bg-blue-100 font-medium px-2 py-1 rounded”>
                                     Bekijken
                                 </a>
                                 <form method=”POST” action=”{{ route('event-costs.receipt.delete', $cost) }}”
                                       onsubmit=”return confirm('Bijlage verwijderen?')”>
                                     @csrf @method('DELETE')
-                                    <button class=”text-xs text-red-500 hover:text-red-700”>&times; Verwijderen</button>
+                                    <button type=”submit” class=”text-xs text-red-500 hover:text-red-700 px-1”>Verwijderen</button>
                                 </form>
                             </div>
                             @else
@@ -188,12 +184,12 @@
                                   enctype=”multipart/form-data” id=”receipt-form-{{ $cost->id }}”>
                                 @csrf
                                 <label for=”receipt-{{ $cost->id }}”
-                                       class=”inline-flex items-center gap-1.5 cursor-pointer text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 px-2 py-1.5 rounded whitespace-nowrap”>
-                                    <svg class=”w-3.5 h-3.5 shrink-0” fill=”none” stroke=”currentColor” stroke-width=”2” viewBox=”0 0 24 24”><path stroke-linecap=”round” stroke-linejoin=”round” d=”M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12”/></svg>
-                                    Uploaden
+                                       class=”cursor-pointer text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium px-3 py-1.5 rounded border border-gray-300 inline-block”>
+                                    Bestand kiezen
                                 </label>
                                 <input type=”file” id=”receipt-{{ $cost->id }}” name=”receipt”
-                                       accept=”.pdf,.jpg,.jpeg,.png” class=”hidden”
+                                       accept=”.pdf,.jpg,.jpeg,.png”
+                                       style=”position:absolute;width:1px;height:1px;overflow:hidden;opacity:0”
                                        onchange=”document.getElementById('receipt-form-{{ $cost->id }}').submit()”>
                             </form>
                             @endif
