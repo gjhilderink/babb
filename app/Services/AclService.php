@@ -43,7 +43,7 @@ class AclService
      */
     public static function allKeys(): array
     {
-        return array_merge(...array_map('array_keys', static::permissions()));
+        return array_merge(...array_values(array_map('array_keys', static::permissions())));
     }
 
     /**
