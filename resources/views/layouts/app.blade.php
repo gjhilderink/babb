@@ -64,7 +64,7 @@
     <div class="w-1/2 bg-bb-green-600"></div>
 </div>
 
-<nav class="bg-gray-900 shadow-lg" x-data="{ open: false, admin: false }">
+<nav class="bg-gray-900 shadow-lg" x-data="{ open: false, admin: false, billing: false }">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16 items-center">
             {{-- Logo --}}
