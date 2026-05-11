@@ -65,6 +65,20 @@
     <div class="w-1/2 bg-bb-green-600"></div>
 </div>
 
+@php
+    $myOpenTaskCount = auth()->check()
+        ? \App\Models\Task::where('assigned_to_user_id', auth()->id())
+            ->whereIn('status', ['open', 'bezig'])
+            ->count()
+        : 0;
+    $myOverdueTaskCount = auth()->check()
+        ? \App\Models\Task::where('assigned_to_user_id', auth()->id())
+            ->whereIn('status', ['open', 'bezig'])
+            ->whereNotNull('due_date')
+            ->where('due_date', '<', now()->startOfDay())
+            ->count()
+        : 0;
+@endphp
 <nav class="bg-gray-900 shadow-lg" x-data="{ open: false, admin: false, billing: false }">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16 items-center">
@@ -107,8 +121,13 @@
                 </a>
                 @endif
                 <a href="{{ route('tasks.index') }}"
-                   class="px-3 py-2 rounded text-sm font-medium transition-colors {{ request()->routeIs('tasks*') ? 'bg-bb-green-700 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700' }}">
+                   class="px-3 py-2 rounded text-sm font-medium transition-colors flex items-center gap-1.5 {{ request()->routeIs('tasks*') ? 'bg-bb-green-700 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700' }}">
                     Taken
+                    @if ($myOpenTaskCount > 0)
+                        <span class="inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full text-xs font-bold leading-none {{ $myOverdueTaskCount > 0 ? 'bg-red-500 text-white' : 'bg-bb-green-500 text-white' }}">
+                            {{ $myOpenTaskCount }}
+                        </span>
+                    @endif
                 </a>
                 @if(\App\Services\AclService::allowed('membership_billing') || \App\Services\AclService::allowed('invoices.view'))
                 <div class="relative" x-data @click.outside="billing=false">
@@ -241,8 +260,13 @@
             </a>
             @endif
             <a href="{{ route('tasks.index') }}" @click="open=false"
-               class="block px-3 py-2 rounded text-sm font-medium {{ request()->routeIs('tasks*') ? 'bg-bb-green-700 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700' }}">
-                Taken
+               class="flex items-center justify-between px-3 py-2 rounded text-sm font-medium {{ request()->routeIs('tasks*') ? 'bg-bb-green-700 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700' }}">
+                <span>Taken</span>
+                @if ($myOpenTaskCount > 0)
+                    <span class="inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full text-xs font-bold leading-none {{ $myOverdueTaskCount > 0 ? 'bg-red-500 text-white' : 'bg-bb-green-500 text-white' }}">
+                        {{ $myOpenTaskCount }}
+                    </span>
+                @endif
             </a>
             @if(\App\Services\AclService::allowed('membership_billing') || \App\Services\AclService::allowed('invoices.view'))
             <p class="px-3 pt-2 pb-0.5 text-xs font-semibold text-gray-500 uppercase tracking-wide">Financieel</p>
