@@ -133,7 +133,7 @@
                 <div class="relative" x-data @click.outside="billing=false">
                     <button @click="billing=!billing"
                             class="px-3 py-2 rounded text-sm font-medium transition-colors flex items-center gap-1
-                                {{ request()->routeIs('membership-billing*','invoices*','afdrachten*') ? 'bg-bb-green-700 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700' }}">
+                                {{ request()->routeIs('membership-billing*','invoices*','afdrachten*','declaraties*') ? 'bg-bb-green-700 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700' }}">
                         Financieel
                         <svg class="w-3.5 h-3.5 transition-transform" :class="billing ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
                     </button>
@@ -154,6 +154,10 @@
                         <a href="{{ route('afdrachten.index') }}" @click="billing=false"
                            class="block px-4 py-2 text-sm {{ request()->routeIs('afdrachten*') ? 'text-white bg-bb-green-700' : 'text-gray-300 hover:text-white hover:bg-gray-700' }}">
                             Afdracht Bonboys
+                        </a>
+                        <a href="{{ route('declaraties.index') }}" @click="billing=false"
+                           class="block px-4 py-2 text-sm {{ request()->routeIs('declaraties*') ? 'text-white bg-bb-green-700' : 'text-gray-300 hover:text-white hover:bg-gray-700' }}">
+                            Overige kosten
                         </a>
                     </div>
                 </div>
@@ -285,6 +289,10 @@
             <a href="{{ route('afdrachten.index') }}" @click="open=false"
                class="block px-4 py-2 rounded text-sm font-medium {{ request()->routeIs('afdrachten*') ? 'bg-bb-green-700 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700' }}">
                 Afdracht Bonboys
+            </a>
+            <a href="{{ route('declaraties.index') }}" @click="open=false"
+               class="block px-4 py-2 rounded text-sm font-medium {{ request()->routeIs('declaraties*') ? 'bg-bb-green-700 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700' }}">
+                Overige kosten
             </a>
             @endif
             @endif

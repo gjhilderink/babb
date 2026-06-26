@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AclController;
 use App\Http\Controllers\AfdrachtenController;
+use App\Http\Controllers\DeclaratiesController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\ImpersonateController;
 use App\Http\Controllers\EventController;
@@ -49,6 +50,10 @@ Route::middleware('auth')->group(function () {
 
         Route::resource('afdrachten', AfdrachtenController::class)->except('show');
         Route::patch('afdrachten/{afdracht}/status', [AfdrachtenController::class, 'updateStatus'])->name('afdrachten.status');
+
+        Route::resource('declaraties', DeclaratiesController::class)->except('show');
+        Route::patch('declaraties/{declaratie}/status', [DeclaratiesController::class, 'updateStatus'])->name('declaraties.status');
+        Route::get('declaraties/{declaratie}/download', [DeclaratiesController::class, 'download'])->name('declaraties.download');
 
         Route::resource('invoices', InvoiceController::class);
         Route::patch('invoices/{invoice}/mark-paid', [InvoiceController::class, 'markPaid'])->name('invoices.mark-paid');
