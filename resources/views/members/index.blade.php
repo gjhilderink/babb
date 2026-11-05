@@ -102,6 +102,7 @@
             @if ($member->company_name)<div>{{ $member->company_name }}</div>@endif
             <div>{{ $member->email }}</div>
             @if ($member->membershipType)<div>{{ $member->membershipType->name }}</div>@endif
+            @include('members._korting_badge')
         </div>
         <div class="mt-3 flex gap-3">
             <a href="{{ route('members.show', $member) }}" class="text-xs text-bb-green-600 font-medium hover:underline">Bekijken</a>
@@ -157,7 +158,10 @@
                     </td>
                     <td class="px-4 py-3 text-gray-600 hidden lg:table-cell">{{ $member->email }}</td>
                     <td class="px-4 py-3 text-gray-600 hidden md:table-cell">{{ $member->company_name ?? '—' }}</td>
-                    <td class="px-4 py-3 text-gray-600">{{ $member->membershipType?->name ?? '—' }}</td>
+                    <td class="px-4 py-3 text-gray-600">
+                        {{ $member->membershipType?->name ?? '—' }}
+                        @include('members._korting_badge')
+                    </td>
                     <td class="px-4 py-3">
                         <span class="px-2 py-0.5 rounded-full text-xs font-medium
                             {{ $member->status === 'active' ? 'bg-green-100 text-green-700' : '' }}
