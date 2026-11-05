@@ -79,6 +79,12 @@
             <option value="{{ $type->id }}" @selected(request('membership_type_id') == $type->id)>{{ $type->name }}</option>
         @endforeach
     </select>
+    <select name="korting" class="border border-gray-300 rounded-lg px-3 py-2 text-sm">
+        <option value="">Korting: alle leden</option>
+        <option value="actief" @selected(request('korting') === 'actief')>Met actieve korting</option>
+        <option value="alle"   @selected(request('korting') === 'alle')>Met korting (ook gepland/verlopen)</option>
+        <option value="geen"   @selected(request('korting') === 'geen')>Zonder korting</option>
+    </select>
     <button type="submit" class="bg-bb-green-600 hover:bg-bb-green-700 text-white text-sm px-4 py-2 rounded-lg">Zoeken</button>
     <a href="{{ route('members.index') }}" class="text-sm text-gray-500 px-3 py-2 hover:text-gray-800">Wis filters</a>
 </form>

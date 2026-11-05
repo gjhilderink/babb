@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -77,6 +78,31 @@ class Member extends Model
                 $member->korting_tot    = null;
             }
         });
+    }
+
+    /** Leden met een korting ingesteld (ongeacht de periode) — zelfde regel als hasDiscount(). */
+    public function scopeWithDiscount(Builder $query): Builder
+    {
+        return $query->whereIn('korting_type', ['percentage', 'bedrag'])->where('korting_waarde', '>', 0);
+    }
+
+    /** Leden zonder korting. */
+    public function scopeWithoutDiscount(Builder $query): Builder
+    {
+        return $query->where(fn ($q) => $q->whereNull('korting_type')
+            ->orWhereNotIn('korting_type', ['percentage', 'bedrag'])
+            ->orWhereNull('korting_waarde')
+            ->orWhere('korting_waarde', '<=', 0));
+    }
+
+    /** Leden met een korting die op de opgegeven datum geldt — zelfde regel als hasActiveDiscount(). */
+    public function scopeWithActiveDiscount(Builder $query, $date = null): Builder
+    {
+        $date = Carbon::parse($date ?? now())->toDateString();
+
+        return $query->withDiscount()
+            ->where(fn ($q) => $q->whereNull('korting_vanaf')->orWhereDate('korting_vanaf', '<=', $date))
+            ->where(fn ($q) => $q->whereNull('korting_tot')->orWhereDate('korting_tot', '>=', $date));
     }
 
     /** Is er een korting ingesteld (ongeacht de periode)? */

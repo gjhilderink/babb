@@ -27,6 +27,12 @@ class MemberController extends Controller
             }))
             ->when($request->status, fn ($q, $s) => $q->where('status', $s))
             ->when($request->membership_type_id, fn ($q, $id) => $q->where('membership_type_id', $id))
+            ->when($request->korting, fn ($q, $k) => match ($k) {
+                'actief' => $q->withActiveDiscount(),
+                'alle'   => $q->withDiscount(),
+                'geen'   => $q->withoutDiscount(),
+                default  => $q,
+            })
             ->orderBy($sort, $dir)
             ->paginate(50)
             ->withQueryString();
