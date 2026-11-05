@@ -37,9 +37,15 @@ class InvoiceController extends Controller
     {
         abort_unless(AclService::allowed('invoices.create'), 403);
 
-        $members  = Member::where('status', 'active')->orderBy('last_name')->get();
+        $members  = Member::with('membershipType')->where('status', 'active')->orderBy('last_name')->get();
         $products = Product::where('is_active', true)->orderBy('name')->get();
         $member   = $request->member_id ? Member::find($request->member_id) : null;
+
+        // Lidmaatschapspakket per lid, om de factuurregel automatisch te vullen
+        $memberships = $members->filter(fn (Member $m) => $m->membershipType)->mapWithKeys(fn (Member $m) => [$m->id => [
+            'name'  => $m->membershipType->name,
+            'price' => (float) $m->membershipType->price_per_year,
+        ]]);
 
         // Tijdelijke kortingen per lid, voor de voorvertoning in het formulier
         $discounts = $members->filter->hasDiscount()->mapWithKeys(fn (Member $m) => [$m->id => [
@@ -51,7 +57,7 @@ class InvoiceController extends Controller
             'tot'    => $m->korting_tot?->format('Y-m-d'),
         ]]);
 
-        return view('invoices.create', compact('members', 'products', 'member', 'discounts'));
+        return view('invoices.create', compact('members', 'products', 'member', 'discounts', 'memberships'));
     }
 
     public function store(Request $request): RedirectResponse

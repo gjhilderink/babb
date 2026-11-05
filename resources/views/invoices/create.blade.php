@@ -26,6 +26,20 @@
                             @endforeach
                         </select>
                     </div>
+                    <div class="md:col-span-2">
+                        <label class="inline-flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+                            <input type="checkbox" name="is_membership" value="1" x-model="isMembership"
+                                   class="rounded border-gray-300 text-bb-green-600">
+                            <span class="font-medium">Lidmaatschapsfactuur</span>
+                            <span class="text-gray-500" x-show="isMembership && membership()" x-cloak>
+                                &mdash; <span x-text="membership()?.name"></span>
+                                (&euro; <span x-text="formatAmount(membership()?.price || 0)"></span> excl. btw)
+                            </span>
+                        </label>
+                        <p x-show="isMembership && memberId && !membership()" x-cloak class="text-xs text-amber-700 mt-1">
+                            Dit lid heeft geen lidmaatschapspakket. Stel dit eerst in bij het lid.
+                        </p>
+                    </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Factuurdatum <span class="text-red-500">*</span></label>
                         <input type="date" name="issue_date" x-model="issueDate"
@@ -38,8 +52,8 @@
                     </div>
                     <div class="md:col-span-2">
                         <label class="block text-sm font-medium text-gray-700 mb-1">Notities</label>
-                        <textarea name="notes" rows="2"
-                                  class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">{{ old('notes') }}</textarea>
+                        <textarea name="notes" rows="2" x-model="notes"
+                                  class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"></textarea>
                     </div>
                 </div>
             </div>
@@ -48,7 +62,7 @@
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                 <h2 class="font-semibold text-gray-800 mb-4">Factuurregels</h2>
 
-                <template x-for="(item, index) in items" :key="index">
+                <template x-for="(item, index) in items" :key="item.uid">
                     <div class="grid grid-cols-12 gap-2 mb-3 items-start">
                         <div class="col-span-12 md:col-span-5">
                             <select :name="`items[${index}][product_id]`" class="w-full border border-gray-300 rounded-lg px-2 py-2 text-sm"
@@ -148,7 +162,8 @@
 <script>
 function invoiceForm() {
     return {
-        items: [{ description: '', quantity: 1, unit_price: 0, tax_rate: 21, product_id: '' }],
+        uid: 1,
+        items: [{ uid: 1, description: '', quantity: 1, unit_price: 0, tax_rate: 21, product_id: '' }],
         memberId: @js((string) old('member_id', $member?->id ?? '')),
         issueDate: @js(old('issue_date', date('Y-m-d'))),
         applyDiscount: @js((bool) old('apply_discount', true)),
@@ -185,8 +200,41 @@ function invoiceForm() {
             return amount > 0 ? [mk(amount, top)] : [];
         },
         allLines() { return this.items.concat(this.discountLines()); },
+
+        // Lidmaatschapsfactuur: pakket van het lid automatisch als eerste regel
+        notes: @js(old('notes', '')),
+        isMembership: @js((bool) old('is_membership', false)),
+        memberships: @json($memberships),
+        autoNote: null,
+        membership() { return this.memberships[this.memberId] || null; },
+        init() {
+            this.$watch('memberId', () => this.syncMembership());
+            this.$watch('isMembership', () => this.syncMembership());
+            this.$watch('issueDate', () => this.syncMembership());
+            this.syncMembership();
+        },
+        syncMembership() {
+            // Eerdere automatische regel weghalen
+            this.items = this.items.filter(i => !i.membership);
+
+            const pkg  = this.isMembership ? this.membership() : null;
+            const year = (this.issueDate || '').slice(0, 4) || new Date().getFullYear();
+            const note = pkg ? `Lidmaatschapsfactuur ${pkg.name} — ${year}` : null;
+
+            if (pkg) {
+                const line = { uid: ++this.uid, description: `Lidmaatschap ${pkg.name} ${year}`, quantity: 1,
+                               unit_price: pkg.price, tax_rate: 21, product_id: '', membership: true };
+                const blank = this.items.length === 1 && !this.items[0].description && !parseFloat(this.items[0].unit_price);
+                if (blank) this.items = [line]; else this.items.unshift(line);
+            }
+            if (!this.items.length) this.addItem();
+
+            // Notitie alleen aanpassen als die leeg is of door ons is ingevuld
+            if (!this.notes || this.notes === this.autoNote) this.notes = note || '';
+            this.autoNote = note;
+        },
         addItem() {
-            this.items.push({ description: '', quantity: 1, unit_price: 0, tax_rate: 21, product_id: '' });
+            this.items.push({ uid: ++this.uid, description: '', quantity: 1, unit_price: 0, tax_rate: 21, product_id: '' });
         },
         removeItem(index) {
             if (this.items.length > 1) this.items.splice(index, 1);
