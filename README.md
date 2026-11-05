@@ -93,6 +93,17 @@ php artisan serve
 
 The seeder creates a default admin user — update the credentials in `database/seeders/DatabaseSeeder.php` before deploying.
 
+### Deploy / update (server)
+
+After the first installation, update the server with:
+
+```bash
+./deploy.sh            # git pull + composer install + migrate + seed + cache clear/rebuild
+./deploy.sh --no-pull  # same, without git pull
+```
+
+The script puts the site in maintenance mode while it runs and always brings it back up, even if a step fails. The seeder is idempotent, so it is safe to run on every deploy.
+
 ### Scheduled tasks (server)
 
 Add to crontab to enable daily reminders and other scheduled jobs:
