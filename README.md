@@ -8,6 +8,7 @@ Business club administration portal built with Laravel 11.
 - Member directory with contact details, company, address, status (actief / inactief / geschorst)
 - Separate private address (straat, postcode, stad) per member
 - Separate invoice e-mail address (`factuur_email`) — falls back to main e-mail
+- Temporary discount per member (percentage or fixed amount excl. VAT) with a reason and optional validity period (vanaf / t/m)
 - Membership types with pricing and billing cycles
 - CSV export (UTF-8 BOM, semicolon-delimited — Excel compatible)
 - CSV import with upsert on e-mail address
@@ -46,6 +47,7 @@ Business club administration portal built with Laravel 11.
 ### Financieel
 - **Facturen** — create invoices with line items, VAT rates, and due dates; statuses: concept → verzonden → betaald (+ verlopen); PDF export via DomPDF; membership billing batch
 - **Contributies** — generate membership invoices for all active members in one action
+- **Kortingen** — a member's active temporary discount is added automatically as a separate (negative) invoice line showing the reason; applied in membership billing and optionally (checkbox, live preview) on manual invoices
 - **Afdracht Bonboys** — record transfers to Bonboys with amount, subject, date, notes, and status (nieuw / nog te betalen / betaald); running totals for paid and outstanding amounts
 
 ### Gebruikersbeheer

@@ -73,7 +73,7 @@
                         </div>
                         <div class="col-span-4 md:col-span-1">
                             <input type="number" :name="`items[${index}][unit_price]`" x-model="item.unit_price"
-                                   min="0" step="0.01" placeholder="Prijs"
+                                   step="0.01" placeholder="Prijs"
                                    class="w-full border border-gray-300 rounded-lg px-2 py-2 text-sm text-right">
                         </div>
                         <div class="col-span-3 md:col-span-1">

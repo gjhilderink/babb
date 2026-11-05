@@ -28,6 +28,11 @@ class MembershipBillingController extends Controller
                     ->whereIn('status', ['draft', 'sent', 'paid'])
                     ->exists();
 
+                // Prijs na eventuele tijdelijke korting (excl. btw, op basis van vandaag)
+                $price    = (float) $member->membershipType->price_per_year;
+                $discount = $member->discountItemsFor([['quantity' => 1, 'unit_price' => $price, 'tax_rate' => 21]]);
+                $member->net_price = $price + array_sum(array_column($discount, 'unit_price'));
+
                 return $member;
             });
 
@@ -58,6 +63,7 @@ class MembershipBillingController extends Controller
             $type = $member->membershipType;
 
             $this->invoiceService->create([
+                'apply_discount' => true,
                 'member_id'  => $member->id,
                 'issue_date' => $request->issue_date,
                 'due_date'   => $request->due_date,

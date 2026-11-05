@@ -41,7 +41,17 @@ class InvoiceController extends Controller
         $products = Product::where('is_active', true)->orderBy('name')->get();
         $member   = $request->member_id ? Member::find($request->member_id) : null;
 
-        return view('invoices.create', compact('members', 'products', 'member'));
+        // Tijdelijke kortingen per lid, voor de voorvertoning in het formulier
+        $discounts = $members->filter->hasDiscount()->mapWithKeys(fn (Member $m) => [$m->id => [
+            'type'   => $m->korting_type,
+            'waarde' => (float) $m->korting_waarde,
+            'label'  => $m->korting_label,
+            'reden'  => $m->korting_reden,
+            'vanaf'  => $m->korting_vanaf?->format('Y-m-d'),
+            'tot'    => $m->korting_tot?->format('Y-m-d'),
+        ]]);
+
+        return view('invoices.create', compact('members', 'products', 'member', 'discounts'));
     }
 
     public function store(Request $request): RedirectResponse
@@ -53,10 +63,11 @@ class InvoiceController extends Controller
             'issue_date' => 'required|date',
             'due_date'   => 'required|date|after_or_equal:issue_date',
             'notes'      => 'nullable|string',
+            'apply_discount' => 'nullable|boolean',
             'items'      => 'required|array|min:1',
             'items.*.description' => 'required|string|max:255',
             'items.*.quantity'    => 'required|numeric|min:0.01',
-            'items.*.unit_price'  => 'required|numeric|min:0',
+            'items.*.unit_price'  => 'required|numeric',
             'items.*.tax_rate'    => 'required|numeric|min:0|max:100',
             'items.*.product_id'  => 'nullable|exists:products,id',
         ]);
@@ -100,7 +111,7 @@ class InvoiceController extends Controller
             'items'      => 'required|array|min:1',
             'items.*.description' => 'required|string|max:255',
             'items.*.quantity'    => 'required|numeric|min:0.01',
-            'items.*.unit_price'  => 'required|numeric|min:0',
+            'items.*.unit_price'  => 'required|numeric',
             'items.*.tax_rate'    => 'required|numeric|min:0|max:100',
             'items.*.product_id'  => 'nullable|exists:products,id',
         ]);

@@ -24,6 +24,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <style>
+        [x-cloak] { display: none !important; }
         .bg-bb-green-50  { background-color: #f0f8e8; }
         .bg-bb-green-100 { background-color: #dff0c4; }
         .bg-bb-green-400 { background-color: #7bc43a; }

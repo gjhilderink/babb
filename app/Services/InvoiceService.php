@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
+use App\Models\Member;
 use App\Models\Setting;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Response;
@@ -12,6 +13,17 @@ class InvoiceService
 {
     public function create(array $data): Invoice
     {
+        // Tijdelijke korting van het lid als extra (negatieve) factuurregel toevoegen
+        if (! empty($data['apply_discount'])) {
+            $member = Member::find($data['member_id']);
+            if ($member) {
+                $data['items'] = array_merge(
+                    $data['items'],
+                    $member->discountItemsFor($data['items'], $data['issue_date'])
+                );
+            }
+        }
+
         $invoice = Invoice::create([
             'invoice_number' => $this->nextInvoiceNumber(),
             'member_id'      => $data['member_id'],

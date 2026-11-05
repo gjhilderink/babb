@@ -101,4 +101,52 @@
         <textarea name="notes" rows="3"
                   class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-bb-green-600">{{ old('notes', $member->notes ?? '') }}</textarea>
     </div>
+
+    {{-- Tijdelijke korting --}}
+    <div class="md:col-span-2 border-t border-gray-100 pt-4 mt-2"
+         x-data="{ type: @js(old('korting_type', $member->korting_type ?? '')) }">
+        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Tijdelijke korting</p>
+        <p class="text-xs text-gray-500 mb-3">Wordt automatisch als kortingsregel op nieuwe facturen voor dit lid gezet (excl. btw), zolang de factuurdatum binnen de periode valt.</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Soort korting</label>
+                <select name="korting_type" x-model="type" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                    <option value="">Geen korting</option>
+                    <option value="percentage">Percentage (%)</option>
+                    <option value="bedrag">Vast bedrag (&euro;, excl. btw)</option>
+                </select>
+                @error('korting_type')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
+            </div>
+            <div x-show="type" x-cloak>
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                    <span x-text="type === 'percentage' ? 'Percentage' : 'Bedrag (€)'"></span> <span class="text-red-500">*</span>
+                </label>
+                <input type="number" name="korting_waarde" step="0.01" min="0.01" :max="type === 'percentage' ? 100 : null"
+                       value="{{ old('korting_waarde', $member->korting_waarde ?? '') }}"
+                       class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-bb-green-600">
+                @error('korting_waarde')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
+            </div>
+            <div class="md:col-span-2" x-show="type" x-cloak>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Reden <span class="text-red-500">*</span></label>
+                <input type="text" name="korting_reden" maxlength="200" placeholder="Bijv. eerste jaar lid, sponsorafspraak"
+                       value="{{ old('korting_reden', $member->korting_reden ?? '') }}"
+                       class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-bb-green-600">
+                <p class="text-xs text-gray-400 mt-1">Deze reden staat ook op de factuur.</p>
+                @error('korting_reden')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
+            </div>
+            <div x-show="type" x-cloak>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Geldig vanaf</label>
+                <input type="date" name="korting_vanaf"
+                       value="{{ old('korting_vanaf', isset($member) ? $member->korting_vanaf?->format('Y-m-d') : '') }}"
+                       class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-bb-green-600">
+            </div>
+            <div x-show="type" x-cloak>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Geldig tot en met</label>
+                <input type="date" name="korting_tot"
+                       value="{{ old('korting_tot', isset($member) ? $member->korting_tot?->format('Y-m-d') : '') }}"
+                       class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-bb-green-600">
+                @error('korting_tot')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
+            </div>
+        </div>
+    </div>
 </div>

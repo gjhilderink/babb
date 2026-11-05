@@ -40,6 +40,24 @@
                     {{ $member->membership_start?->format('d-m-Y') ?: '—' }} t/m {{ $member->membership_end?->format('d-m-Y') ?: '—' }}
                 </dd></div>
             </dl>
+            @if ($member->hasDiscount())
+            @php $kortingActief = $member->hasActiveDiscount(); @endphp
+            <div class="mt-4 pt-4 border-t border-gray-100">
+                <dt class="text-gray-500 text-sm mb-1 font-medium flex items-center gap-2">
+                    Tijdelijke korting
+                    <span class="px-2 py-0.5 rounded-full text-xs font-medium {{ $kortingActief ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600' }}">
+                        {{ $kortingActief ? 'Actief' : 'Niet actief' }}
+                    </span>
+                </dt>
+                <dd class="text-sm text-gray-700">
+                    <span class="font-medium">{{ $member->korting_label }}</span> &mdash; {{ $member->korting_reden }}<br>
+                    <span class="text-gray-500">
+                        {{ $member->korting_vanaf ? 'vanaf '.$member->korting_vanaf->format('d-m-Y') : 'direct' }}
+                        {{ $member->korting_tot ? 't/m '.$member->korting_tot->format('d-m-Y') : '(geen einddatum)' }}
+                    </span>
+                </dd>
+            </div>
+            @endif
             @if ($member->prive_adres || $member->prive_postcode || $member->prive_stad)
             <div class="mt-4 pt-4 border-t border-gray-100">
                 <dt class="text-gray-500 text-sm mb-1 font-medium">Prive adres</dt>

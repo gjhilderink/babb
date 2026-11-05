@@ -17,7 +17,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="md:col-span-2">
                         <label class="block text-sm font-medium text-gray-700 mb-1">Lid <span class="text-red-500">*</span></label>
-                        <select name="member_id" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                        <select name="member_id" x-model="memberId" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
                             <option value="">&mdash; Selecteer lid &mdash;</option>
                             @foreach ($members as $m)
                                 <option value="{{ $m->id }}" @selected(old('member_id', $member?->id) == $m->id)>
@@ -28,7 +28,7 @@
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Factuurdatum <span class="text-red-500">*</span></label>
-                        <input type="date" name="issue_date" value="{{ old('issue_date', date('Y-m-d')) }}"
+                        <input type="date" name="issue_date" x-model="issueDate"
                                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
                     </div>
                     <div>
@@ -73,7 +73,7 @@
                         </div>
                         <div class="col-span-4 md:col-span-1">
                             <input type="number" :name="`items[${index}][unit_price]`" x-model="item.unit_price"
-                                   min="0" step="0.01" placeholder="Prijs"
+                                   step="0.01" placeholder="Prijs"
                                    class="w-full border border-gray-300 rounded-lg px-2 py-2 text-sm text-right">
                         </div>
                         <div class="col-span-3 md:col-span-1">
@@ -101,7 +101,27 @@
         <div class="space-y-4">
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
                 <h2 class="font-semibold text-gray-800 mb-4">Totalen</h2>
+                <div x-show="discount()" x-cloak class="mb-4 rounded-lg border border-green-200 bg-green-50 p-3 text-sm">
+                    <label class="flex items-start gap-2 cursor-pointer">
+                        <input type="hidden" name="apply_discount" value="0">
+                        <input type="checkbox" name="apply_discount" value="1" x-model="applyDiscount"
+                               class="mt-0.5 rounded border-gray-300 text-bb-green-600">
+                        <span>
+                            <span class="font-medium text-gray-800">Korting toepassen: <span x-text="discount()?.label"></span></span><br>
+                            <span class="text-gray-600" x-text="discount()?.reden"></span>
+                            <template x-if="discount() && !discountActive()">
+                                <span class="block text-amber-700 text-xs mt-1">Niet geldig op deze factuurdatum &mdash; wordt niet toegepast.</span>
+                            </template>
+                        </span>
+                    </label>
+                </div>
                 <dl class="space-y-2 text-sm">
+                    <template x-for="line in discountLines()">
+                        <div class="flex justify-between text-green-700">
+                            <dt x-text="line.description"></dt>
+                            <dd class="font-medium whitespace-nowrap pl-2">&euro; <span x-text="formatAmount(line.unit_price)"></span></dd>
+                        </div>
+                    </template>
                     <div class="flex justify-between">
                         <dt class="text-gray-500">Subtotaal</dt>
                         <dd class="font-medium">&euro; <span x-text="formatAmount(subtotal())">0,00</span></dd>
@@ -129,6 +149,42 @@
 function invoiceForm() {
     return {
         items: [{ description: '', quantity: 1, unit_price: 0, tax_rate: 21, product_id: '' }],
+        memberId: @js((string) old('member_id', $member?->id ?? '')),
+        issueDate: @js(old('issue_date', date('Y-m-d'))),
+        applyDiscount: @js((bool) old('apply_discount', true)),
+        discounts: @json($discounts),
+        discount() { return this.discounts[this.memberId] || null; },
+        discountActive() {
+            const d = this.discount();
+            if (!d || !this.issueDate) return false;
+            if (d.vanaf && this.issueDate < d.vanaf) return false;
+            if (d.tot && this.issueDate > d.tot) return false;
+            return true;
+        },
+        // Spiegelt Member::discountItemsFor() — de server berekent de definitieve regels
+        discountLines() {
+            const d = this.discount();
+            if (!d || !this.applyDiscount || !this.discountActive()) return [];
+            const perRate = {};
+            this.items.forEach(i => {
+                const line = Math.round((parseFloat(i.quantity)||0) * (parseFloat(i.unit_price)||0) * 100) / 100;
+                if (line <= 0) return;
+                const r = parseFloat(i.tax_rate) || 0;
+                perRate[r] = (perRate[r] || 0) + line;
+            });
+            const rates = Object.keys(perRate);
+            if (!rates.length) return [];
+            const desc = 'Korting ' + d.label + (d.reden ? ' - ' + d.reden : '');
+            const mk = (amount, rate) => ({ description: desc, quantity: 1, unit_price: -amount, tax_rate: parseFloat(rate) });
+            if (d.type === 'percentage') {
+                const pct = Math.min(100, d.waarde);
+                return rates.map(r => mk(Math.round(perRate[r] * pct) / 100, r)).filter(l => l.unit_price < 0);
+            }
+            const top = rates.sort((a, b) => perRate[b] - perRate[a])[0];
+            const amount = Math.round(Math.min(d.waarde, perRate[top]) * 100) / 100;
+            return amount > 0 ? [mk(amount, top)] : [];
+        },
+        allLines() { return this.items.concat(this.discountLines()); },
         addItem() {
             this.items.push({ description: '', quantity: 1, unit_price: 0, tax_rate: 21, product_id: '' });
         },
@@ -144,10 +200,10 @@ function invoiceForm() {
             }
         },
         subtotal() {
-            return this.items.reduce((s, i) => s + (parseFloat(i.quantity)||0) * (parseFloat(i.unit_price)||0), 0);
+            return this.allLines().reduce((s, i) => s + (parseFloat(i.quantity)||0) * (parseFloat(i.unit_price)||0), 0);
         },
         taxTotal() {
-            return this.items.reduce((s, i) => {
+            return this.allLines().reduce((s, i) => {
                 const line = (parseFloat(i.quantity)||0) * (parseFloat(i.unit_price)||0);
                 return s + line * (parseFloat(i.tax_rate)||0) / 100;
             }, 0);

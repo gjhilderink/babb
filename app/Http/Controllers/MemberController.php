@@ -64,6 +64,11 @@ class MemberController extends Controller
             'prive_adres'        => 'nullable|string|max:255',
             'prive_postcode'     => 'nullable|string|max:20',
             'prive_stad'         => 'nullable|string|max:255',
+            'korting_type'       => 'nullable|in:percentage,bedrag',
+            'korting_waarde'     => 'nullable|required_with:korting_type|numeric|min:0.01'.($request->korting_type === 'percentage' ? '|max:100' : ''),
+            'korting_reden'      => 'nullable|required_with:korting_type|string|max:200',
+            'korting_vanaf'      => 'nullable|date',
+            'korting_tot'        => 'nullable|date|after_or_equal:korting_vanaf',
         ]);
 
         Member::create($data);
@@ -103,6 +108,14 @@ class MemberController extends Controller
             'membership_end'     => 'nullable|date|after_or_equal:membership_start',
             'status'             => 'required|in:active,inactive,suspended',
             'notes'              => 'nullable|string',
+            'prive_adres'        => 'nullable|string|max:255',
+            'prive_postcode'     => 'nullable|string|max:20',
+            'prive_stad'         => 'nullable|string|max:255',
+            'korting_type'       => 'nullable|in:percentage,bedrag',
+            'korting_waarde'     => 'nullable|required_with:korting_type|numeric|min:0.01'.($request->korting_type === 'percentage' ? '|max:100' : ''),
+            'korting_reden'      => 'nullable|required_with:korting_type|string|max:200',
+            'korting_vanaf'      => 'nullable|date',
+            'korting_tot'        => 'nullable|date|after_or_equal:korting_vanaf',
         ]);
 
         $member->update($data);
