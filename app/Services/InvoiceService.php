@@ -7,7 +7,9 @@ use App\Models\InvoiceItem;
 use App\Models\Member;
 use App\Models\Setting;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 
 class InvoiceService
 {
@@ -24,19 +26,30 @@ class InvoiceService
             }
         }
 
-        $invoice = Invoice::create([
-            'invoice_number' => $this->nextInvoiceNumber(),
-            'member_id'      => $data['member_id'],
-            'issue_date'     => $data['issue_date'],
-            'due_date'       => $data['due_date'],
-            'notes'          => $data['notes'] ?? null,
-            'status'         => 'draft',
-        ]);
+        // Bij een gelijktijdig uitgegeven nummer (unieke index) opnieuw proberen
+        for ($attempt = 1; ; $attempt++) {
+            try {
+                return DB::transaction(function () use ($data) {
+                    $invoice = Invoice::create([
+                        'invoice_number' => $this->nextInvoiceNumber(),
+                        'member_id'      => $data['member_id'],
+                        'issue_date'     => $data['issue_date'],
+                        'due_date'       => $data['due_date'],
+                        'notes'          => $data['notes'] ?? null,
+                        'status'         => 'draft',
+                    ]);
 
-        $this->syncItems($invoice, $data['items']);
-        $invoice->recalculateTotals();
+                    $this->syncItems($invoice, $data['items']);
+                    $invoice->recalculateTotals();
 
-        return $invoice;
+                    return $invoice;
+                });
+            } catch (UniqueConstraintViolationException $e) {
+                if ($attempt >= 3) {
+                    throw $e;
+                }
+            }
+        }
     }
 
     public function update(Invoice $invoice, array $data): Invoice
@@ -98,14 +111,15 @@ class InvoiceService
     {
         $prefix = config('babb.invoice_prefix', 'BABB');
         $year   = now()->year;
-        $last   = Invoice::whereYear('created_at', $year)->max('invoice_number');
+        $base   = sprintf('%s-%d-', $prefix, $year);
 
-        if ($last) {
-            $seq = (int) substr($last, -4) + 1;
-        } else {
-            $seq = 1;
-        }
+        // Ook verwijderde (soft-deleted) facturen meetellen: hun nummer blijft bezet in de unieke index
+        $max = Invoice::withTrashed()
+            ->where('invoice_number', 'like', $base . '%')
+            ->pluck('invoice_number')
+            ->map(fn ($n) => (int) substr($n, strlen($base)))
+            ->max();
 
-        return sprintf('%s-%d-%04d', $prefix, $year, $seq);
+        return sprintf('%s%04d', $base, ($max ?? 0) + 1);
     }
 }
