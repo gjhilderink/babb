@@ -71,6 +71,32 @@ class LidmaatschapAfdrachtService
      * leden met een vastgelegde afdracht in dat jaar tellen altijd mee, met het
      * vastgelegde bedrag.
      */
+    /**
+     * Verwachte contributie-inkomsten in een jaar: de pakketprijs van dat jaar
+     * voor elk actief lid van wie het lidmaatschap het jaar overlapt (excl. BTW,
+     * zonder tijdelijke kortingen).
+     *
+     * @return array{aantal:int, totaal:float}
+     */
+    public function contributiesVoorJaar(int $jaar): array
+    {
+        $begin = Carbon::create($jaar, 1, 1)->toDateString();
+        $eind  = Carbon::create($jaar, 12, 31)->toDateString();
+
+        $leden = Member::with('membershipType.prijzen')
+            ->where('status', 'active')
+            ->whereNotNull('membership_type_id')
+            ->whereHas('membershipType')
+            ->where(fn ($q) => $q->whereNull('membership_start')->orWhere('membership_start', '<=', $eind))
+            ->where(fn ($q) => $q->whereNull('membership_end')->orWhere('membership_end', '>=', $begin))
+            ->get();
+
+        return [
+            'aantal' => $leden->count(),
+            'totaal' => (float) $leden->sum(fn (Member $m) => $m->membershipType->prijsVoorJaar($jaar)),
+        ];
+    }
+
     public function regelsVoorJaar(string $soort, int $jaar): Collection
     {
         $kolom = self::kolom($soort);

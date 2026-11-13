@@ -33,8 +33,14 @@ class FinancieleSamenvattingController extends Controller
     /** @return Collection<int, array> per jaar (nieuwste eerst) */
     private function perJaar(): Collection
     {
-        // Facturen: concepten en geannuleerde facturen tellen niet mee
-        $facturen = Invoice::whereIn('status', ['sent', 'paid', 'overdue'])
+        // Facturen: concepten en geannuleerde facturen tellen niet mee.
+        // Lidmaatschapsfacturen (via "Contributies factureren" of de lidmaatschapsoptie bij een nieuwe factuur)
+        // horen bij de contributies; de rest zijn overige facturen.
+        // COALESCE: anders valt een factuur zonder notitie (NULL) ook buiten "whereNot"
+        $isLidmaatschap = fn ($q) => $q->whereRaw("COALESCE(notes, '') LIKE 'Lidmaatschapsfactuur%'")
+            ->orWhereHas('items', fn ($i) => $i->where('description', 'like', 'Lidmaatschap %'));
+
+        $factuurTotalen = fn ($query) => $query->whereIn('status', ['sent', 'paid', 'overdue'])
             ->selectRaw('YEAR(issue_date) as jaar')
             ->selectRaw('SUM(subtotal) as gefactureerd')
             ->selectRaw("SUM(CASE WHEN status = 'paid' THEN subtotal ELSE 0 END) as ontvangen")
@@ -42,6 +48,9 @@ class FinancieleSamenvattingController extends Controller
             ->groupBy('jaar')
             ->get()
             ->keyBy('jaar');
+
+        $lidmaatschapsfacturen = $factuurTotalen(Invoice::where($isLidmaatschap));
+        $overigeFacturen       = $factuurTotalen(Invoice::whereNot($isLidmaatschap));
 
         $overigeAfdrachten = Afdracht::query()
             ->selectRaw('YEAR(COALESCE(datum, created_at)) as jaar')
@@ -76,7 +85,7 @@ class FinancieleSamenvattingController extends Controller
 
         $huidig = now()->year;
         $alleJaren = collect([$huidig])
-            ->merge($facturen->keys())->merge($overigeAfdrachten->keys())->merge($declaraties->keys())
+            ->merge($lidmaatschapsfacturen->keys())->merge($overigeFacturen->keys())->merge($overigeAfdrachten->keys())->merge($declaraties->keys())
             ->merge($evenementkosten->keys())->merge($sponsorcommissie->keys())->merge($bonboys->keys())
             ->merge($reserveringen->keys())
             ->map(fn ($j) => (int) $j)
@@ -91,15 +100,33 @@ class FinancieleSamenvattingController extends Controller
             'open'         => $totaal - $gerealiseerd,
         ];
 
-        return $alleJaren->mapWithKeys(function (int $j) use ($facturen, $overigeAfdrachten, $declaraties, $evenementkosten, $sponsorcommissie, $bonboys, $reserveringen, $regel) {
-            $f  = $facturen->get($j);
+        return $alleJaren->mapWithKeys(function (int $j) use ($lidmaatschapsfacturen, $overigeFacturen, $overigeAfdrachten, $declaraties, $evenementkosten, $sponsorcommissie, $bonboys, $reserveringen, $regel) {
+            $lf = $lidmaatschapsfacturen->get($j);
+            $of = $overigeFacturen->get($j);
             $sc = $sponsorcommissie->get($j);
             $bb = $bonboys->get($j);
             $oa = $overigeAfdrachten->get($j);
             $de = $declaraties->get($j);
             $ev = $evenementkosten->get($j);
 
-            $inkomsten = $regel((float) ($f->gefactureerd ?? 0), (float) ($f->ontvangen ?? 0));
+            // Contributies: verwacht op basis van de abonnementen; ontvangen = betaalde lidmaatschapsfacturen
+            $contributies         = $this->afdrachten->contributiesVoorJaar($j);
+            $contributiesOntvangen = (float) ($lf->ontvangen ?? 0);
+
+            $inkomstenRegels = [
+                'Contributies (abonnementen)' => [
+                    'totaal'       => $contributies['totaal'],
+                    'gerealiseerd' => $contributiesOntvangen,
+                    'open'         => max(0.0, $contributies['totaal'] - $contributiesOntvangen),
+                ],
+                'Overige facturen' => $regel((float) ($of->gefactureerd ?? 0), (float) ($of->ontvangen ?? 0)),
+            ];
+
+            $inkomsten = [
+                'totaal'       => collect($inkomstenRegels)->sum('totaal'),
+                'gerealiseerd' => collect($inkomstenRegels)->sum('gerealiseerd'),
+                'open'         => collect($inkomstenRegels)->sum('open'),
+            ];
 
             $afdrachten = [
                 'Afdracht sponsorcommissie'       => $regel((float) ($sc['totaal'] ?? 0), (float) ($sc['overgemaakt'] ?? 0)),
@@ -117,8 +144,10 @@ class FinancieleSamenvattingController extends Controller
 
             return [$j => [
                 'jaar'              => $j,
+                'leden'             => $contributies['aantal'],
                 'inkomsten'         => $inkomsten,
-                'btw'               => (float) ($f->btw ?? 0),
+                'inkomsten_regels'  => $inkomstenRegels,
+                'btw'               => (float) ($lf->btw ?? 0) + (float) ($of->btw ?? 0),
                 'afdrachten'        => $afdrachten,
                 'kosten'            => $kosten,
                 'totaal_afdrachten' => $totaalAfdrachten,

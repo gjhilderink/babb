@@ -3,48 +3,63 @@
 
 @php
     $euro = fn ($b) => ($b < 0 ? '− ' : '').'€ '.number_format(abs($b), 2, ',', '.');
+    $links = [
+        'Contributies (abonnementen)'     => route('membership-billing.index'),
+        'Overige facturen'                => route('invoices.index'),
+        'Afdracht sponsorcommissie'       => route('sponsorcommissie.index'),
+        'Afdracht Bonboys (lidmaatschap)' => route('afdrachten.index'),
+        'Overige afdrachten Bonboys'      => route('afdrachten.index'),
+        'Declaraties (overige kosten)'    => route('declaraties.index'),
+        'Evenementkosten'                 => route('events.index'),
+    ];
 @endphp
 
 @section('content')
+<div x-data="{ jaar: {{ $jaar }}, kies(j) { this.jaar = j; history.replaceState(null, '', '?jaar=' + j); window.scrollTo({ top: 0, behavior: 'smooth' }); } }">
+
 <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
     <div>
         <h1 class="text-2xl font-bold text-gray-900">Financiële samenvatting</h1>
         <p class="text-sm text-gray-500 mt-1">Geldstromen per jaar. Bedragen excl. BTW; conceptfacturen en geannuleerde facturen tellen niet mee.</p>
     </div>
-    <form method="GET" class="flex items-center gap-2">
+    <div class="flex items-center gap-2">
         <label for="jaar" class="text-sm text-gray-600">Jaar</label>
-        <select id="jaar" name="jaar" onchange="this.form.submit()" class="border border-gray-300 rounded-lg px-3 py-2 text-sm">
+        <select id="jaar" :value="jaar" @change="kies(+$event.target.value)" class="border border-gray-300 rounded-lg px-3 py-2 text-sm">
             @foreach ($jaren as $j)
                 <option value="{{ $j }}" @selected($j === $jaar)>{{ $j }}</option>
             @endforeach
         </select>
-    </form>
+    </div>
 </div>
+
+@foreach ($perJaar as $d)
+<div x-show="jaar === {{ $d['jaar'] }}" @if ($d['jaar'] !== $jaar) style="display: none" @endif>
 
 {{-- Kerncijfers --}}
 <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-        <div class="text-xs text-gray-500 mb-1">Inkomsten {{ $jaar }}</div>
-        <div class="text-xl font-bold text-green-600">{{ $euro($detail['inkomsten']['totaal']) }}</div>
+        <div class="text-xs text-gray-500 mb-1">Inkomsten {{ $d['jaar'] }}</div>
+        <div class="text-xl font-bold text-green-600">{{ $euro($d['inkomsten']['totaal']) }}</div>
+        <div class="text-xs text-gray-400 mt-0.5">{{ $d['leden'] }} {{ $d['leden'] === 1 ? 'actief lid' : 'actieve leden' }}</div>
     </div>
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-        <div class="text-xs text-gray-500 mb-1">Af te dragen</div>
-        <div class="text-xl font-bold text-orange-500">{{ $euro($detail['totaal_afdrachten']) }}</div>
+        <div class="text-xs text-gray-500 mb-1">Af te dragen {{ $d['jaar'] }}</div>
+        <div class="text-xl font-bold text-orange-500">{{ $euro($d['totaal_afdrachten']) }}</div>
     </div>
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-        <div class="text-xs text-gray-500 mb-1">Kosten</div>
-        <div class="text-xl font-bold text-orange-500">{{ $euro($detail['totaal_kosten']) }}</div>
+        <div class="text-xs text-gray-500 mb-1">Kosten {{ $d['jaar'] }}</div>
+        <div class="text-xl font-bold text-orange-500">{{ $euro($d['totaal_kosten']) }}</div>
     </div>
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-        <div class="text-xs text-gray-500 mb-1">Saldo</div>
-        <div class="text-xl font-bold {{ $detail['saldo'] < 0 ? 'text-red-600' : 'text-gray-900' }}">{{ $euro($detail['saldo']) }}</div>
+        <div class="text-xs text-gray-500 mb-1">Saldo {{ $d['jaar'] }}</div>
+        <div class="text-xl font-bold {{ $d['saldo'] < 0 ? 'text-red-600' : 'text-gray-900' }}">{{ $euro($d['saldo']) }}</div>
     </div>
 </div>
 
-{{-- Detail geselecteerd jaar --}}
+{{-- Detail jaar --}}
 <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-8">
     <div class="px-5 py-3 border-b border-gray-100">
-        <h2 class="font-semibold text-gray-800">Geldstromen {{ $jaar }}</h2>
+        <h2 class="font-semibold text-gray-800">Geldstromen {{ $d['jaar'] }}</h2>
     </div>
     <div class="overflow-x-auto">
     <table class="min-w-full text-sm">
@@ -57,62 +72,47 @@
             </tr>
         </thead>
         <tbody class="divide-y divide-gray-100">
-            {{-- Inkomsten --}}
-            <tr class="bg-green-50/60"><td colspan="4" class="px-5 py-2 text-xs font-semibold uppercase tracking-wide text-green-800">Binnenkomend</td></tr>
-            <tr>
-                <td class="px-5 py-3"><a href="{{ route('invoices.index') }}" class="text-gray-800 hover:underline">Facturen</a></td>
-                <td class="px-5 py-3 text-right whitespace-nowrap">{{ $euro($detail['inkomsten']['totaal']) }}</td>
-                <td class="px-5 py-3 text-right whitespace-nowrap text-green-600">{{ $euro($detail['inkomsten']['gerealiseerd']) }}</td>
-                <td class="px-5 py-3 text-right whitespace-nowrap text-orange-500">{{ $euro($detail['inkomsten']['open']) }}</td>
-            </tr>
-
-            {{-- Afdrachten --}}
-            <tr class="bg-orange-50/60"><td colspan="4" class="px-5 py-2 text-xs font-semibold uppercase tracking-wide text-orange-800">Af te dragen</td></tr>
-            @php $links = ['Afdracht sponsorcommissie' => route('sponsorcommissie.index'), 'Afdracht Bonboys (lidmaatschap)' => route('afdrachten.index'), 'Overige afdrachten Bonboys' => route('afdrachten.index')]; @endphp
-            @foreach ($detail['afdrachten'] as $label => $r)
-            <tr>
-                <td class="px-5 py-3">
-                    <a href="{{ $links[$label] }}" class="text-gray-800 hover:underline">{{ $label }}</a>
-                    @if ($label === 'Afdracht Bonboys (lidmaatschap)' && $detail['reservering'] > 0)
-                        <span class="text-xs text-gray-400">(na reservering van {{ $euro($detail['reservering']) }})</span>
-                    @endif
-                </td>
-                <td class="px-5 py-3 text-right whitespace-nowrap">{{ $euro($r['totaal']) }}</td>
-                <td class="px-5 py-3 text-right whitespace-nowrap text-green-600">{{ $euro($r['gerealiseerd']) }}</td>
-                <td class="px-5 py-3 text-right whitespace-nowrap text-orange-500">{{ $euro($r['open']) }}</td>
-            </tr>
-            @endforeach
-
-            {{-- Kosten --}}
-            <tr class="bg-orange-50/60"><td colspan="4" class="px-5 py-2 text-xs font-semibold uppercase tracking-wide text-orange-800">Kosten</td></tr>
-            @php $links = ['Declaraties (overige kosten)' => route('declaraties.index'), 'Evenementkosten' => route('events.index')]; @endphp
-            @foreach ($detail['kosten'] as $label => $r)
-            <tr>
-                <td class="px-5 py-3"><a href="{{ $links[$label] }}" class="text-gray-800 hover:underline">{{ $label }}</a></td>
-                <td class="px-5 py-3 text-right whitespace-nowrap">{{ $euro($r['totaal']) }}</td>
-                <td class="px-5 py-3 text-right whitespace-nowrap text-green-600">{{ $euro($r['gerealiseerd']) }}</td>
-                <td class="px-5 py-3 text-right whitespace-nowrap text-orange-500">{{ $euro($r['open']) }}</td>
-            </tr>
+            @foreach ([
+                'Binnenkomend' => ['regels' => $d['inkomsten_regels'], 'kleur' => 'bg-green-50/60 text-green-800'],
+                'Af te dragen' => ['regels' => $d['afdrachten'],       'kleur' => 'bg-orange-50/60 text-orange-800'],
+                'Kosten'       => ['regels' => $d['kosten'],           'kleur' => 'bg-orange-50/60 text-orange-800'],
+            ] as $groep => $g)
+                <tr class="{{ $g['kleur'] }}"><td colspan="4" class="px-5 py-2 text-xs font-semibold uppercase tracking-wide">{{ $groep }}</td></tr>
+                @foreach ($g['regels'] as $label => $r)
+                <tr>
+                    <td class="px-5 py-3">
+                        <a href="{{ $links[$label] }}" class="text-gray-800 hover:underline">{{ $label }}</a>
+                        @if ($label === 'Contributies (abonnementen)')
+                            <span class="text-xs text-gray-400">({{ $d['leden'] }} {{ $d['leden'] === 1 ? 'lid' : 'leden' }}, pakketprijs van {{ $d['jaar'] }})</span>
+                        @elseif ($label === 'Afdracht Bonboys (lidmaatschap)' && $d['reservering'] > 0)
+                            <span class="text-xs text-gray-400">(na reservering van {{ $euro($d['reservering']) }})</span>
+                        @endif
+                    </td>
+                    <td class="px-5 py-3 text-right whitespace-nowrap">{{ $euro($r['totaal']) }}</td>
+                    <td class="px-5 py-3 text-right whitespace-nowrap text-green-600">{{ $euro($r['gerealiseerd']) }}</td>
+                    <td class="px-5 py-3 text-right whitespace-nowrap text-orange-500">{{ $euro($r['open']) }}</td>
+                </tr>
+                @endforeach
             @endforeach
         </tbody>
         <tfoot class="border-t-2 border-gray-200">
             <tr class="font-semibold">
                 <td class="px-5 py-3">Saldo (inkomsten − afdrachten − kosten)</td>
-                <td class="px-5 py-3 text-right whitespace-nowrap {{ $detail['saldo'] < 0 ? 'text-red-600' : '' }}">{{ $euro($detail['saldo']) }}</td>
+                <td class="px-5 py-3 text-right whitespace-nowrap {{ $d['saldo'] < 0 ? 'text-red-600' : '' }}">{{ $euro($d['saldo']) }}</td>
                 <td colspan="2"></td>
             </tr>
-            @if ($detail['reservering'] > 0)
+            @if ($d['reservering'] > 0)
             <tr class="text-gray-600">
                 <td class="px-5 py-2">
                     Waarvan <a href="{{ route('reserveringen.index') }}" class="hover:underline">gereserveerd</a> voor eigen besteding
                 </td>
-                <td class="px-5 py-2 text-right whitespace-nowrap">{{ $euro($detail['reservering']) }}</td>
+                <td class="px-5 py-2 text-right whitespace-nowrap">{{ $euro($d['reservering']) }}</td>
                 <td colspan="2"></td>
             </tr>
             @endif
             <tr class="text-gray-500 text-xs">
                 <td class="px-5 py-2">BTW op facturen (apart af te dragen aan de Belastingdienst)</td>
-                <td class="px-5 py-2 text-right whitespace-nowrap">{{ $euro($detail['btw']) }}</td>
+                <td class="px-5 py-2 text-right whitespace-nowrap">{{ $euro($d['btw']) }}</td>
                 <td colspan="2"></td>
             </tr>
         </tfoot>
@@ -120,16 +120,21 @@
     </div>
 </div>
 
+</div>
+@endforeach
+
 {{-- Overzicht alle jaren --}}
 <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
     <div class="px-5 py-3 border-b border-gray-100">
         <h2 class="font-semibold text-gray-800">Overzicht per jaar</h2>
+        <p class="text-xs text-gray-500 mt-0.5">Klik op een jaar om het hierboven te bekijken.</p>
     </div>
     <div class="overflow-x-auto">
     <table class="min-w-full divide-y divide-gray-100 text-sm">
         <thead class="bg-gray-50">
             <tr>
                 <th class="px-5 py-3 text-left font-semibold text-gray-600">Jaar</th>
+                <th class="px-5 py-3 text-right font-semibold text-gray-600">Leden</th>
                 <th class="px-5 py-3 text-right font-semibold text-gray-600">Inkomsten</th>
                 <th class="px-5 py-3 text-right font-semibold text-gray-600">Afdrachten</th>
                 <th class="px-5 py-3 text-right font-semibold text-gray-600">Kosten</th>
@@ -139,10 +144,13 @@
         </thead>
         <tbody class="divide-y divide-gray-100">
             @foreach ($perJaar as $rij)
-            <tr class="hover:bg-gray-50 {{ $rij['jaar'] === $jaar ? 'bg-green-50' : '' }}">
+            <tr class="hover:bg-gray-50 cursor-pointer" :class="jaar === {{ $rij['jaar'] }} ? 'bg-green-50' : ''"
+                @click="kies({{ $rij['jaar'] }})">
                 <td class="px-5 py-3">
-                    <a href="{{ route('samenvatting.index', ['jaar' => $rij['jaar']]) }}" class="text-bb-green-700 hover:underline font-medium">{{ $rij['jaar'] }}</a>
+                    <a href="{{ route('samenvatting.index', ['jaar' => $rij['jaar']]) }}" @click.prevent.stop="kies({{ $rij['jaar'] }})"
+                       class="text-bb-green-700 hover:underline font-medium">{{ $rij['jaar'] }}</a>
                 </td>
+                <td class="px-5 py-3 text-right text-gray-600">{{ $rij['leden'] }}</td>
                 <td class="px-5 py-3 text-right whitespace-nowrap text-green-600">{{ $euro($rij['inkomsten']['totaal']) }}</td>
                 <td class="px-5 py-3 text-right whitespace-nowrap">{{ $euro($rij['totaal_afdrachten']) }}</td>
                 <td class="px-5 py-3 text-right whitespace-nowrap">{{ $euro($rij['totaal_kosten']) }}</td>
@@ -153,5 +161,7 @@
         </tbody>
     </table>
     </div>
+</div>
+
 </div>
 @endsection
