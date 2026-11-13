@@ -51,7 +51,8 @@ Route::middleware('auth')->group(function () {
         Route::get('membership-billing', [MembershipBillingController::class, 'index'])->name('membership-billing.index');
         Route::post('membership-billing', [MembershipBillingController::class, 'store'])->name('membership-billing.store');
 
-        Route::resource('afdrachten', AfdrachtenController::class)->except('show');
+        // Expliciete parameternamen: Laravel's Engelse enkelvoudsregels maken anders {afdrachten} / {declaraty}
+        Route::resource('afdrachten', AfdrachtenController::class)->except('show')->parameters(['afdrachten' => 'afdracht']);
         Route::patch('afdrachten/{afdracht}/status', [AfdrachtenController::class, 'updateStatus'])->name('afdrachten.status');
 
         Route::get('sponsorcommissie', [LidmaatschapAfdrachtController::class, 'sponsorcommissie'])->name('sponsorcommissie.index');
@@ -59,8 +60,10 @@ Route::middleware('auth')->group(function () {
             ->whereIn('soort', ['sponsorcommissie', 'bonboys'])->name('lidmaatschap-afdrachten.update');
         Route::post('lidmaatschap-afdrachten/{soort}/markeer-alles', [LidmaatschapAfdrachtController::class, 'markeerAlles'])
             ->whereIn('soort', ['sponsorcommissie', 'bonboys'])->name('lidmaatschap-afdrachten.markeer-alles');
+        Route::delete('lidmaatschap-afdrachten/{soort}/jaar', [LidmaatschapAfdrachtController::class, 'jaarOngedaan'])
+            ->whereIn('soort', ['sponsorcommissie', 'bonboys'])->name('lidmaatschap-afdrachten.jaar-ongedaan');
 
-        Route::resource('declaraties', DeclaratiesController::class)->except('show');
+        Route::resource('declaraties', DeclaratiesController::class)->except('show')->parameters(['declaraties' => 'declaratie']);
         Route::patch('declaraties/{declaratie}/status', [DeclaratiesController::class, 'updateStatus'])->name('declaraties.status');
         Route::get('declaraties/{declaratie}/download', [DeclaratiesController::class, 'download'])->name('declaraties.download');
 
