@@ -4,6 +4,7 @@ use App\Http\Controllers\AclController;
 use App\Http\Controllers\AfdrachtenController;
 use App\Http\Controllers\DeclaratiesController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\FinancieleSamenvattingController;
 use App\Http\Controllers\ImpersonateController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\MeetingController;
@@ -56,7 +57,9 @@ Route::middleware('auth')->group(function () {
         Route::resource('afdrachten', AfdrachtenController::class)->except('show')->parameters(['afdrachten' => 'afdracht']);
         Route::patch('afdrachten/{afdracht}/status', [AfdrachtenController::class, 'updateStatus'])->name('afdrachten.status');
 
-        Route::resource('reserveringen', ReserveringController::class)->only(['index', 'store', 'update', 'destroy'])
+        Route::get('samenvatting', [FinancieleSamenvattingController::class, 'index'])->name('samenvatting.index');
+
+        Route::resource('reserveringen',ReserveringController::class)->only(['index', 'store', 'update', 'destroy'])
             ->parameters(['reserveringen' => 'reservering']);
 
         Route::get('sponsorcommissie',[LidmaatschapAfdrachtController::class, 'sponsorcommissie'])->name('sponsorcommissie.index');
