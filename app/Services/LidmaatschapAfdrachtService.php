@@ -25,20 +25,11 @@ class LidmaatschapAfdrachtService
         return self::SOORTEN[$soort] ?? throw new \InvalidArgumentException("Onbekende soort afdracht: {$soort}");
     }
 
-    /**
-     * Alle gegevens voor de overzichtspagina van één soort.
-     *
-     * @return array{jaar:int, jaren:array<int>, regels:Collection, overzicht:Collection, huidig:array}
-     */
-    public function overzicht(string $soort, ?int $jaar): array
+    /** Totalen en "overgemaakt"-status per jaar voor één soort afdracht, nieuwste jaar eerst. */
+    public function overzichtPerJaar(string $soort): Collection
     {
-        $jaren = $this->jaren($soort);
-        $jaar  = in_array($jaar, $jaren, true) ? $jaar : now()->year;
-
-        $regels = $this->regelsVoorJaar($soort, $jaar);
-
-        $overzicht = collect($jaren)->map(function (int $j) use ($soort, $jaar, $regels) {
-            $r = $j === $jaar ? $regels : $this->regelsVoorJaar($soort, $j);
+        return collect($this->jaren($soort))->map(function (int $j) use ($soort) {
+            $r = $this->regelsVoorJaar($soort, $j);
 
             return [
                 'jaar'        => $j,
@@ -51,14 +42,6 @@ class LidmaatschapAfdrachtService
                 'overgemaakt_op' => $r->pluck('overgemaakt_op')->filter()->max(),
             ];
         });
-
-        return [
-            'jaar'      => $jaar,
-            'jaren'     => $jaren,
-            'regels'    => $regels,
-            'overzicht' => $overzicht,
-            'huidig'    => $overzicht->firstWhere('jaar', $jaar),
-        ];
     }
 
     /**

@@ -23,9 +23,9 @@ class AfdrachtenController extends Controller
         $totaalBetaald    = Afdracht::where('status', 'betaald')->sum('bedrag');
         $totaalOpenstaand = Afdracht::where('status', 'nog_te_betalen')->sum('bedrag');
 
-        $lidmaatschap = $service->overzicht('bonboys', $request->integer('jaar') ?: null);
+        $lidmaatschapOverzicht = $service->overzichtPerJaar('bonboys');
 
-        return view('afdrachten.index', compact('afdrachten', 'totaalBetaald', 'totaalOpenstaand', 'lidmaatschap'));
+        return view('afdrachten.index', compact('afdrachten', 'totaalBetaald', 'totaalOpenstaand', 'lidmaatschapOverzicht'));
     }
 
     public function create(): View

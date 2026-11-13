@@ -56,8 +56,6 @@ Route::middleware('auth')->group(function () {
         Route::patch('afdrachten/{afdracht}/status', [AfdrachtenController::class, 'updateStatus'])->name('afdrachten.status');
 
         Route::get('sponsorcommissie', [LidmaatschapAfdrachtController::class, 'sponsorcommissie'])->name('sponsorcommissie.index');
-        Route::patch('lidmaatschap-afdrachten/{soort}', [LidmaatschapAfdrachtController::class, 'update'])
-            ->whereIn('soort', ['sponsorcommissie', 'bonboys'])->name('lidmaatschap-afdrachten.update');
         Route::post('lidmaatschap-afdrachten/{soort}/markeer-alles', [LidmaatschapAfdrachtController::class, 'markeerAlles'])
             ->whereIn('soort', ['sponsorcommissie', 'bonboys'])->name('lidmaatschap-afdrachten.markeer-alles');
         Route::delete('lidmaatschap-afdrachten/{soort}/jaar', [LidmaatschapAfdrachtController::class, 'jaarOngedaan'])
