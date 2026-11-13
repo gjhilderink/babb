@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Afdracht;
 use App\Models\Declaratie;
+use App\Models\EvenementReservering;
 use App\Models\EventCost;
 use App\Models\Invoice;
 use App\Models\Reservering;
@@ -82,12 +83,13 @@ class FinancieleSamenvattingController extends Controller
         $sponsorcommissie = $this->afdrachten->overzichtPerJaar('sponsorcommissie')->keyBy('jaar');
         $bonboys          = $this->afdrachten->overzichtPerJaar('bonboys')->keyBy('jaar');
         $reserveringen    = Reservering::pluck('bedrag', 'jaar');
+        $evenementPerLid  = EvenementReservering::pluck('bedrag_per_lid', 'jaar');
 
         $huidig = now()->year;
         $alleJaren = collect([$huidig])
             ->merge($lidmaatschapsfacturen->keys())->merge($overigeFacturen->keys())->merge($overigeAfdrachten->keys())->merge($declaraties->keys())
             ->merge($evenementkosten->keys())->merge($sponsorcommissie->keys())->merge($bonboys->keys())
-            ->merge($reserveringen->keys())
+            ->merge($reserveringen->keys())->merge($evenementPerLid->keys())
             ->map(fn ($j) => (int) $j)
             ->filter(fn ($j) => $j > 1999 && $j <= $huidig + 1)
             ->unique()
@@ -100,7 +102,7 @@ class FinancieleSamenvattingController extends Controller
             'open'         => $totaal - $gerealiseerd,
         ];
 
-        return $alleJaren->mapWithKeys(function (int $j) use ($lidmaatschapsfacturen, $overigeFacturen, $overigeAfdrachten, $declaraties, $evenementkosten, $sponsorcommissie, $bonboys, $reserveringen, $regel) {
+        return $alleJaren->mapWithKeys(function (int $j) use ($lidmaatschapsfacturen, $overigeFacturen, $overigeAfdrachten, $declaraties, $evenementkosten, $sponsorcommissie, $bonboys, $reserveringen, $evenementPerLid, $regel) {
             $lf = $lidmaatschapsfacturen->get($j);
             $of = $overigeFacturen->get($j);
             $sc = $sponsorcommissie->get($j);
@@ -153,6 +155,9 @@ class FinancieleSamenvattingController extends Controller
                 'totaal_afdrachten' => $totaalAfdrachten,
                 'totaal_kosten'     => $totaalKosten,
                 'reservering'       => (float) $reserveringen->get($j, 0),
+                // Alleen informatief: telt niet mee in de afdracht of het saldo
+                'evenementen_per_lid'     => (float) $evenementPerLid->get($j, 0),
+                'evenementen_reservering' => (float) $evenementPerLid->get($j, 0) * $contributies['aantal'],
                 'saldo'             => $inkomsten['totaal'] - $totaalAfdrachten - $totaalKosten,
             ]];
         });

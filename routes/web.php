@@ -4,6 +4,7 @@ use App\Http\Controllers\AclController;
 use App\Http\Controllers\AfdrachtenController;
 use App\Http\Controllers\DeclaratiesController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\EvenementReserveringController;
 use App\Http\Controllers\FinancieleSamenvattingController;
 use App\Http\Controllers\ImpersonateController;
 use App\Http\Controllers\EventController;
@@ -59,10 +60,12 @@ Route::middleware('auth')->group(function () {
 
         Route::get('samenvatting', [FinancieleSamenvattingController::class, 'index'])->name('samenvatting.index');
 
-        Route::resource('reserveringen',ReserveringController::class)->only(['index', 'store', 'update', 'destroy'])
+        Route::resource('reserveringen', ReserveringController::class)->only(['index', 'store', 'update', 'destroy'])
             ->parameters(['reserveringen' => 'reservering']);
+        Route::resource('evenement-reserveringen', EvenementReserveringController::class)->only(['index', 'store', 'update', 'destroy'])
+            ->parameters(['evenement-reserveringen' => 'evenement_reservering']);
 
-        Route::get('sponsorcommissie',[LidmaatschapAfdrachtController::class, 'sponsorcommissie'])->name('sponsorcommissie.index');
+        Route::get('sponsorcommissie', [LidmaatschapAfdrachtController::class, 'sponsorcommissie'])->name('sponsorcommissie.index');
         Route::post('lidmaatschap-afdrachten/{soort}/markeer-alles', [LidmaatschapAfdrachtController::class, 'markeerAlles'])
             ->whereIn('soort', ['sponsorcommissie', 'bonboys'])->name('lidmaatschap-afdrachten.markeer-alles');
         Route::delete('lidmaatschap-afdrachten/{soort}/jaar', [LidmaatschapAfdrachtController::class, 'jaarOngedaan'])

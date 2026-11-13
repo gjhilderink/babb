@@ -110,6 +110,16 @@
                 <td colspan="2"></td>
             </tr>
             @endif
+            @if ($d['evenementen_reservering'] > 0)
+            <tr class="text-gray-600">
+                <td class="px-5 py-2">
+                    <a href="{{ route('evenement-reserveringen.index') }}" class="hover:underline">Gereserveerd voor evenementen</a>
+                    <span class="text-xs text-gray-400">({{ $euro($d['evenementen_per_lid']) }} × {{ $d['leden'] }} {{ $d['leden'] === 1 ? 'lid' : 'leden' }})</span>
+                </td>
+                <td class="px-5 py-2 text-right whitespace-nowrap">{{ $euro($d['evenementen_reservering']) }}</td>
+                <td colspan="2"></td>
+            </tr>
+            @endif
             <tr class="text-gray-500 text-xs">
                 <td class="px-5 py-2">BTW op facturen (apart af te dragen aan de Belastingdienst)</td>
                 <td class="px-5 py-2 text-right whitespace-nowrap">{{ $euro($d['btw']) }}</td>
@@ -140,6 +150,7 @@
                 <th class="px-5 py-3 text-right font-semibold text-gray-600">Kosten</th>
                 <th class="px-5 py-3 text-right font-semibold text-gray-600">Saldo</th>
                 <th class="px-5 py-3 text-right font-semibold text-gray-600">Reservering</th>
+                <th class="px-5 py-3 text-right font-semibold text-gray-600 whitespace-nowrap">Evenementen reservering</th>
             </tr>
         </thead>
         <tbody class="divide-y divide-gray-100">
@@ -156,6 +167,7 @@
                 <td class="px-5 py-3 text-right whitespace-nowrap">{{ $euro($rij['totaal_kosten']) }}</td>
                 <td class="px-5 py-3 text-right whitespace-nowrap font-semibold {{ $rij['saldo'] < 0 ? 'text-red-600' : '' }}">{{ $euro($rij['saldo']) }}</td>
                 <td class="px-5 py-3 text-right whitespace-nowrap text-gray-600">{{ $rij['reservering'] > 0 ? $euro($rij['reservering']) : '—' }}</td>
+                <td class="px-5 py-3 text-right whitespace-nowrap text-gray-600">{{ $rij['evenementen_reservering'] > 0 ? $euro($rij['evenementen_reservering']) : '—' }}</td>
             </tr>
             @endforeach
         </tbody>
