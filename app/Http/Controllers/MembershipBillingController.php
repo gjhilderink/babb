@@ -15,7 +15,7 @@ class MembershipBillingController extends Controller
 
     public function index(Request $request): View
     {
-        $members = Member::with('membershipType')
+        $members = Member::with('membershipType.prijzen')
             ->where('status', 'active')
             ->whereNotNull('membership_type_id')
             ->whereHas('membershipType', fn ($q) => $q->where('is_active', true))
@@ -29,7 +29,8 @@ class MembershipBillingController extends Controller
                     ->exists();
 
                 // Prijs na eventuele tijdelijke korting (excl. btw, op basis van vandaag)
-                $price    = (float) $member->membershipType->price_per_year;
+                $price    = $member->membershipType->prijsVoorJaar(now()->year);
+                $member->jaar_prijs = $price;
                 $discount = $member->discountItemsFor([['quantity' => 1, 'unit_price' => $price, 'tax_rate' => 21]]);
                 $member->net_price = $price + array_sum(array_column($discount, 'unit_price'));
 
@@ -51,7 +52,7 @@ class MembershipBillingController extends Controller
             'due_date'     => 'required|date|after_or_equal:issue_date',
         ]);
 
-        $members = Member::with('membershipType')
+        $members = Member::with('membershipType.prijzen')
             ->whereIn('id', $request->member_ids)
             ->where('status', 'active')
             ->whereNotNull('membership_type_id')
@@ -73,7 +74,7 @@ class MembershipBillingController extends Controller
                         'product_id'  => null,
                         'description' => "Lidmaatschap {$type->name} " . now()->year,
                         'quantity'    => 1,
-                        'unit_price'  => $type->price_per_year,
+                        'unit_price'  => $type->prijsVoorJaar(now()->year),
                         'tax_rate'    => 21,
                     ],
                 ],

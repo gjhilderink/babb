@@ -36,6 +36,22 @@
                 <p class="text-xs text-gray-500 mb-1">Afdracht sponsorcommissie: &euro; {{ number_format($type->afdracht_sponsorcommissie, 2, ',', '.') }} / jaar</p>
             @endif
 
+            @if ($type->prijzen->isNotEmpty())
+                <details class="mb-3 text-xs text-gray-500">
+                    <summary class="cursor-pointer hover:text-gray-700">Prijzen per jaar ({{ $type->prijzen->count() }})</summary>
+                    <table class="mt-1 w-full">
+                        <tr class="text-gray-400"><td>Jaar</td><td class="text-right">Prijs</td><td class="text-right">Afdracht</td></tr>
+                        @foreach ($type->prijzen as $p)
+                            <tr>
+                                <td>{{ $p->jaar }}</td>
+                                <td class="text-right">&euro; {{ number_format($type->prijsVoorJaar($p->jaar), 2, ',', '.') }}</td>
+                                <td class="text-right">&euro; {{ number_format($type->afdrachtVoorJaar($p->jaar), 2, ',', '.') }}</td>
+                            </tr>
+                        @endforeach
+                    </table>
+                </details>
+            @endif
+
             @if ($type->max_members)
                 <p class="text-xs text-gray-500 mb-3">Max. {{ $type->max_members }} medewerkers</p>
             @endif

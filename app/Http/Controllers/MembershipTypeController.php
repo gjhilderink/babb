@@ -5,13 +5,14 @@ namespace App\Http\Controllers;
 use App\Models\MembershipType;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 class MembershipTypeController extends Controller
 {
     public function index(): View
     {
-        $types = MembershipType::withCount('members')->orderBy('price_per_year')->get();
+        $types = MembershipType::with('prijzen')->withCount('members')->orderBy('price_per_year')->get();
 
         return view('membership_types.index', compact('types'));
     }
@@ -23,23 +24,33 @@ class MembershipTypeController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-        $data = $this->validate($request);
+        $data    = $this->validate($request);
+        $prijzen = $this->validatePrijzen($request);
 
-        MembershipType::create($data);
+        DB::transaction(function () use ($data, $prijzen) {
+            $type = MembershipType::create($data);
+            $this->syncPrijzen($type, $prijzen);
+        });
 
         return redirect()->route('membership-types.index')->with('success', 'Pakket aangemaakt.');
     }
 
     public function edit(MembershipType $membershipType): View
     {
+        $membershipType->load('prijzen');
+
         return view('membership_types.edit', compact('membershipType'));
     }
 
     public function update(Request $request, MembershipType $membershipType): RedirectResponse
     {
-        $data = $this->validate($request);
+        $data    = $this->validate($request);
+        $prijzen = $this->validatePrijzen($request);
 
-        $membershipType->update($data);
+        DB::transaction(function () use ($membershipType, $data, $prijzen) {
+            $membershipType->update($data);
+            $this->syncPrijzen($membershipType, $prijzen);
+        });
 
         return redirect()->route('membership-types.index')->with('success', 'Pakket bijgewerkt.');
     }
@@ -53,6 +64,45 @@ class MembershipTypeController extends Controller
         $membershipType->delete();
 
         return redirect()->route('membership-types.index')->with('success', 'Pakket verwijderd.');
+    }
+
+    /** Jaarprijzen uit het formulier; regels zonder prijs én afdracht worden genegeerd. */
+    private function validatePrijzen(Request $request): array
+    {
+        $request->merge([
+            'prijzen' => collect($request->input('prijzen', []))
+                ->filter(fn ($r) => filled($r['jaar'] ?? null) || filled($r['prijs'] ?? null) || filled($r['afdracht_sponsorcommissie'] ?? null))
+                ->values()
+                ->all(),
+        ]);
+
+        $request->validate([
+            'prijzen'                             => 'array',
+            'prijzen.*.jaar'                      => 'required|integer|min:2000|max:2100|distinct',
+            'prijzen.*.prijs'                     => 'nullable|numeric|min:0',
+            'prijzen.*.afdracht_sponsorcommissie' => 'nullable|numeric|min:0',
+        ], [
+            'prijzen.*.jaar.required' => 'Vul bij elke jaarprijs een jaar in.',
+            'prijzen.*.jaar.distinct' => 'Elk jaar mag maar één keer voorkomen bij de jaarprijzen.',
+        ]);
+
+        return collect($request->input('prijzen', []))
+            ->filter(fn ($r) => filled($r['prijs'] ?? null) || filled($r['afdracht_sponsorcommissie'] ?? null))
+            ->values()
+            ->all();
+    }
+
+    private function syncPrijzen(MembershipType $type, array $prijzen): void
+    {
+        $type->prijzen()->delete();
+
+        foreach ($prijzen as $r) {
+            $type->prijzen()->create([
+                'jaar'                      => (int) $r['jaar'],
+                'prijs'                     => filled($r['prijs'] ?? null) ? $r['prijs'] : null,
+                'afdracht_sponsorcommissie' => filled($r['afdracht_sponsorcommissie'] ?? null) ? $r['afdracht_sponsorcommissie'] : null,
+            ]);
+        }
     }
 
     private function validate(Request $request): array

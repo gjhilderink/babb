@@ -77,14 +77,14 @@
                     <td class="px-4 py-3 text-gray-500">{{ $member->company_name ?? 'â€”' }}</td>
                     <td class="px-4 py-3 text-gray-700">{{ $member->membershipType->name }}</td>
                     <td class="px-4 py-3 text-right font-medium">
-                        @if ($member->net_price < $member->membershipType->price_per_year)
-                            <span class="line-through text-gray-400 font-normal text-xs">&euro; {{ number_format($member->membershipType->price_per_year, 2, ',', '.') }}</span><br>
+                        @if ($member->net_price < $member->jaar_prijs)
+                            <span class="line-through text-gray-400 font-normal text-xs">&euro; {{ number_format($member->jaar_prijs, 2, ',', '.') }}</span><br>
                             &euro; {{ number_format($member->net_price, 2, ',', '.') }}
                             <div class="text-xs text-green-700 font-normal" title="{{ $member->korting_reden }}">
                                 korting {{ $member->korting_label }}
                             </div>
                         @else
-                            &euro; {{ number_format($member->membershipType->price_per_year, 2, ',', '.') }}
+                            &euro; {{ number_format($member->jaar_prijs, 2, ',', '.') }}
                         @endif
                     </td>
                     <td class="px-4 py-3">

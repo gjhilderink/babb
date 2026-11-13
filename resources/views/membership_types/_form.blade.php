@@ -51,6 +51,63 @@
         <p class="text-xs text-gray-400 mt-1">Één voordeel per regel. Deze worden als lijst getoond.</p>
     </div>
 
+    @php
+        $prijsRegels = old('prijzen', isset($membershipType)
+            ? $membershipType->prijzen->map(fn ($p) => [
+                'jaar'                      => $p->jaar,
+                'prijs'                     => $p->prijs,
+                'afdracht_sponsorcommissie' => $p->afdracht_sponsorcommissie,
+            ])->values()->all()
+            : []);
+    @endphp
+    <div class="md:col-span-2" x-data="{ regels: @js(array_values($prijsRegels)) }">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Prijzen per jaar</label>
+        <p class="text-xs text-gray-400 mb-2">
+            Leg vast wat de prijs en de afdracht sponsorcommissie in een bepaald jaar waren.
+            Voor jaren zonder regel, of een leeg veld, gelden de standaardbedragen hierboven.
+        </p>
+        <table class="w-full text-sm" x-show="regels.length">
+            <thead>
+                <tr class="text-left text-xs text-gray-500">
+                    <th class="pb-1 pr-2 font-medium w-28">Jaar</th>
+                    <th class="pb-1 pr-2 font-medium">Prijs (excl. BTW)</th>
+                    <th class="pb-1 pr-2 font-medium">Afdracht sponsorcommissie</th>
+                    <th class="pb-1"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <template x-for="(regel, i) in regels" :key="i">
+                    <tr>
+                        <td class="pb-2 pr-2">
+                            <input type="number" min="2000" max="2100" step="1" :name="`prijzen[${i}][jaar]`" x-model="regel.jaar"
+                                   class="w-full border border-gray-300 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-bb-green-600">
+                        </td>
+                        <td class="pb-2 pr-2">
+                            <div class="relative">
+                                <span class="absolute left-2 top-1.5 text-gray-400 text-sm">&euro;</span>
+                                <input type="number" step="0.01" min="0" :name="`prijzen[${i}][prijs]`" x-model="regel.prijs" placeholder="standaard"
+                                       class="w-full border border-gray-300 rounded-lg pl-6 pr-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-bb-green-600">
+                            </div>
+                        </td>
+                        <td class="pb-2 pr-2">
+                            <div class="relative">
+                                <span class="absolute left-2 top-1.5 text-gray-400 text-sm">&euro;</span>
+                                <input type="number" step="0.01" min="0" :name="`prijzen[${i}][afdracht_sponsorcommissie]`" x-model="regel.afdracht_sponsorcommissie" placeholder="standaard"
+                                       class="w-full border border-gray-300 rounded-lg pl-6 pr-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-bb-green-600">
+                            </div>
+                        </td>
+                        <td class="pb-2 text-right">
+                            <button type="button" @click="regels.splice(i, 1)" class="text-xs text-red-500 hover:underline">Verwijderen</button>
+                        </td>
+                    </tr>
+                </template>
+            </tbody>
+        </table>
+        <button type="button"
+                @click="regels.push({ jaar: regels.length ? Math.min(...regels.map(r => +r.jaar || {{ now()->year }})) - 1 : {{ now()->year }}, prijs: '', afdracht_sponsorcommissie: '' })"
+                class="mt-1 text-sm text-bb-green-600 hover:underline">+ Jaar toevoegen</button>
+    </div>
+
     <div class="flex items-center gap-2">
         <input type="checkbox" name="is_active" id="is_active" value="1"
                @checked(old('is_active', $membershipType->is_active ?? true))

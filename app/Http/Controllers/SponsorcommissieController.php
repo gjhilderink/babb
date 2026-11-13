@@ -102,14 +102,19 @@ class SponsorcommissieController extends Controller
         $begin = Carbon::create($jaar, 1, 1)->toDateString();
         $eind  = Carbon::create($jaar, 12, 31)->toDateString();
 
-        $vastgelegd = SponsorcommissieAfdracht::with('member.membershipType')
+        $vastgelegd = SponsorcommissieAfdracht::with('member.membershipType.prijzen')
             ->where('jaar', $jaar)
             ->get()
             ->keyBy('member_id');
 
-        $leden = Member::with('membershipType')
+        // Pakket heeft een afdracht in dit jaar: via een jaarbedrag, of zonder jaarbedrag via het standaardbedrag
+        $leden = Member::with('membershipType.prijzen')
             ->where('status', 'active')
-            ->whereHas('membershipType', fn ($q) => $q->where('afdracht_sponsorcommissie', '>', 0))
+            ->whereHas('membershipType', fn ($q) => $q->where(fn ($q) => $q
+                ->whereHas('prijzen', fn ($p) => $p->where('jaar', $jaar)->where('afdracht_sponsorcommissie', '>', 0))
+                ->orWhere(fn ($q) => $q
+                    ->where('afdracht_sponsorcommissie', '>', 0)
+                    ->whereDoesntHave('prijzen', fn ($p) => $p->where('jaar', $jaar)->whereNotNull('afdracht_sponsorcommissie')))))
             ->where(fn ($q) => $q->whereNull('membership_start')->orWhere('membership_start', '<=', $eind))
             ->where(fn ($q) => $q->whereNull('membership_end')->orWhere('membership_end', '>=', $begin))
             ->get()
@@ -123,7 +128,7 @@ class SponsorcommissieController extends Controller
         }
 
         return $leden
-            ->map(function (Member $member) use ($vastgelegd) {
+            ->map(function (Member $member) use ($vastgelegd, $jaar) {
                 $afdracht = $vastgelegd->get($member->id);
 
                 return [
@@ -131,7 +136,7 @@ class SponsorcommissieController extends Controller
                     'pakket'         => $member->membershipType?->name,
                     'bedrag'         => $afdracht
                         ? (float) $afdracht->bedrag
-                        : (float) ($member->membershipType?->afdracht_sponsorcommissie ?? 0),
+                        : ($member->membershipType?->afdrachtVoorJaar($jaar) ?? 0.0),
                     'overgemaakt_op' => $afdracht?->overgemaakt_op,
                 ];
             })

@@ -37,14 +37,14 @@ class InvoiceController extends Controller
     {
         abort_unless(AclService::allowed('invoices.create'), 403);
 
-        $members  = Member::with('membershipType')->where('status', 'active')->orderBy('last_name')->get();
+        $members  = Member::with('membershipType.prijzen')->where('status', 'active')->orderBy('last_name')->get();
         $products = Product::where('is_active', true)->orderBy('name')->get();
         $member   = $request->member_id ? Member::find($request->member_id) : null;
 
         // Lidmaatschapspakket per lid, om de factuurregel automatisch te vullen
         $memberships = $members->filter(fn (Member $m) => $m->membershipType)->mapWithKeys(fn (Member $m) => [$m->id => [
             'name'  => $m->membershipType->name,
-            'price' => (float) $m->membershipType->price_per_year,
+            'price' => $m->membershipType->prijsVoorJaar(now()->year),
         ]]);
 
         // Tijdelijke kortingen per lid, voor de voorvertoning in het formulier

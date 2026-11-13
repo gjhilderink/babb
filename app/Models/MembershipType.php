@@ -30,4 +30,25 @@ class MembershipType extends Model
     {
         return $this->hasMany(Member::class);
     }
+
+    public function prijzen()
+    {
+        return $this->hasMany(MembershipTypePrijs::class)->orderByDesc('jaar');
+    }
+
+    /** Prijs per jaar in een bepaald jaar; zonder vastgelegde jaarprijs geldt de standaardprijs. */
+    public function prijsVoorJaar(int $jaar): float
+    {
+        $jaarPrijs = $this->prijzen->firstWhere('jaar', $jaar)?->prijs;
+
+        return (float) ($jaarPrijs ?? $this->price_per_year);
+    }
+
+    /** Afdracht sponsorcommissie in een bepaald jaar; zonder vastgelegd jaarbedrag geldt het standaardbedrag. */
+    public function afdrachtVoorJaar(int $jaar): float
+    {
+        $jaarAfdracht = $this->prijzen->firstWhere('jaar', $jaar)?->afdracht_sponsorcommissie;
+
+        return (float) ($jaarAfdracht ?? $this->afdracht_sponsorcommissie);
+    }
 }
