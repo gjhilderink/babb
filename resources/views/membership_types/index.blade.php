@@ -32,6 +32,10 @@
                 <span class="text-sm font-normal text-gray-400">/ jaar</span>
             </div>
 
+            @if ($type->afdracht_sponsorcommissie > 0)
+                <p class="text-xs text-gray-500 mb-1">Afdracht sponsorcommissie: &euro; {{ number_format($type->afdracht_sponsorcommissie, 2, ',', '.') }} / jaar</p>
+            @endif
+
             @if ($type->max_members)
                 <p class="text-xs text-gray-500 mb-3">Max. {{ $type->max_members }} medewerkers</p>
             @endif

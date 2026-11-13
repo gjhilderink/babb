@@ -16,6 +16,7 @@ use App\Http\Controllers\MembershipBillingController;
 use App\Http\Controllers\MembershipTypeController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\SettingController;
+use App\Http\Controllers\SponsorcommissieController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -51,6 +52,10 @@ Route::middleware('auth')->group(function () {
 
         Route::resource('afdrachten', AfdrachtenController::class)->except('show');
         Route::patch('afdrachten/{afdracht}/status', [AfdrachtenController::class, 'updateStatus'])->name('afdrachten.status');
+
+        Route::get('sponsorcommissie', [SponsorcommissieController::class, 'index'])->name('sponsorcommissie.index');
+        Route::patch('sponsorcommissie', [SponsorcommissieController::class, 'update'])->name('sponsorcommissie.update');
+        Route::post('sponsorcommissie/markeer-alles', [SponsorcommissieController::class, 'markeerAlles'])->name('sponsorcommissie.markeer-alles');
 
         Route::resource('declaraties', DeclaratiesController::class)->except('show');
         Route::patch('declaraties/{declaratie}/status', [DeclaratiesController::class, 'updateStatus'])->name('declaraties.status');

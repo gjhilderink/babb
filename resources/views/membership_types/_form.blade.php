@@ -17,6 +17,17 @@
     </div>
 
     <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Afdracht sponsorcommissie per jaar</label>
+        <div class="relative">
+            <span class="absolute left-3 top-2 text-gray-400 text-sm">&euro;</span>
+            <input type="number" name="afdracht_sponsorcommissie" step="0.01" min="0"
+                   value="{{ old('afdracht_sponsorcommissie', $membershipType->afdracht_sponsorcommissie ?? '0.00') }}"
+                   class="w-full border border-gray-300 rounded-lg pl-7 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-bb-green-600">
+        </div>
+        <p class="text-xs text-gray-400 mt-1">Bedrag per lid dat naar de club wordt overgemaakt. 0 = geen afdracht.</p>
+    </div>
+
+    <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">Max. aantal medewerkers</label>
         <input type="number" name="max_members" min="1"
                value="{{ old('max_members', $membershipType->max_members ?? '') }}"

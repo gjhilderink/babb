@@ -61,12 +61,14 @@ class MembershipTypeController extends Controller
             'name'           => 'required|string|max:255',
             'description'    => 'nullable|string',
             'price_per_year' => 'required|numeric|min:0',
+            'afdracht_sponsorcommissie' => 'nullable|numeric|min:0',
             'max_members'    => 'nullable|integer|min:1',
             'is_active'      => 'boolean',
             'benefits'       => 'nullable|string',
         ]);
 
         $data['is_active'] = $request->boolean('is_active', true);
+        $data['afdracht_sponsorcommissie'] = $data['afdracht_sponsorcommissie'] ?? 0;
 
         // Convert textarea (one benefit per line) to array
         if (!empty($data['benefits'])) {

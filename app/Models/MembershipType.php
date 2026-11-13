@@ -13,6 +13,7 @@ class MembershipType extends Model
         'name',
         'description',
         'price_per_year',
+        'afdracht_sponsorcommissie',
         'max_members',
         'benefits',
         'is_active',
@@ -20,6 +21,7 @@ class MembershipType extends Model
 
     protected $casts = [
         'price_per_year' => 'decimal:2',
+        'afdracht_sponsorcommissie' => 'decimal:2',
         'benefits'       => 'array',
         'is_active'      => 'boolean',
     ];
