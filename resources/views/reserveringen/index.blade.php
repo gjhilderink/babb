@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@use('App\Support\Seizoen')
 @section('title', 'Reservering per jaar – BABB Portaal')
 
 @php
@@ -10,8 +11,9 @@
 <div class="mb-6">
     <h1 class="text-2xl font-bold text-gray-900">Reservering per jaar</h1>
     <p class="text-sm text-gray-500 mt-1">
-        Bedrag dat de club elk jaar reserveert om zelf in te zetten.
-        De reservering gaat af van de <a href="{{ route('afdrachten.index') }}" class="text-bb-green-600 hover:underline">afdracht aan Bonboys</a> over hetzelfde jaar.
+        Bedrag dat de club elk seizoen (1 september t/m 31 augustus) reserveert om zelf in te zetten.
+        De reservering gaat af van de <a href="{{ route('afdrachten.index') }}" class="text-bb-green-600 hover:underline">afdracht aan Bonboys</a> over hetzelfde seizoen.
+        Jaar 2026 = seizoen 26/27.
     </p>
 </div>
 
@@ -19,10 +21,12 @@
 <form method="POST" action="{{ route('reserveringen.store') }}"
       class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-6 flex flex-wrap items-end gap-3">
     @csrf
-    <div>
-        <label class="block text-xs font-medium text-gray-600 mb-1">Jaar</label>
-        <input type="number" name="jaar" min="2000" max="2100" step="1" required
-               value="{{ old('jaar', now()->year) }}" class="{{ $inputClass }} w-28">
+    <div x-data="{ j: {{ (int) old('jaar', Seizoen::huidig()) }} }">
+        <label class="block text-xs font-medium text-gray-600 mb-1">
+            Jaar <span class="text-gray-400" x-text="j > 1999 ? '(seizoen ' + String(j % 100).padStart(2, '0') + '/' + String((j + 1) % 100).padStart(2, '0') + ')' : ''"></span>
+        </label>
+        <input type="number" name="jaar" min="2000" max="2100" step="1" required x-model.number="j"
+               class="{{ $inputClass }} w-28">
     </div>
     <div>
         <label class="block text-xs font-medium text-gray-600 mb-1">Bedrag</label>
@@ -50,7 +54,7 @@
     <table class="min-w-full divide-y divide-gray-100 text-sm">
         <thead class="bg-gray-50">
             <tr>
-                <th class="px-5 py-3 text-left font-semibold text-gray-600">Jaar</th>
+                <th class="px-5 py-3 text-left font-semibold text-gray-600">Jaar / seizoen</th>
                 <th class="px-5 py-3 text-left font-semibold text-gray-600">Reservering</th>
                 <th class="px-5 py-3 text-left font-semibold text-gray-600">Omschrijving</th>
                 <th class="px-5 py-3 text-right font-semibold text-gray-600 whitespace-nowrap">Afdracht Bonboys (totaal)</th>
@@ -62,7 +66,7 @@
             @foreach ($reserveringen as $reservering)
             @php $afdracht = $afdrachtBonboys->get($reservering->jaar); @endphp
             <tr class="hover:bg-gray-50 align-middle">
-                <td class="px-5 py-3 font-medium text-gray-900">{{ $reservering->jaar }}</td>
+                <td class="px-5 py-3 whitespace-nowrap"><span class="font-medium text-gray-900">{{ $reservering->jaar }}</span> <span class="text-xs text-gray-500">seizoen {{ Seizoen::label($reservering->jaar) }}</span></td>
                 <td class="px-5 py-3" colspan="2">
                     <form method="POST" action="{{ route('reserveringen.update', $reservering) }}" id="reservering-{{ $reservering->id }}"
                           class="flex flex-wrap items-center gap-2">
@@ -86,7 +90,7 @@
                 </td>
                 <td class="px-5 py-3 text-right">
                     <form method="POST" action="{{ route('reserveringen.destroy', $reservering) }}"
-                          onsubmit="return confirm('Reservering voor {{ $reservering->jaar }} verwijderen?')">
+                          onsubmit="return confirm('Reservering voor seizoen {{ Seizoen::label($reservering->jaar) }} verwijderen?')">
                         @csrf @method('DELETE')
                         <button type="submit" class="text-xs text-red-400 hover:text-red-600">Verwijderen</button>
                     </form>

@@ -53,7 +53,7 @@
                     <th class="px-4 py-3 text-left font-semibold text-gray-600">Bedrijf</th>
                     <th class="px-4 py-3 text-left font-semibold text-gray-600">Pakket</th>
                     <th class="px-4 py-3 text-right font-semibold text-gray-600">Bedrag</th>
-                    <th class="px-4 py-3 text-left font-semibold text-gray-600">Status {{ now()->year }}</th>
+                    <th class="px-4 py-3 text-left font-semibold text-gray-600">Status seizoen {{ \App\Support\Seizoen::label($seizoen) }}</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-100">

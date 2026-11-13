@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\AfdrachtBestemming;
 use App\Models\LidmaatschapAfdracht;
 use App\Services\LidmaatschapAfdrachtService;
+use App\Support\Seizoen;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -42,7 +43,7 @@ class LidmaatschapAfdrachtController extends Controller
             ]);
         }
 
-        return back()->with('success', "{$open->count()} afdracht(en) over {$jaar} gemarkeerd als overgemaakt.");
+        return back()->with('success', "{$open->count()} afdracht(en) over seizoen ".Seizoen::label($jaar)." gemarkeerd als overgemaakt.");
     }
 
     /** Bestemming van de afdracht over een jaar opslaan; leeg = verwijderen. */
@@ -58,12 +59,12 @@ class LidmaatschapAfdrachtController extends Controller
         if (blank($data['bestemming'] ?? null)) {
             AfdrachtBestemming::where($sleutel)->delete();
 
-            return back()->with('success', "Bestemming voor {$data['jaar']} verwijderd.");
+            return back()->with('success', "Bestemming voor seizoen ".Seizoen::label((int) $data['jaar'])." verwijderd.");
         }
 
         AfdrachtBestemming::updateOrCreate($sleutel, ['bestemming' => trim($data['bestemming'])]);
 
-        return back()->with('success', "Bestemming voor {$data['jaar']} opgeslagen.");
+        return back()->with('success', "Bestemming voor seizoen ".Seizoen::label((int) $data['jaar'])." opgeslagen.");
     }
 
     /** Alle "overgemaakt"-markeringen van een jaar verwijderen. */
@@ -73,6 +74,6 @@ class LidmaatschapAfdrachtController extends Controller
 
         $aantal = LidmaatschapAfdracht::where(['soort' => $soort, 'jaar' => (int) $data['jaar']])->delete();
 
-        return back()->with('success', "Markering overgemaakt verwijderd voor {$aantal} afdracht(en) over {$data['jaar']}.");
+        return back()->with('success', "Markering overgemaakt verwijderd voor {$aantal} afdracht(en) over seizoen ".Seizoen::label((int) $data['jaar']).".");
     }
 }

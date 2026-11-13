@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\EvenementReservering;
 use App\Services\LidmaatschapAfdrachtService;
+use App\Support\Seizoen;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -29,21 +30,21 @@ class EvenementReserveringController extends Controller
 
         EvenementReservering::create($data);
 
-        return back()->with('success', "Evenementenreservering voor {$data['jaar']} toegevoegd.");
+        return back()->with('success', "Evenementenreservering voor seizoen ".Seizoen::label((int) $data['jaar'])." toegevoegd.");
     }
 
     public function update(Request $request, EvenementReservering $evenementReservering): RedirectResponse
     {
         $evenementReservering->update($this->valideer($request, $evenementReservering));
 
-        return back()->with('success', "Evenementenreservering voor {$evenementReservering->jaar} bijgewerkt.");
+        return back()->with('success', "Evenementenreservering voor seizoen ".Seizoen::label($evenementReservering->jaar)." bijgewerkt.");
     }
 
     public function destroy(EvenementReservering $evenementReservering): RedirectResponse
     {
         $evenementReservering->delete();
 
-        return back()->with('success', "Evenementenreservering voor {$evenementReservering->jaar} verwijderd.");
+        return back()->with('success', "Evenementenreservering voor seizoen ".Seizoen::label($evenementReservering->jaar)." verwijderd.");
     }
 
     private function valideer(Request $request, ?EvenementReservering $reservering = null): array

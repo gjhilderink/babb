@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Invoice;
 use App\Models\Member;
 use App\Services\InvoiceService;
+use App\Support\Seizoen;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -15,21 +16,23 @@ class MembershipBillingController extends Controller
 
     public function index(Request $request): View
     {
+        $seizoen = Seizoen::huidig();
+
         $members = Member::with('membershipType.prijzen')
             ->where('status', 'active')
             ->whereNotNull('membership_type_id')
             ->whereHas('membershipType', fn ($q) => $q->where('is_active', true))
             ->orderBy('last_name')
             ->get()
-            ->map(function (Member $member) {
-                // Check if member already has an open invoice this year
+            ->map(function (Member $member) use ($seizoen) {
+                // Heeft dit lid in het huidige seizoen al een factuur?
                 $member->already_invoiced = Invoice::where('member_id', $member->id)
-                    ->whereYear('issue_date', now()->year)
+                    ->whereBetween('issue_date', Seizoen::periode($seizoen))
                     ->whereIn('status', ['draft', 'sent', 'paid'])
                     ->exists();
 
                 // Prijs na eventuele tijdelijke korting (excl. btw, op basis van vandaag)
-                $price    = $member->membershipType->prijsVoorJaar(now()->year);
+                $price    = $member->membershipType->prijsVoorJaar($seizoen);
                 $member->jaar_prijs = $price;
                 $discount = $member->discountItemsFor([['quantity' => 1, 'unit_price' => $price, 'tax_rate' => 21]]);
                 $member->net_price = $price + array_sum(array_column($discount, 'unit_price'));
@@ -40,7 +43,7 @@ class MembershipBillingController extends Controller
         $issueDate = $request->old('issue_date', now()->format('Y-m-d'));
         $dueDate   = $request->old('due_date', now()->addDays(30)->format('Y-m-d'));
 
-        return view('membership_billing.index', compact('members', 'issueDate', 'dueDate'));
+        return view('membership_billing.index', compact('members', 'issueDate', 'dueDate', 'seizoen'));
     }
 
     public function store(Request $request): RedirectResponse
@@ -60,6 +63,10 @@ class MembershipBillingController extends Controller
 
         $created = 0;
 
+        // Het seizoen volgt uit de factuurdatum (1 sep t/m 31 aug)
+        $seizoen = Seizoen::vanDatum($request->issue_date);
+        $label   = 'seizoen '.Seizoen::label($seizoen);
+
         foreach ($members as $member) {
             $type = $member->membershipType;
 
@@ -68,13 +75,13 @@ class MembershipBillingController extends Controller
                 'member_id'  => $member->id,
                 'issue_date' => $request->issue_date,
                 'due_date'   => $request->due_date,
-                'notes'      => "Lidmaatschapsfactuur {$type->name} — " . now()->year,
+                'notes'      => "Lidmaatschapsfactuur {$type->name} — {$label}",
                 'items'      => [
                     [
                         'product_id'  => null,
-                        'description' => "Lidmaatschap {$type->name} " . now()->year,
+                        'description' => "Lidmaatschap {$type->name} {$label}",
                         'quantity'    => 1,
-                        'unit_price'  => $type->prijsVoorJaar(now()->year),
+                        'unit_price'  => $type->prijsVoorJaar($seizoen),
                         'tax_rate'    => 21,
                     ],
                 ],

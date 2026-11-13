@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Declaratie;
+use App\Support\Seizoen;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -12,27 +13,30 @@ class DeclaratiesController extends Controller
 {
     public function index(Request $request): View
     {
-        $jaar = $request->integer('jaar', now()->year);
+        // "Jaar" = seizoen (1 sep t/m 31 aug), aangeduid met het startjaar
+        $jaar    = $request->integer('jaar', Seizoen::huidig());
+        $periode = Seizoen::periode($jaar);
 
         $declaraties = Declaratie::with('creator')
-            ->whereYear('datum', $jaar)
+            ->whereBetween('datum', $periode)
             ->when($request->status, fn ($q, $s) => $q->where('status', $s))
             ->when($request->search, fn ($q, $s) => $q->where('omschrijving', 'like', "%$s%"))
             ->orderBy('datum', 'desc')
             ->paginate(25)
             ->withQueryString();
 
-        $totaalJaar = Declaratie::whereYear('datum', $jaar)->sum('bedrag');
-        $totaalBetaald = Declaratie::whereYear('datum', $jaar)->where('status', 'betaald')->sum('bedrag');
-        $totaalOpen = Declaratie::whereYear('datum', $jaar)->whereIn('status', ['ingediend', 'goedgekeurd'])->sum('bedrag');
+        $totaalJaar = Declaratie::whereBetween('datum', $periode)->sum('bedrag');
+        $totaalBetaald = Declaratie::whereBetween('datum', $periode)->where('status', 'betaald')->sum('bedrag');
+        $totaalOpen = Declaratie::whereBetween('datum', $periode)->whereIn('status', ['ingediend', 'goedgekeurd'])->sum('bedrag');
 
-        $beschikbareJaren = Declaratie::selectRaw('YEAR(datum) as jaar')
+        $beschikbareJaren = Declaratie::selectRaw(Seizoen::sql('datum').' as jaar')
             ->groupBy('jaar')
             ->orderByDesc('jaar')
-            ->pluck('jaar');
+            ->pluck('jaar')
+            ->map(fn ($j) => (int) $j);
 
         if ($beschikbareJaren->isEmpty()) {
-            $beschikbareJaren = collect([now()->year]);
+            $beschikbareJaren = collect([Seizoen::huidig()]);
         }
 
         return view('declaraties.index', compact(

@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@use('App\Support\Seizoen')
 @section('title', 'Overige kosten & Declaraties – BABB Portaal')
 
 @section('content')
@@ -10,19 +11,20 @@
     </a>
 </div>
 
-{{-- Jaar selector --}}
-<div class="mb-5 flex items-center gap-3">
+{{-- Seizoen selector (1 sep t/m 31 aug) --}}
+<div class="mb-5 flex flex-wrap items-center gap-3">
     @foreach ($beschikbareJaren as $j)
         <a href="{{ route('declaraties.index', array_merge(request()->except('jaar','page'), ['jaar' => $j])) }}"
+           title="{{ Seizoen::begin($j)->format('d-m-Y') }} t/m {{ Seizoen::eind($j)->format('d-m-Y') }}"
            class="px-4 py-1.5 rounded-full text-sm font-medium border transition
                   {{ $j == $jaar ? 'bg-bb-green-600 text-white border-bb-green-600' : 'bg-white text-gray-600 border-gray-300 hover:border-bb-green-400' }}">
-            {{ $j }}
+            {{ Seizoen::weergave($j) }}
         </a>
     @endforeach
-    @if (!$beschikbareJaren->contains(now()->year))
-        <a href="{{ route('declaraties.index', ['jaar' => now()->year]) }}"
+    @if (!$beschikbareJaren->contains(Seizoen::huidig()))
+        <a href="{{ route('declaraties.index', ['jaar' => Seizoen::huidig()]) }}"
            class="px-4 py-1.5 rounded-full text-sm font-medium border bg-white text-gray-400 border-gray-200">
-            {{ now()->year }}
+            {{ Seizoen::weergave(Seizoen::huidig()) }}
         </a>
     @endif
 </div>
@@ -30,7 +32,7 @@
 {{-- KPI totalen --}}
 <div class="grid grid-cols-3 gap-4 mb-6">
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-        <div class="text-xs text-gray-500 mb-1">Totaal {{ $jaar }}</div>
+        <div class="text-xs text-gray-500 mb-1">Totaal seizoen {{ Seizoen::label($jaar) }}</div>
         <div class="text-xl font-bold text-gray-800">&euro; {{ number_format($totaalJaar, 2, ',', '.') }}</div>
     </div>
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
@@ -64,7 +66,7 @@
 
 <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
     @if ($declaraties->isEmpty())
-        <p class="px-6 py-10 text-center text-sm text-gray-400">Geen declaraties gevonden voor {{ $jaar }}.</p>
+        <p class="px-6 py-10 text-center text-sm text-gray-400">Geen declaraties gevonden voor seizoen {{ Seizoen::label($jaar) }}.</p>
     @else
     <table class="min-w-full divide-y divide-gray-100 text-sm">
         <thead class="bg-gray-50">

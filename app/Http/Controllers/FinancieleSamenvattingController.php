@@ -9,13 +9,15 @@ use App\Models\EventCost;
 use App\Models\Invoice;
 use App\Models\Reservering;
 use App\Services\LidmaatschapAfdrachtService;
+use App\Support\Seizoen;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\View\View;
 
 /**
- * Per jaar alle geldstromen: wat binnenkomt (facturen) en wat eruit gaat
- * (afdrachten en kosten). Alle bedragen excl. BTW, tenzij anders vermeld.
+ * Per seizoen (1 sep t/m 31 aug, aangeduid met het startjaar) alle geldstromen:
+ * wat binnenkomt en wat eruit gaat (afdrachten en kosten).
+ * Alle bedragen excl. BTW, tenzij anders vermeld.
  */
 class FinancieleSamenvattingController extends Controller
 {
@@ -25,7 +27,7 @@ class FinancieleSamenvattingController extends Controller
     {
         $perJaar = $this->perJaar();
         $jaren   = $perJaar->keys()->all();
-        $jaar    = in_array($request->integer('jaar'), $jaren, true) ? $request->integer('jaar') : now()->year;
+        $jaar    = in_array($request->integer('jaar'), $jaren, true) ? $request->integer('jaar') : Seizoen::huidig();
         $detail  = $perJaar->get($jaar);
 
         return view('samenvatting.index', compact('perJaar', 'jaren', 'jaar', 'detail'));
@@ -42,7 +44,7 @@ class FinancieleSamenvattingController extends Controller
             ->orWhereHas('items', fn ($i) => $i->where('description', 'like', 'Lidmaatschap %'));
 
         $factuurTotalen = fn ($query) => $query->whereIn('status', ['sent', 'paid', 'overdue'])
-            ->selectRaw('YEAR(issue_date) as jaar')
+            ->selectRaw(Seizoen::sql('issue_date').' as jaar')
             ->selectRaw('SUM(subtotal) as gefactureerd')
             ->selectRaw("SUM(CASE WHEN status = 'paid' THEN subtotal ELSE 0 END) as ontvangen")
             ->selectRaw('SUM(tax_amount) as btw')
@@ -54,7 +56,7 @@ class FinancieleSamenvattingController extends Controller
         $overigeFacturen       = $factuurTotalen(Invoice::whereNot($isLidmaatschap));
 
         $overigeAfdrachten = Afdracht::query()
-            ->selectRaw('YEAR(COALESCE(datum, created_at)) as jaar')
+            ->selectRaw(Seizoen::sql('COALESCE(datum, created_at)').' as jaar')
             ->selectRaw('SUM(bedrag) as totaal')
             ->selectRaw("SUM(CASE WHEN status = 'betaald' THEN bedrag ELSE 0 END) as betaald")
             ->groupBy('jaar')
@@ -62,18 +64,18 @@ class FinancieleSamenvattingController extends Controller
             ->keyBy('jaar');
 
         $declaraties = Declaratie::where('status', '!=', 'afgewezen')
-            ->selectRaw('YEAR(datum) as jaar')
+            ->selectRaw(Seizoen::sql('datum').' as jaar')
             ->selectRaw('SUM(bedrag) as totaal')
             ->selectRaw("SUM(CASE WHEN status = 'betaald' THEN bedrag ELSE 0 END) as betaald")
             ->groupBy('jaar')
             ->get()
             ->keyBy('jaar');
 
-        // Evenementkosten tellen in het jaar van het evenement; betaald = er is een betaaldatum
+        // Evenementkosten tellen in het seizoen van het evenement; betaald = er is een betaaldatum
         $evenementkosten = EventCost::query()
             ->join('events', 'events.id', '=', 'event_costs.event_id')
             ->whereNull('events.deleted_at')
-            ->selectRaw('YEAR(events.event_date) as jaar')
+            ->selectRaw(Seizoen::sql('events.event_date').' as jaar')
             ->selectRaw('SUM(event_costs.amount) as totaal')
             ->selectRaw('SUM(CASE WHEN event_costs.paid_at IS NOT NULL THEN event_costs.amount ELSE 0 END) as betaald')
             ->groupBy('jaar')
@@ -85,7 +87,7 @@ class FinancieleSamenvattingController extends Controller
         $reserveringen    = Reservering::pluck('bedrag', 'jaar');
         $evenementPerLid  = EvenementReservering::pluck('bedrag_per_lid', 'jaar');
 
-        $huidig = now()->year;
+        $huidig = Seizoen::huidig();
         $alleJaren = collect([$huidig])
             ->merge($lidmaatschapsfacturen->keys())->merge($overigeFacturen->keys())->merge($overigeAfdrachten->keys())->merge($declaraties->keys())
             ->merge($evenementkosten->keys())->merge($sponsorcommissie->keys())->merge($bonboys->keys())

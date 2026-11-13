@@ -41,10 +41,14 @@ class InvoiceController extends Controller
         $products = Product::where('is_active', true)->orderBy('name')->get();
         $member   = $request->member_id ? Member::find($request->member_id) : null;
 
-        // Lidmaatschapspakket per lid, om de factuurregel automatisch te vullen
+        // Lidmaatschapspakket per lid, om de factuurregel automatisch te vullen.
+        // De prijs hangt af van het seizoen van de factuurdatum: 'prijzen' = vastgelegde
+        // seizoensprijzen, 'price' = standaardprijs voor seizoenen zonder eigen prijs.
         $memberships = $members->filter(fn (Member $m) => $m->membershipType)->mapWithKeys(fn (Member $m) => [$m->id => [
-            'name'  => $m->membershipType->name,
-            'price' => $m->membershipType->prijsVoorJaar(now()->year),
+            'name'    => $m->membershipType->name,
+            'price'   => (float) $m->membershipType->price_per_year,
+            'prijzen' => $m->membershipType->prijzen->whereNotNull('prijs')
+                ->mapWithKeys(fn ($p) => [$p->jaar => (float) $p->prijs]),
         ]]);
 
         // Tijdelijke kortingen per lid, voor de voorvertoning in het formulier

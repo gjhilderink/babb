@@ -41,12 +41,12 @@
 
             @if ($type->prijzen->isNotEmpty())
                 <details class="mb-3 text-xs text-gray-500">
-                    <summary class="cursor-pointer hover:text-gray-700">Prijzen per jaar ({{ $type->prijzen->count() }})</summary>
+                    <summary class="cursor-pointer hover:text-gray-700">Prijzen per seizoen ({{ $type->prijzen->count() }})</summary>
                     <table class="mt-1 w-full">
-                        <tr class="text-gray-400"><td>Jaar</td><td class="text-right">Prijs</td><td class="text-right">Sponsorcie.</td><td class="text-right">Bonboys</td></tr>
+                        <tr class="text-gray-400"><td>Seizoen</td><td class="text-right">Prijs</td><td class="text-right">Sponsorcie.</td><td class="text-right">Bonboys</td></tr>
                         @foreach ($type->prijzen as $p)
                             <tr>
-                                <td>{{ $p->jaar }}</td>
+                                <td title="Jaar {{ $p->jaar }}">{{ \App\Support\Seizoen::label($p->jaar) }}</td>
                                 <td class="text-right">&euro; {{ number_format($type->prijsVoorJaar($p->jaar), 2, ',', '.') }}</td>
                                 <td class="text-right">&euro; {{ number_format($type->afdrachtVoorJaar($p->jaar, 'sponsorcommissie'), 2, ',', '.') }}</td>
                                 <td class="text-right">&euro; {{ number_format($type->afdrachtVoorJaar($p->jaar, 'bonboys'), 2, ',', '.') }}</td>

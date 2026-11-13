@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@use('App\Support\Seizoen')
 @section('title', 'Financiële samenvatting – BABB Portaal')
 
 @php
@@ -20,13 +21,13 @@
 <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
     <div>
         <h1 class="text-2xl font-bold text-gray-900">Financiële samenvatting</h1>
-        <p class="text-sm text-gray-500 mt-1">Geldstromen per jaar. Bedragen excl. BTW; conceptfacturen en geannuleerde facturen tellen niet mee.</p>
+        <p class="text-sm text-gray-500 mt-1">Geldstromen per seizoen (1 september t/m 31 augustus; jaar 2026 = seizoen 26/27). Bedragen excl. BTW; conceptfacturen en geannuleerde facturen tellen niet mee.</p>
     </div>
     <div class="flex items-center gap-2">
-        <label for="jaar" class="text-sm text-gray-600">Jaar</label>
+        <label for="jaar" class="text-sm text-gray-600">Seizoen</label>
         <select id="jaar" :value="jaar" @change="kies(+$event.target.value)" class="border border-gray-300 rounded-lg px-3 py-2 text-sm">
             @foreach ($jaren as $j)
-                <option value="{{ $j }}" @selected($j === $jaar)>{{ $j }}</option>
+                <option value="{{ $j }}" @selected($j === $jaar)>{{ Seizoen::weergave($j) }}</option>
             @endforeach
         </select>
     </div>
@@ -38,20 +39,20 @@
 {{-- Kerncijfers --}}
 <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-        <div class="text-xs text-gray-500 mb-1">Inkomsten {{ $d['jaar'] }}</div>
+        <div class="text-xs text-gray-500 mb-1">Inkomsten seizoen {{ Seizoen::label($d['jaar']) }}</div>
         <div class="text-xl font-bold text-green-600">{{ $euro($d['inkomsten']['totaal']) }}</div>
         <div class="text-xs text-gray-400 mt-0.5">{{ $d['leden'] }} {{ $d['leden'] === 1 ? 'actief lid' : 'actieve leden' }}</div>
     </div>
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-        <div class="text-xs text-gray-500 mb-1">Af te dragen {{ $d['jaar'] }}</div>
+        <div class="text-xs text-gray-500 mb-1">Af te dragen seizoen {{ Seizoen::label($d['jaar']) }}</div>
         <div class="text-xl font-bold text-orange-500">{{ $euro($d['totaal_afdrachten']) }}</div>
     </div>
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-        <div class="text-xs text-gray-500 mb-1">Kosten {{ $d['jaar'] }}</div>
+        <div class="text-xs text-gray-500 mb-1">Kosten seizoen {{ Seizoen::label($d['jaar']) }}</div>
         <div class="text-xl font-bold text-orange-500">{{ $euro($d['totaal_kosten']) }}</div>
     </div>
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-        <div class="text-xs text-gray-500 mb-1">Saldo {{ $d['jaar'] }}</div>
+        <div class="text-xs text-gray-500 mb-1">Saldo seizoen {{ Seizoen::label($d['jaar']) }}</div>
         <div class="text-xl font-bold {{ $d['saldo'] < 0 ? 'text-red-600' : 'text-gray-900' }}">{{ $euro($d['saldo']) }}</div>
     </div>
 </div>
@@ -59,7 +60,7 @@
 {{-- Detail jaar --}}
 <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-8">
     <div class="px-5 py-3 border-b border-gray-100">
-        <h2 class="font-semibold text-gray-800">Geldstromen {{ $d['jaar'] }}</h2>
+        <h2 class="font-semibold text-gray-800">Geldstromen {{ Seizoen::weergave($d['jaar']) }} <span class="text-xs font-normal text-gray-500">{{ Seizoen::begin($d['jaar'])->format('d-m-Y') }} t/m {{ Seizoen::eind($d['jaar'])->format('d-m-Y') }}</span></h2>
     </div>
     <div class="overflow-x-auto">
     <table class="min-w-full text-sm">
@@ -83,7 +84,7 @@
                     <td class="px-5 py-3">
                         <a href="{{ $links[$label] }}" class="text-gray-800 hover:underline">{{ $label }}</a>
                         @if ($label === 'Contributies (abonnementen)')
-                            <span class="text-xs text-gray-400">({{ $d['leden'] }} {{ $d['leden'] === 1 ? 'lid' : 'leden' }}, pakketprijs van {{ $d['jaar'] }})</span>
+                            <span class="text-xs text-gray-400">({{ $d['leden'] }} {{ $d['leden'] === 1 ? 'lid' : 'leden' }}, pakketprijs seizoen {{ Seizoen::label($d['jaar']) }})</span>
                         @elseif ($label === 'Afdracht Bonboys (lidmaatschap)' && $d['reservering'] > 0)
                             <span class="text-xs text-gray-400">(na reservering van {{ $euro($d['reservering']) }})</span>
                         @endif
@@ -136,14 +137,14 @@
 {{-- Overzicht alle jaren --}}
 <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
     <div class="px-5 py-3 border-b border-gray-100">
-        <h2 class="font-semibold text-gray-800">Overzicht per jaar</h2>
-        <p class="text-xs text-gray-500 mt-0.5">Klik op een jaar om het hierboven te bekijken.</p>
+        <h2 class="font-semibold text-gray-800">Overzicht per seizoen</h2>
+        <p class="text-xs text-gray-500 mt-0.5">Klik op een seizoen om het hierboven te bekijken.</p>
     </div>
     <div class="overflow-x-auto">
     <table class="min-w-full divide-y divide-gray-100 text-sm">
         <thead class="bg-gray-50">
             <tr>
-                <th class="px-5 py-3 text-left font-semibold text-gray-600">Jaar</th>
+                <th class="px-5 py-3 text-left font-semibold text-gray-600">Jaar / seizoen</th>
                 <th class="px-5 py-3 text-right font-semibold text-gray-600">Leden</th>
                 <th class="px-5 py-3 text-right font-semibold text-gray-600">Inkomsten</th>
                 <th class="px-5 py-3 text-right font-semibold text-gray-600">Afdrachten</th>
@@ -159,7 +160,7 @@
                 @click="kies({{ $rij['jaar'] }})">
                 <td class="px-5 py-3">
                     <a href="{{ route('samenvatting.index', ['jaar' => $rij['jaar']]) }}" @click.prevent.stop="kies({{ $rij['jaar'] }})"
-                       class="text-bb-green-700 hover:underline font-medium">{{ $rij['jaar'] }}</a>
+                       class="text-bb-green-700 hover:underline font-medium">{{ $rij['jaar'] }}</a> <span class="text-xs text-gray-500 whitespace-nowrap">seizoen {{ Seizoen::label($rij['jaar']) }}</span>
                 </td>
                 <td class="px-5 py-3 text-right text-gray-600">{{ $rij['leden'] }}</td>
                 <td class="px-5 py-3 text-right whitespace-nowrap text-green-600">{{ $euro($rij['inkomsten']['totaal']) }}</td>

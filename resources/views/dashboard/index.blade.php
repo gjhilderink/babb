@@ -113,7 +113,7 @@
         <div class="text-xs text-gray-400 mt-1">te laat betaald</div>
     </div>
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
-        <div class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Omzet dit jaar</div>
+        <div class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Omzet seizoen {{ \App\Support\Seizoen::label(\App\Support\Seizoen::huidig()) }}</div>
         <div class="text-3xl font-bold text-green-700">&euro; {{ number_format($stats['revenue_ytd'], 2, ',', '.') }}</div>
         <div class="text-xs text-gray-400 mt-1">&euro; {{ number_format($stats['outstanding'], 2, ',', '.') }} uitstaand</div>
     </div>

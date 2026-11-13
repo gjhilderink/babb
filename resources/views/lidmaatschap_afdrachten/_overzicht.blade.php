@@ -1,7 +1,9 @@
 {{--
-    Overzicht per jaar van afdrachten op basis van het lidmaatschapspakket.
+    Overzicht per seizoen (1 sep t/m 31 aug, aangeduid met het startjaar) van
+    afdrachten op basis van het lidmaatschapspakket.
     Verwacht: $soort, $overzicht.
 --}}
+@use('App\Support\Seizoen')
 @php
     $euro           = fn ($b) => '€ '.number_format($b, 2, ',', '.');
     $metReservering = $soort === 'bonboys';
@@ -9,11 +11,11 @@
 
 <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-8">
     <div class="px-5 py-3 border-b border-gray-100">
-        <h2 class="font-semibold text-gray-800">Afdracht lidmaatschappen per jaar</h2>
+        <h2 class="font-semibold text-gray-800">Afdracht lidmaatschappen per seizoen</h2>
         <p class="text-xs text-gray-500 mt-0.5">
-            Op basis van de actieve leden en de afdracht per pakket.
+            Op basis van de actieve leden en de afdracht per pakket. Een seizoen loopt van 1 september t/m 31 augustus.
             @if ($metReservering)
-                De <a href="{{ route('reserveringen.index') }}" class="text-bb-green-600 hover:underline">reservering</a> van het jaar gaat eraf.
+                De <a href="{{ route('reserveringen.index') }}" class="text-bb-green-600 hover:underline">reservering</a> van het seizoen gaat eraf.
             @endif
         </p>
     </div>
@@ -21,7 +23,7 @@
     <table class="min-w-full divide-y divide-gray-100 text-sm">
         <thead class="bg-gray-50">
             <tr>
-                <th class="px-5 py-3 text-left font-semibold text-gray-600">Jaar</th>
+                <th class="px-5 py-3 text-left font-semibold text-gray-600">Jaar / seizoen</th>
                 <th class="px-5 py-3 text-right font-semibold text-gray-600">Leden</th>
                 <th class="px-5 py-3 text-right font-semibold text-gray-600">Totaal</th>
                 @if ($metReservering)
@@ -39,7 +41,7 @@
         <tbody class="divide-y divide-gray-100">
             @foreach ($overzicht as $rij)
             <tr class="hover:bg-gray-50">
-                <td class="px-5 py-3 font-medium text-gray-900">{{ $rij['jaar'] }}</td>
+                <td class="px-5 py-3 whitespace-nowrap"><span class="font-medium text-gray-900">{{ $rij['jaar'] }}</span> <span class="text-xs text-gray-500">seizoen {{ Seizoen::label($rij['jaar']) }}</span></td>
                 <td class="px-5 py-3 text-right text-gray-600">{{ $rij['aantal'] }}</td>
                 <td class="px-5 py-3 text-right whitespace-nowrap">{{ $euro($rij['totaal']) }}</td>
                 @if ($metReservering)
@@ -57,7 +59,7 @@
                                 Ja, op {{ $rij['overgemaakt_op']->format('d-m-Y') }}
                             </span>
                             <form method="POST" action="{{ route('lidmaatschap-afdrachten.jaar-ongedaan', $soort) }}"
-                                  onsubmit="return confirm('Markering overgemaakt voor {{ $rij['jaar'] }} verwijderen?')">
+                                  onsubmit="return confirm('Markering overgemaakt voor seizoen {{ Seizoen::label($rij['jaar']) }} verwijderen?')">
                                 @csrf @method('DELETE')
                                 <input type="hidden" name="jaar" value="{{ $rij['jaar'] }}">
                                 <button type="submit" class="text-xs text-gray-400 hover:text-red-600">Ongedaan maken</button>
@@ -65,7 +67,7 @@
                         </div>
                     @else
                         <form method="POST" action="{{ route('lidmaatschap-afdrachten.markeer-alles', $soort) }}" class="flex flex-wrap items-center gap-2"
-                              onsubmit="return confirm('{{ $rij['jaar'] }} markeren als overgemaakt?')">
+                              onsubmit="return confirm('Seizoen {{ Seizoen::label($rij['jaar']) }} markeren als overgemaakt?')">
                             @csrf
                             <input type="hidden" name="jaar" value="{{ $rij['jaar'] }}">
                             @if ($rij['overgemaakt'] > 0)

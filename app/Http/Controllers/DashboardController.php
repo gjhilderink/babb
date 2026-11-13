@@ -69,7 +69,7 @@ class DashboardController extends Controller
             'invoices_sent'    => Invoice::where('status', 'sent')->count(),
             'invoices_overdue' => Invoice::where('status', 'sent')->where('due_date', '<', today())->count(),
             'revenue_ytd'      => Invoice::where('status', 'paid')
-                ->whereYear('paid_at', now()->year)
+                ->whereBetween('paid_at', \App\Support\Seizoen::periodeTijd(\App\Support\Seizoen::huidig()))
                 ->sum('total'),
             'outstanding'      => Invoice::whereIn('status', ['sent'])->sum('total'),
         ];

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Reservering;
 use App\Services\LidmaatschapAfdrachtService;
+use App\Support\Seizoen;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -27,7 +28,7 @@ class ReserveringController extends Controller
 
         Reservering::create($data);
 
-        return back()->with('success', "Reservering voor {$data['jaar']} toegevoegd.");
+        return back()->with('success', "Reservering voor seizoen ".Seizoen::label((int) $data['jaar'])." toegevoegd.");
     }
 
     public function update(Request $request, Reservering $reservering): RedirectResponse
@@ -36,14 +37,14 @@ class ReserveringController extends Controller
 
         $reservering->update($data);
 
-        return back()->with('success', "Reservering voor {$reservering->jaar} bijgewerkt.");
+        return back()->with('success', "Reservering voor seizoen ".Seizoen::label($reservering->jaar)." bijgewerkt.");
     }
 
     public function destroy(Reservering $reservering): RedirectResponse
     {
         $reservering->delete();
 
-        return back()->with('success', "Reservering voor {$reservering->jaar} verwijderd.");
+        return back()->with('success', "Reservering voor seizoen ".Seizoen::label($reservering->jaar)." verwijderd.");
     }
 
     private function valideer(Request $request, ?Reservering $reservering = null): array

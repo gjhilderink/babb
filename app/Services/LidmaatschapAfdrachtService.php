@@ -6,10 +6,13 @@ use App\Models\AfdrachtBestemming;
 use App\Models\LidmaatschapAfdracht;
 use App\Models\Member;
 use App\Models\Reservering;
-use Carbon\Carbon;
+use App\Support\Seizoen;
 use Illuminate\Support\Collection;
 
 /**
+ * Een "jaar" is hier een seizoen (1 september t/m 31 augustus), aangeduid met
+ * het startjaar: 2026 = seizoen 26/27. Zie App\Support\Seizoen.
+ *
  * Berekent per jaar welke actieve leden welke afdracht verschuldigd zijn,
  * op basis van het pakket (met eventuele jaarprijzen) en de vastgelegde
  * "overgemaakt"-registraties.
@@ -84,8 +87,7 @@ class LidmaatschapAfdrachtService
      */
     public function contributiesVoorJaar(int $jaar): array
     {
-        $begin = Carbon::create($jaar, 1, 1)->toDateString();
-        $eind  = Carbon::create($jaar, 12, 31)->toDateString();
+        [$begin, $eind] = Seizoen::periode($jaar);
 
         $leden = Member::with('membershipType.prijzen')
             ->where('status', 'active')
@@ -104,8 +106,7 @@ class LidmaatschapAfdrachtService
     public function regelsVoorJaar(string $soort, int $jaar): Collection
     {
         $kolom = self::kolom($soort);
-        $begin = Carbon::create($jaar, 1, 1)->toDateString();
-        $eind  = Carbon::create($jaar, 12, 31)->toDateString();
+        [$begin, $eind] = Seizoen::periode($jaar);
 
         $vastgelegd = LidmaatschapAfdracht::with('member.membershipType.prijzen')
             ->where('soort', $soort)
@@ -150,14 +151,14 @@ class LidmaatschapAfdrachtService
             ->values();
     }
 
-    /** Jaren vanaf de eerste lidmaatschapsstart of vastlegging t/m dit jaar (max. 15), nieuwste eerst. */
+    /** Seizoenen (startjaar) vanaf de eerste lidmaatschapsstart of vastlegging t/m het huidige seizoen (max. 15), nieuwste eerst. */
     public function jaren(string $soort): array
     {
-        $huidig     = now()->year;
+        $huidig     = Seizoen::huidig();
         $eersteLid  = Member::whereNotNull('membership_start')->min('membership_start');
         $kandidaten = array_filter([
             $huidig,
-            $eersteLid ? Carbon::parse($eersteLid)->year : null,
+            $eersteLid ? Seizoen::vanDatum($eersteLid) : null,
             LidmaatschapAfdracht::where('soort', $soort)->min('jaar'),
             $soort === 'bonboys' ? Reservering::min('jaar') : null,
         ]);

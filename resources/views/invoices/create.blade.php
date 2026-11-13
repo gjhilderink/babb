@@ -218,12 +218,17 @@ function invoiceForm() {
             this.items = this.items.filter(i => !i.membership);
 
             const pkg  = this.isMembership ? this.membership() : null;
-            const year = (this.issueDate || '').slice(0, 4) || new Date().getFullYear();
-            const note = pkg ? `Lidmaatschapsfactuur ${pkg.name} — ${year}` : null;
+            // Seizoen loopt van 1 september t/m 31 augustus; aangeduid met het startjaar (2026 = 26/27)
+            const datum   = this.issueDate ? new Date(this.issueDate) : new Date();
+            const seizoen = datum.getMonth() >= 8 ? datum.getFullYear() : datum.getFullYear() - 1;
+            const twee    = n => String(n % 100).padStart(2, '0');
+            const label   = `seizoen ${twee(seizoen)}/${twee(seizoen + 1)}`;
+            const note = pkg ? `Lidmaatschapsfactuur ${pkg.name} — ${label}` : null;
 
             if (pkg) {
-                const line = { uid: ++this.uid, description: `Lidmaatschap ${pkg.name} ${year}`, quantity: 1,
-                               unit_price: pkg.price, tax_rate: 21, product_id: '', membership: true };
+                const prijs = (pkg.prijzen && pkg.prijzen[seizoen] !== undefined) ? pkg.prijzen[seizoen] : pkg.price;
+                const line = { uid: ++this.uid, description: `Lidmaatschap ${pkg.name} ${label}`, quantity: 1,
+                               unit_price: prijs, tax_rate: 21, product_id: '', membership: true };
                 const blank = this.items.length === 1 && !this.items[0].description && !parseFloat(this.items[0].unit_price);
                 if (blank) this.items = [line]; else this.items.unshift(line);
             }
