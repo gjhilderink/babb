@@ -46,6 +46,9 @@ class LidmaatschapAfdrachtService
                 'totaal'      => $r->sum('bedrag'),
                 'overgemaakt' => $r->whereNotNull('overgemaakt_op')->sum('bedrag'),
                 'open'        => $r->whereNull('overgemaakt_op')->sum('bedrag'),
+                'open_aantal' => $r->whereNull('overgemaakt_op')->count(),
+                // Datum waarop het jaar (laatste lid) is overgemaakt
+                'overgemaakt_op' => $r->pluck('overgemaakt_op')->filter()->max(),
             ];
         });
 

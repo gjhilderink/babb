@@ -76,4 +76,14 @@ class LidmaatschapAfdrachtController extends Controller
 
         return back()->with('success', "{$open->count()} afdracht(en) over {$jaar} gemarkeerd als overgemaakt.");
     }
+
+    /** Alle "overgemaakt"-markeringen van een jaar verwijderen. */
+    public function jaarOngedaan(Request $request, string $soort): RedirectResponse
+    {
+        $data = $request->validate(['jaar' => 'required|integer|min:2000|max:2100']);
+
+        $aantal = LidmaatschapAfdracht::where(['soort' => $soort, 'jaar' => (int) $data['jaar']])->delete();
+
+        return back()->with('success', "Markering overgemaakt verwijderd voor {$aantal} afdracht(en) over {$data['jaar']}.");
+    }
 }

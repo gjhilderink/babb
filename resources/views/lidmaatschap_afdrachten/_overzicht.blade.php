@@ -135,7 +135,7 @@
                 <th class="px-5 py-3 text-right font-semibold text-gray-600">Totaal</th>
                 <th class="px-5 py-3 text-right font-semibold text-gray-600">Overgemaakt</th>
                 <th class="px-5 py-3 text-right font-semibold text-gray-600">Nog over te maken</th>
-                <th class="px-5 py-3 text-left font-semibold text-gray-600">Status</th>
+                <th class="px-5 py-3 text-left font-semibold text-gray-600">Jaar overgemaakt</th>
             </tr>
         </thead>
         <tbody class="divide-y divide-gray-100">
@@ -151,12 +151,32 @@
                 <td class="px-5 py-3">
                     @if ($rij['aantal'] === 0)
                         <span class="text-xs text-gray-400">—</span>
-                    @elseif ($rij['open'] == 0)
-                        <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">Volledig overgemaakt</span>
-                    @elseif ($rij['overgemaakt'] > 0)
-                        <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700">Deels overgemaakt</span>
+                    @elseif ($rij['open_aantal'] === 0)
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">
+                                Ja, op {{ $rij['overgemaakt_op']->format('d-m-Y') }}
+                            </span>
+                            <form method="POST" action="{{ route('lidmaatschap-afdrachten.jaar-ongedaan', $soort) }}"
+                                  onsubmit="return confirm('Markering overgemaakt voor heel {{ $rij['jaar'] }} verwijderen?')">
+                                @csrf @method('DELETE')
+                                <input type="hidden" name="jaar" value="{{ $rij['jaar'] }}">
+                                <button type="submit" class="text-xs text-gray-400 hover:text-red-600">Ongedaan maken</button>
+                            </form>
+                        </div>
                     @else
-                        <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-700">Nog niet overgemaakt</span>
+                        <form method="POST" action="{{ route('lidmaatschap-afdrachten.markeer-alles', $soort) }}" class="flex flex-wrap items-center gap-2"
+                              onsubmit="return confirm('{{ $rij['jaar'] }} markeren als overgemaakt? Alle openstaande leden van dat jaar worden op overgemaakt gezet.')">
+                            @csrf
+                            <input type="hidden" name="jaar" value="{{ $rij['jaar'] }}">
+                            @if ($rij['overgemaakt'] > 0)
+                                <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700">Deels</span>
+                            @else
+                                <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-700">Nee</span>
+                            @endif
+                            <input type="date" name="overgemaakt_op" value="{{ now()->format('Y-m-d') }}" required
+                                   class="border border-gray-300 rounded-lg px-2 py-0.5 text-xs">
+                            <button type="submit" class="text-xs text-bb-green-600 hover:underline font-medium">Markeer jaar overgemaakt</button>
+                        </form>
                     @endif
                 </td>
             </tr>
