@@ -108,6 +108,7 @@
             @if ($member->company_name)<div>{{ $member->company_name }}</div>@endif
             <div>{{ $member->email }}</div>
             <div>@include('members._membership_type_select')</div>
+            <div class="flex items-center gap-1">Lid sinds @include('members._membership_start_input')</div>
             @include('members._korting_badge')
         </div>
         <div class="mt-3 flex gap-3">
@@ -150,6 +151,9 @@
                     <th class="px-4 py-3 text-left font-semibold text-gray-600">
                         <a href="{{ $sortUrl('status') }}" class="hover:text-gray-900 inline-flex items-center gap-1">Status {!! $sortIcon('status') !!}</a>
                     </th>
+                    <th class="px-4 py-3 text-left font-semibold text-gray-600 hidden md:table-cell">
+                        <a href="{{ $sortUrl('membership_start') }}" class="hover:text-gray-900 inline-flex items-center gap-1">Lid sinds {!! $sortIcon('membership_start') !!}</a>
+                    </th>
                     <th class="px-4 py-3 text-left font-semibold text-gray-600 hidden lg:table-cell">
                         <a href="{{ $sortUrl('membership_end') }}" class="hover:text-gray-900 inline-flex items-center gap-1">Verloopt {!! $sortIcon('membership_end') !!}</a>
                     </th>
@@ -176,6 +180,7 @@
                             {{ ucfirst($member->status) }}
                         </span>
                     </td>
+                    <td class="px-4 py-3 text-gray-600 hidden md:table-cell whitespace-nowrap">@include('members._membership_start_input')</td>
                     <td class="px-4 py-3 text-gray-600 hidden lg:table-cell">{{ $member->membership_end?->format('d-m-Y') ?? '—' }}</td>
                     <td class="px-4 py-3 text-right whitespace-nowrap">
                         <a href="{{ route('members.edit', $member) }}" class="text-xs text-bb-green-600 hover:underline mr-3">Bewerken</a>
@@ -188,7 +193,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="7" class="px-4 py-8 text-center text-gray-400">Geen leden gevonden.</td>
+                    <td colspan="8" class="px-4 py-8 text-center text-gray-400">Geen leden gevonden.</td>
                 </tr>
                 @endforelse
             </tbody>

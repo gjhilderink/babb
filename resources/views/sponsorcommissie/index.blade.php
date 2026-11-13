@@ -19,10 +19,6 @@
     </form>
 </div>
 
-@if (session('error'))
-    <div class="mb-4 rounded-md bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-800">{{ session('error') }}</div>
-@endif
-
 {{-- Samenvatting geselecteerd jaar --}}
 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4">

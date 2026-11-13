@@ -14,7 +14,7 @@ class MemberController extends Controller
 {
     public function index(Request $request): View
     {
-        $allowed = ['last_name', 'company_name', 'email', 'status', 'membership_end'];
+        $allowed = ['last_name', 'company_name', 'email', 'status', 'membership_start', 'membership_end'];
         $sort    = in_array($request->sort, $allowed) ? $request->sort : 'last_name';
         $dir     = $request->dir === 'desc' ? 'desc' : 'asc';
 
@@ -140,6 +140,21 @@ class MemberController extends Controller
         $name = $member->load('membershipType')->membershipType?->name ?? 'geen';
 
         return back()->with('success', "Abonnement van {$member->full_name} gewijzigd naar {$name}.");
+    }
+
+    public function updateMembershipStart(Request $request, Member $member): RedirectResponse
+    {
+        $data = $request->validate([
+            'membership_start' => 'nullable|date'.($member->membership_end ? '|before_or_equal:'.$member->membership_end->format('Y-m-d') : ''),
+        ], [
+            'membership_start.before_or_equal' => 'Lid sinds mag niet na de einddatum van het lidmaatschap liggen.',
+        ]);
+
+        $member->update(['membership_start' => $data['membership_start'] ?? null]);
+
+        $datum = $member->membership_start?->format('d-m-Y') ?? 'leeg';
+
+        return back()->with('success', "Lid sinds van {$member->full_name} gewijzigd naar {$datum}.");
     }
 
     public function destroy(Member $member): RedirectResponse
