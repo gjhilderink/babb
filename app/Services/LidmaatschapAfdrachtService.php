@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\LidmaatschapAfdracht;
 use App\Models\Member;
+use App\Models\Reservering;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 
@@ -25,18 +26,36 @@ class LidmaatschapAfdrachtService
         return self::SOORTEN[$soort] ?? throw new \InvalidArgumentException("Onbekende soort afdracht: {$soort}");
     }
 
-    /** Totalen en "overgemaakt"-status per jaar voor één soort afdracht, nieuwste jaar eerst. */
+    /**
+     * Totalen en "overgemaakt"-status per jaar voor één soort afdracht, nieuwste jaar eerst.
+     *
+     * Bij Bonboys gaat de reservering van dat jaar eraf: af_te_dragen = totaal - reservering.
+     * De reservering wordt ook afgetrokken van wat per lid als overgemaakt is vastgelegd,
+     * zodat "overgemaakt" en "open" samen precies het af te dragen bedrag zijn.
+     */
     public function overzichtPerJaar(string $soort): Collection
     {
-        return collect($this->jaren($soort))->map(function (int $j) use ($soort) {
+        $reserveringen = $soort === 'bonboys'
+            ? Reservering::pluck('bedrag', 'jaar')->map(fn ($b) => (float) $b)
+            : collect();
+
+        return collect($this->jaren($soort))->map(function (int $j) use ($soort, $reserveringen) {
             $r = $this->regelsVoorJaar($soort, $j);
+
+            $totaal          = (float) $r->sum('bedrag');
+            $reservering     = $reserveringen->get($j, 0.0);
+            $afTeDragen      = max(0.0, $totaal - $reservering);
+            $overgemaaktBruto = (float) $r->whereNotNull('overgemaakt_op')->sum('bedrag');
+            $overgemaakt     = min($afTeDragen, max(0.0, $overgemaaktBruto - $reservering));
 
             return [
                 'jaar'        => $j,
                 'aantal'      => $r->count(),
-                'totaal'      => $r->sum('bedrag'),
-                'overgemaakt' => $r->whereNotNull('overgemaakt_op')->sum('bedrag'),
-                'open'        => $r->whereNull('overgemaakt_op')->sum('bedrag'),
+                'totaal'      => $totaal,
+                'reservering' => $reservering,
+                'af_te_dragen' => $afTeDragen,
+                'overgemaakt' => $overgemaakt,
+                'open'        => $afTeDragen - $overgemaakt,
                 'open_aantal' => $r->whereNull('overgemaakt_op')->count(),
                 // Datum waarop het jaar (laatste lid) is overgemaakt
                 'overgemaakt_op' => $r->pluck('overgemaakt_op')->filter()->max(),
@@ -110,6 +129,7 @@ class LidmaatschapAfdrachtService
             $huidig,
             $eersteLid ? Carbon::parse($eersteLid)->year : null,
             LidmaatschapAfdracht::where('soort', $soort)->min('jaar'),
+            $soort === 'bonboys' ? Reservering::min('jaar') : null,
         ]);
 
         return range($huidig, max((int) min($kandidaten), $huidig - 15));

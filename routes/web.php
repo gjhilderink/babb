@@ -16,6 +16,7 @@ use App\Http\Controllers\MemberController;
 use App\Http\Controllers\MembershipBillingController;
 use App\Http\Controllers\MembershipTypeController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ReserveringController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -55,7 +56,10 @@ Route::middleware('auth')->group(function () {
         Route::resource('afdrachten', AfdrachtenController::class)->except('show')->parameters(['afdrachten' => 'afdracht']);
         Route::patch('afdrachten/{afdracht}/status', [AfdrachtenController::class, 'updateStatus'])->name('afdrachten.status');
 
-        Route::get('sponsorcommissie', [LidmaatschapAfdrachtController::class, 'sponsorcommissie'])->name('sponsorcommissie.index');
+        Route::resource('reserveringen', ReserveringController::class)->only(['index', 'store', 'update', 'destroy'])
+            ->parameters(['reserveringen' => 'reservering']);
+
+        Route::get('sponsorcommissie',[LidmaatschapAfdrachtController::class, 'sponsorcommissie'])->name('sponsorcommissie.index');
         Route::post('lidmaatschap-afdrachten/{soort}/markeer-alles', [LidmaatschapAfdrachtController::class, 'markeerAlles'])
             ->whereIn('soort', ['sponsorcommissie', 'bonboys'])->name('lidmaatschap-afdrachten.markeer-alles');
         Route::delete('lidmaatschap-afdrachten/{soort}/jaar', [LidmaatschapAfdrachtController::class, 'jaarOngedaan'])

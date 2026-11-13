@@ -3,13 +3,19 @@
     Verwacht: $soort, $overzicht.
 --}}
 @php
-    $euro = fn ($b) => '€ '.number_format($b, 2, ',', '.');
+    $euro           = fn ($b) => '€ '.number_format($b, 2, ',', '.');
+    $metReservering = $soort === 'bonboys';
 @endphp
 
 <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-8">
     <div class="px-5 py-3 border-b border-gray-100">
         <h2 class="font-semibold text-gray-800">Afdracht lidmaatschappen per jaar</h2>
-        <p class="text-xs text-gray-500 mt-0.5">Op basis van de actieve leden en de afdracht per pakket.</p>
+        <p class="text-xs text-gray-500 mt-0.5">
+            Op basis van de actieve leden en de afdracht per pakket.
+            @if ($metReservering)
+                De <a href="{{ route('reserveringen.index') }}" class="text-bb-green-600 hover:underline">reservering</a> van het jaar gaat eraf.
+            @endif
+        </p>
     </div>
     <div class="overflow-x-auto">
     <table class="min-w-full divide-y divide-gray-100 text-sm">
@@ -18,6 +24,10 @@
                 <th class="px-5 py-3 text-left font-semibold text-gray-600">Jaar</th>
                 <th class="px-5 py-3 text-right font-semibold text-gray-600">Leden</th>
                 <th class="px-5 py-3 text-right font-semibold text-gray-600">Totaal</th>
+                @if ($metReservering)
+                <th class="px-5 py-3 text-right font-semibold text-gray-600">Reservering</th>
+                <th class="px-5 py-3 text-right font-semibold text-gray-600">Af te dragen</th>
+                @endif
                 <th class="px-5 py-3 text-right font-semibold text-gray-600">Overgemaakt</th>
                 <th class="px-5 py-3 text-right font-semibold text-gray-600">Nog over te maken</th>
                 <th class="px-5 py-3 text-left font-semibold text-gray-600">Jaar overgemaakt</th>
@@ -29,6 +39,10 @@
                 <td class="px-5 py-3 font-medium text-gray-900">{{ $rij['jaar'] }}</td>
                 <td class="px-5 py-3 text-right text-gray-600">{{ $rij['aantal'] }}</td>
                 <td class="px-5 py-3 text-right whitespace-nowrap">{{ $euro($rij['totaal']) }}</td>
+                @if ($metReservering)
+                <td class="px-5 py-3 text-right whitespace-nowrap text-gray-600">{{ $rij['reservering'] > 0 ? '− '.$euro($rij['reservering']) : '—' }}</td>
+                <td class="px-5 py-3 text-right whitespace-nowrap font-semibold">{{ $euro($rij['af_te_dragen']) }}</td>
+                @endif
                 <td class="px-5 py-3 text-right whitespace-nowrap text-green-600">{{ $euro($rij['overgemaakt']) }}</td>
                 <td class="px-5 py-3 text-right whitespace-nowrap text-orange-500">{{ $euro($rij['open']) }}</td>
                 <td class="px-5 py-3">
