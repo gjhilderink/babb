@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AfdrachtBestemming;
 use App\Models\LidmaatschapAfdracht;
 use App\Services\LidmaatschapAfdrachtService;
 use Illuminate\Http\RedirectResponse;
@@ -42,6 +43,27 @@ class LidmaatschapAfdrachtController extends Controller
         }
 
         return back()->with('success', "{$open->count()} afdracht(en) over {$jaar} gemarkeerd als overgemaakt.");
+    }
+
+    /** Bestemming van de afdracht over een jaar opslaan; leeg = verwijderen. */
+    public function bestemming(Request $request, string $soort): RedirectResponse
+    {
+        $data = $request->validate([
+            'jaar'       => 'required|integer|min:2000|max:2100',
+            'bestemming' => 'nullable|string|max:2000',
+        ]);
+
+        $sleutel = ['soort' => $soort, 'jaar' => (int) $data['jaar']];
+
+        if (blank($data['bestemming'] ?? null)) {
+            AfdrachtBestemming::where($sleutel)->delete();
+
+            return back()->with('success', "Bestemming voor {$data['jaar']} verwijderd.");
+        }
+
+        AfdrachtBestemming::updateOrCreate($sleutel, ['bestemming' => trim($data['bestemming'])]);
+
+        return back()->with('success', "Bestemming voor {$data['jaar']} opgeslagen.");
     }
 
     /** Alle "overgemaakt"-markeringen van een jaar verwijderen. */

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\AfdrachtBestemming;
 use App\Models\LidmaatschapAfdracht;
 use App\Models\Member;
 use App\Models\Reservering;
@@ -39,7 +40,9 @@ class LidmaatschapAfdrachtService
             ? Reservering::pluck('bedrag', 'jaar')->map(fn ($b) => (float) $b)
             : collect();
 
-        return collect($this->jaren($soort))->map(function (int $j) use ($soort, $reserveringen) {
+        $bestemmingen = AfdrachtBestemming::where('soort', $soort)->pluck('bestemming', 'jaar');
+
+        return collect($this->jaren($soort))->map(function (int $j) use ($soort, $reserveringen, $bestemmingen) {
             $r = $this->regelsVoorJaar($soort, $j);
 
             $totaal          = (float) $r->sum('bedrag');
@@ -59,6 +62,7 @@ class LidmaatschapAfdrachtService
                 'open_aantal' => $r->whereNull('overgemaakt_op')->count(),
                 // Datum waarop het jaar (laatste lid) is overgemaakt
                 'overgemaakt_op' => $r->pluck('overgemaakt_op')->filter()->max(),
+                'bestemming'     => $bestemmingen->get($j),
             ];
         });
     }

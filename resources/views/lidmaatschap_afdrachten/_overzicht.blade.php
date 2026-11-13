@@ -31,6 +31,9 @@
                 <th class="px-5 py-3 text-right font-semibold text-gray-600">Overgemaakt</th>
                 <th class="px-5 py-3 text-right font-semibold text-gray-600">Nog over te maken</th>
                 <th class="px-5 py-3 text-left font-semibold text-gray-600">Jaar overgemaakt</th>
+                @if ($metReservering)
+                <th class="px-5 py-3 text-left font-semibold text-gray-600">Bestemming</th>
+                @endif
             </tr>
         </thead>
         <tbody class="divide-y divide-gray-100">
@@ -76,6 +79,19 @@
                         </form>
                     @endif
                 </td>
+                @if ($metReservering)
+                <td class="px-5 py-3 min-w-[16rem]">
+                    <form method="POST" action="{{ route('lidmaatschap-afdrachten.bestemming', $soort) }}" class="flex items-start gap-2"
+                          x-data="{ origineel: @js($rij['bestemming'] ?? ''), tekst: @js($rij['bestemming'] ?? '') }">
+                        @csrf @method('PUT')
+                        <input type="hidden" name="jaar" value="{{ $rij['jaar'] }}">
+                        <textarea name="bestemming" rows="1" maxlength="2000" x-model="tekst" placeholder="Bestemming toevoegen…"
+                                  class="flex-1 border border-transparent hover:border-gray-300 focus:border-gray-300 rounded-lg px-2 py-1 text-sm resize-y focus:outline-none focus:ring-2 focus:ring-bb-green-600"></textarea>
+                        <button type="submit" x-show="tekst !== origineel" x-cloak
+                                class="text-xs text-bb-green-600 hover:underline font-medium whitespace-nowrap pt-1.5">Opslaan</button>
+                    </form>
+                </td>
+                @endif
             </tr>
             @endforeach
         </tbody>

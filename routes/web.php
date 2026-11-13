@@ -70,6 +70,8 @@ Route::middleware('auth')->group(function () {
             ->whereIn('soort', ['sponsorcommissie', 'bonboys'])->name('lidmaatschap-afdrachten.markeer-alles');
         Route::delete('lidmaatschap-afdrachten/{soort}/jaar', [LidmaatschapAfdrachtController::class, 'jaarOngedaan'])
             ->whereIn('soort', ['sponsorcommissie', 'bonboys'])->name('lidmaatschap-afdrachten.jaar-ongedaan');
+        Route::put('lidmaatschap-afdrachten/{soort}/bestemming', [LidmaatschapAfdrachtController::class, 'bestemming'])
+            ->whereIn('soort', ['sponsorcommissie', 'bonboys'])->name('lidmaatschap-afdrachten.bestemming');
 
         Route::resource('declaraties', DeclaratiesController::class)->except('show')->parameters(['declaraties' => 'declaratie']);
         Route::patch('declaraties/{declaratie}/status', [DeclaratiesController::class, 'updateStatus'])->name('declaraties.status');
