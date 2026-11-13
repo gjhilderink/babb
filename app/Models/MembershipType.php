@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\LidmaatschapAfdrachtService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -14,6 +15,7 @@ class MembershipType extends Model
         'description',
         'price_per_year',
         'afdracht_sponsorcommissie',
+        'afdracht_bonboys',
         'max_members',
         'benefits',
         'is_active',
@@ -22,6 +24,7 @@ class MembershipType extends Model
     protected $casts = [
         'price_per_year' => 'decimal:2',
         'afdracht_sponsorcommissie' => 'decimal:2',
+        'afdracht_bonboys' => 'decimal:2',
         'benefits'       => 'array',
         'is_active'      => 'boolean',
     ];
@@ -44,11 +47,15 @@ class MembershipType extends Model
         return (float) ($jaarPrijs ?? $this->price_per_year);
     }
 
-    /** Afdracht sponsorcommissie in een bepaald jaar; zonder vastgelegd jaarbedrag geldt het standaardbedrag. */
-    public function afdrachtVoorJaar(int $jaar): float
+    /**
+     * Afdracht (sponsorcommissie of bonboys) in een bepaald jaar;
+     * zonder vastgelegd jaarbedrag geldt het standaardbedrag.
+     */
+    public function afdrachtVoorJaar(int $jaar, string $soort = 'sponsorcommissie'): float
     {
-        $jaarAfdracht = $this->prijzen->firstWhere('jaar', $jaar)?->afdracht_sponsorcommissie;
+        $kolom        = LidmaatschapAfdrachtService::kolom($soort);
+        $jaarAfdracht = $this->prijzen->firstWhere('jaar', $jaar)?->{$kolom};
 
-        return (float) ($jaarAfdracht ?? $this->afdracht_sponsorcommissie);
+        return (float) ($jaarAfdracht ?? $this->{$kolom});
     }
 }

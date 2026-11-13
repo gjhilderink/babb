@@ -66,12 +66,17 @@ class MembershipTypeController extends Controller
         return redirect()->route('membership-types.index')->with('success', 'Pakket verwijderd.');
     }
 
-    /** Jaarprijzen uit het formulier; regels zonder prijs én afdracht worden genegeerd. */
+    /** Bedragvelden van een jaarprijsregel; een leeg veld betekent "standaardbedrag van het pakket". */
+    private const PRIJS_VELDEN = ['prijs', 'afdracht_sponsorcommissie', 'afdracht_bonboys'];
+
+    /** Jaarprijzen uit het formulier; regels zonder enig bedrag worden genegeerd. */
     private function validatePrijzen(Request $request): array
     {
+        $heeftBedrag = fn ($r) => collect(self::PRIJS_VELDEN)->contains(fn ($v) => filled($r[$v] ?? null));
+
         $request->merge([
             'prijzen' => collect($request->input('prijzen', []))
-                ->filter(fn ($r) => filled($r['jaar'] ?? null) || filled($r['prijs'] ?? null) || filled($r['afdracht_sponsorcommissie'] ?? null))
+                ->filter(fn ($r) => filled($r['jaar'] ?? null) || $heeftBedrag($r))
                 ->values()
                 ->all(),
         ]);
@@ -81,15 +86,13 @@ class MembershipTypeController extends Controller
             'prijzen.*.jaar'                      => 'required|integer|min:2000|max:2100|distinct',
             'prijzen.*.prijs'                     => 'nullable|numeric|min:0',
             'prijzen.*.afdracht_sponsorcommissie' => 'nullable|numeric|min:0',
+            'prijzen.*.afdracht_bonboys'          => 'nullable|numeric|min:0',
         ], [
             'prijzen.*.jaar.required' => 'Vul bij elke jaarprijs een jaar in.',
             'prijzen.*.jaar.distinct' => 'Elk jaar mag maar één keer voorkomen bij de jaarprijzen.',
         ]);
 
-        return collect($request->input('prijzen', []))
-            ->filter(fn ($r) => filled($r['prijs'] ?? null) || filled($r['afdracht_sponsorcommissie'] ?? null))
-            ->values()
-            ->all();
+        return collect($request->input('prijzen', []))->filter($heeftBedrag)->values()->all();
     }
 
     private function syncPrijzen(MembershipType $type, array $prijzen): void
@@ -97,11 +100,12 @@ class MembershipTypeController extends Controller
         $type->prijzen()->delete();
 
         foreach ($prijzen as $r) {
-            $type->prijzen()->create([
-                'jaar'                      => (int) $r['jaar'],
-                'prijs'                     => filled($r['prijs'] ?? null) ? $r['prijs'] : null,
-                'afdracht_sponsorcommissie' => filled($r['afdracht_sponsorcommissie'] ?? null) ? $r['afdracht_sponsorcommissie'] : null,
-            ]);
+            $velden = ['jaar' => (int) $r['jaar']];
+            foreach (self::PRIJS_VELDEN as $v) {
+                $velden[$v] = filled($r[$v] ?? null) ? $r[$v] : null;
+            }
+
+            $type->prijzen()->create($velden);
         }
     }
 
@@ -112,6 +116,7 @@ class MembershipTypeController extends Controller
             'description'    => 'nullable|string',
             'price_per_year' => 'required|numeric|min:0',
             'afdracht_sponsorcommissie' => 'nullable|numeric|min:0',
+            'afdracht_bonboys' => 'nullable|numeric|min:0',
             'max_members'    => 'nullable|integer|min:1',
             'is_active'      => 'boolean',
             'benefits'       => 'nullable|string',
@@ -119,6 +124,7 @@ class MembershipTypeController extends Controller
 
         $data['is_active'] = $request->boolean('is_active', true);
         $data['afdracht_sponsorcommissie'] = $data['afdracht_sponsorcommissie'] ?? 0;
+        $data['afdracht_bonboys']          = $data['afdracht_bonboys'] ?? 0;
 
         // Convert textarea (one benefit per line) to array
         if (!empty($data['benefits'])) {

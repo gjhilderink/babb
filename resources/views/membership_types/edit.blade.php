@@ -8,7 +8,7 @@
 </div>
 
 <form method="POST" action="{{ route('membership-types.update', $membershipType) }}"
-      class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 max-w-2xl">
+      class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 max-w-4xl">
     @csrf
     @method('PUT')
     @include('membership_types._form')

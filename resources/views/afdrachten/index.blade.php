@@ -10,6 +10,14 @@
     </a>
 </div>
 
+@include('lidmaatschap_afdrachten._overzicht', $lidmaatschap + [
+    'soort'       => 'bonboys',
+    'indexRoute'  => 'afdrachten.index',
+    'behoudQuery' => request()->only(['search', 'status']),
+])
+
+<h2 class="text-lg font-semibold text-gray-800 mb-4">Overige afdrachten</h2>
+
 {{-- Samenvatting --}}
 <div class="grid grid-cols-2 md:grid-cols-2 gap-4 mb-6">
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
@@ -24,6 +32,7 @@
 
 {{-- Filters --}}
 <form method="GET" class="mb-5 flex flex-wrap gap-3">
+    @if (request('jaar'))<input type="hidden" name="jaar" value="{{ request('jaar') }}">@endif
     <input type="text" name="search" value="{{ request('search') }}"
            placeholder="Zoeken op onderwerp…"
            class="border border-gray-300 rounded-lg px-3 py-2 text-sm w-52 focus:outline-none focus:ring-2 focus:ring-bb-green-600">

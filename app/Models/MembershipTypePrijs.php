@@ -17,12 +17,14 @@ class MembershipTypePrijs extends Model
         'jaar',
         'prijs',
         'afdracht_sponsorcommissie',
+        'afdracht_bonboys',
     ];
 
     protected $casts = [
         'jaar'                      => 'integer',
         'prijs'                     => 'decimal:2',
         'afdracht_sponsorcommissie' => 'decimal:2',
+        'afdracht_bonboys'          => 'decimal:2',
     ];
 
     public function membershipType()

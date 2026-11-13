@@ -28,6 +28,17 @@
     </div>
 
     <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Afdracht Bonboys per jaar</label>
+        <div class="relative">
+            <span class="absolute left-3 top-2 text-gray-400 text-sm">&euro;</span>
+            <input type="number" name="afdracht_bonboys" step="0.01" min="0"
+                   value="{{ old('afdracht_bonboys', $membershipType->afdracht_bonboys ?? '0.00') }}"
+                   class="w-full border border-gray-300 rounded-lg pl-7 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-bb-green-600">
+        </div>
+        <p class="text-xs text-gray-400 mt-1">Bedrag per lid dat naar Bonboys wordt afgedragen. 0 = geen afdracht.</p>
+    </div>
+
+    <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">Max. aantal medewerkers</label>
         <input type="number" name="max_members" min="1"
                value="{{ old('max_members', $membershipType->max_members ?? '') }}"
@@ -57,13 +68,14 @@
                 'jaar'                      => $p->jaar,
                 'prijs'                     => $p->prijs,
                 'afdracht_sponsorcommissie' => $p->afdracht_sponsorcommissie,
+                'afdracht_bonboys'          => $p->afdracht_bonboys,
             ])->values()->all()
             : []);
     @endphp
     <div class="md:col-span-2" x-data="{ regels: @js(array_values($prijsRegels)) }">
         <label class="block text-sm font-medium text-gray-700 mb-1">Prijzen per jaar</label>
         <p class="text-xs text-gray-400 mb-2">
-            Leg vast wat de prijs en de afdracht sponsorcommissie in een bepaald jaar waren.
+            Leg vast wat de prijs en de afdrachten in een bepaald jaar waren.
             Voor jaren zonder regel, of een leeg veld, gelden de standaardbedragen hierboven.
         </p>
         <table class="w-full text-sm" x-show="regels.length">
@@ -72,6 +84,7 @@
                     <th class="pb-1 pr-2 font-medium w-28">Jaar</th>
                     <th class="pb-1 pr-2 font-medium">Prijs (excl. BTW)</th>
                     <th class="pb-1 pr-2 font-medium">Afdracht sponsorcommissie</th>
+                    <th class="pb-1 pr-2 font-medium">Afdracht Bonboys</th>
                     <th class="pb-1"></th>
                 </tr>
             </thead>
@@ -96,6 +109,13 @@
                                        class="w-full border border-gray-300 rounded-lg pl-6 pr-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-bb-green-600">
                             </div>
                         </td>
+                        <td class="pb-2 pr-2">
+                            <div class="relative">
+                                <span class="absolute left-2 top-1.5 text-gray-400 text-sm">&euro;</span>
+                                <input type="number" step="0.01" min="0" :name="`prijzen[${i}][afdracht_bonboys]`" x-model="regel.afdracht_bonboys" placeholder="standaard"
+                                       class="w-full border border-gray-300 rounded-lg pl-6 pr-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-bb-green-600">
+                            </div>
+                        </td>
                         <td class="pb-2 text-right">
                             <button type="button" @click="regels.splice(i, 1)" class="text-xs text-red-500 hover:underline">Verwijderen</button>
                         </td>
@@ -104,7 +124,7 @@
             </tbody>
         </table>
         <button type="button"
-                @click="regels.push({ jaar: regels.length ? Math.min(...regels.map(r => +r.jaar || {{ now()->year }})) - 1 : {{ now()->year }}, prijs: '', afdracht_sponsorcommissie: '' })"
+                @click="regels.push({ jaar: regels.length ? Math.min(...regels.map(r => +r.jaar || {{ now()->year }})) - 1 : {{ now()->year }}, prijs: '', afdracht_sponsorcommissie: '', afdracht_bonboys: '' })"
                 class="mt-1 text-sm text-bb-green-600 hover:underline">+ Jaar toevoegen</button>
     </div>
 

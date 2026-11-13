@@ -8,7 +8,7 @@
 </div>
 
 <form method="POST" action="{{ route('membership-types.store') }}"
-      class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 max-w-2xl">
+      class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 max-w-4xl">
     @csrf
     @include('membership_types._form')
     <div class="mt-6 flex gap-3">

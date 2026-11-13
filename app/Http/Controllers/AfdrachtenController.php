@@ -3,13 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Afdracht;
+use App\Services\LidmaatschapAfdrachtService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class AfdrachtenController extends Controller
 {
-    public function index(Request $request): View
+    public function index(Request $request, LidmaatschapAfdrachtService $service): View
     {
         $afdrachten = Afdracht::with('creator')
             ->when($request->status, fn ($q, $s) => $q->where('status', $s))
@@ -22,7 +23,9 @@ class AfdrachtenController extends Controller
         $totaalBetaald    = Afdracht::where('status', 'betaald')->sum('bedrag');
         $totaalOpenstaand = Afdracht::where('status', 'nog_te_betalen')->sum('bedrag');
 
-        return view('afdrachten.index', compact('afdrachten', 'totaalBetaald', 'totaalOpenstaand'));
+        $lidmaatschap = $service->overzicht('bonboys', $request->integer('jaar') ?: null);
+
+        return view('afdrachten.index', compact('afdrachten', 'totaalBetaald', 'totaalOpenstaand', 'lidmaatschap'));
     }
 
     public function create(): View

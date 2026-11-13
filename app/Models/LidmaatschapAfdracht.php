@@ -5,16 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Vastlegging dat de afdracht sponsorcommissie van een lid over een jaar
- * is overgemaakt naar de club. Het bedrag wordt bij het markeren vastgezet,
- * zodat latere wijzigingen aan het pakket de historie niet veranderen.
+ * Vastlegging dat de afdracht (sponsorcommissie of Bonboys) van een lid over
+ * een jaar is overgemaakt. Het bedrag wordt bij het markeren vastgezet, zodat
+ * latere wijzigingen aan het pakket de historie niet veranderen.
  */
-class SponsorcommissieAfdracht extends Model
+class LidmaatschapAfdracht extends Model
 {
-    protected $table = 'sponsorcommissie_afdrachten';
+    protected $table = 'lidmaatschap_afdrachten';
 
     protected $fillable = [
         'member_id',
+        'soort',
         'jaar',
         'bedrag',
         'overgemaakt_op',

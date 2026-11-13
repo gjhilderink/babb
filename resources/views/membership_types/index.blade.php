@@ -35,17 +35,21 @@
             @if ($type->afdracht_sponsorcommissie > 0)
                 <p class="text-xs text-gray-500 mb-1">Afdracht sponsorcommissie: &euro; {{ number_format($type->afdracht_sponsorcommissie, 2, ',', '.') }} / jaar</p>
             @endif
+            @if ($type->afdracht_bonboys > 0)
+                <p class="text-xs text-gray-500 mb-1">Afdracht Bonboys: &euro; {{ number_format($type->afdracht_bonboys, 2, ',', '.') }} / jaar</p>
+            @endif
 
             @if ($type->prijzen->isNotEmpty())
                 <details class="mb-3 text-xs text-gray-500">
                     <summary class="cursor-pointer hover:text-gray-700">Prijzen per jaar ({{ $type->prijzen->count() }})</summary>
                     <table class="mt-1 w-full">
-                        <tr class="text-gray-400"><td>Jaar</td><td class="text-right">Prijs</td><td class="text-right">Afdracht</td></tr>
+                        <tr class="text-gray-400"><td>Jaar</td><td class="text-right">Prijs</td><td class="text-right">Sponsorcie.</td><td class="text-right">Bonboys</td></tr>
                         @foreach ($type->prijzen as $p)
                             <tr>
                                 <td>{{ $p->jaar }}</td>
                                 <td class="text-right">&euro; {{ number_format($type->prijsVoorJaar($p->jaar), 2, ',', '.') }}</td>
-                                <td class="text-right">&euro; {{ number_format($type->afdrachtVoorJaar($p->jaar), 2, ',', '.') }}</td>
+                                <td class="text-right">&euro; {{ number_format($type->afdrachtVoorJaar($p->jaar, 'sponsorcommissie'), 2, ',', '.') }}</td>
+                                <td class="text-right">&euro; {{ number_format($type->afdrachtVoorJaar($p->jaar, 'bonboys'), 2, ',', '.') }}</td>
                             </tr>
                         @endforeach
                     </table>
