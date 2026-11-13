@@ -129,6 +129,19 @@ class MemberController extends Controller
         return redirect()->route('members.show', $member)->with('success', 'Lid bijgewerkt.');
     }
 
+    public function updateMembershipType(Request $request, Member $member): RedirectResponse
+    {
+        $data = $request->validate([
+            'membership_type_id' => 'nullable|exists:membership_types,id',
+        ]);
+
+        $member->update(['membership_type_id' => $data['membership_type_id'] ?? null]);
+
+        $name = $member->load('membershipType')->membershipType?->name ?? 'geen';
+
+        return back()->with('success', "Abonnement van {$member->full_name} gewijzigd naar {$name}.");
+    }
+
     public function destroy(Member $member): RedirectResponse
     {
         $member->delete();

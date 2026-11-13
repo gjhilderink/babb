@@ -107,7 +107,7 @@
         <div class="text-sm text-gray-500 space-y-0.5">
             @if ($member->company_name)<div>{{ $member->company_name }}</div>@endif
             <div>{{ $member->email }}</div>
-            @if ($member->membershipType)<div>{{ $member->membershipType->name }}</div>@endif
+            <div>@include('members._membership_type_select')</div>
             @include('members._korting_badge')
         </div>
         <div class="mt-3 flex gap-3">
@@ -165,7 +165,7 @@
                     <td class="px-4 py-3 text-gray-600 hidden lg:table-cell">{{ $member->email }}</td>
                     <td class="px-4 py-3 text-gray-600 hidden md:table-cell">{{ $member->company_name ?? '—' }}</td>
                     <td class="px-4 py-3 text-gray-600">
-                        {{ $member->membershipType?->name ?? '—' }}
+                        @include('members._membership_type_select')
                         @include('members._korting_badge')
                     </td>
                     <td class="px-4 py-3">

@@ -30,6 +30,7 @@ Route::middleware('auth')->group(function () {
     Route::middleware('role:admin,bestuur')->group(function () {
         Route::resource('membership-types', MembershipTypeController::class)->except('show');
         Route::resource('members', MemberController::class);
+        Route::patch('members/{member}/membership-type', [MemberController::class, 'updateMembershipType'])->name('members.membership-type');
         Route::get('members-export', [MemberController::class, 'export'])->name('members.export');
         Route::post('members-import', [MemberController::class, 'import'])->name('members.import');
         Route::resource('products', ProductController::class);
