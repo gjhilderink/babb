@@ -93,10 +93,9 @@ class SponsorcommissieController extends Controller
     /**
      * Alle regels (lid, pakket, bedrag, overgemaakt_op) voor een jaar.
      *
-     * Een lid telt mee als het lidmaatschap het jaar overlapt en het pakket een
-     * afdracht heeft. Leden zonder einddatum tellen alleen mee als ze actief zijn.
-     * Leden met een vastgelegde afdracht in dat jaar tellen altijd mee, met het
-     * vastgelegde bedrag.
+     * Alleen actieve leden tellen mee: het lidmaatschap moet het jaar overlappen
+     * en het pakket moet een afdracht hebben. Actieve leden met een vastgelegde
+     * afdracht in dat jaar tellen altijd mee, met het vastgelegde bedrag.
      */
     private function regelsVoorJaar(int $jaar): Collection
     {
@@ -109,17 +108,17 @@ class SponsorcommissieController extends Controller
             ->keyBy('member_id');
 
         $leden = Member::with('membershipType')
+            ->where('status', 'active')
             ->whereHas('membershipType', fn ($q) => $q->where('afdracht_sponsorcommissie', '>', 0))
             ->where(fn ($q) => $q->whereNull('membership_start')->orWhere('membership_start', '<=', $eind))
-            ->where(fn ($q) => $q
-                ->where(fn ($q) => $q->whereNotNull('membership_end')->where('membership_end', '>=', $begin))
-                ->orWhere(fn ($q) => $q->whereNull('membership_end')->where('status', 'active')))
+            ->where(fn ($q) => $q->whereNull('membership_end')->orWhere('membership_end', '>=', $begin))
             ->get()
             ->keyBy('id');
 
         foreach ($vastgelegd as $memberId => $afdracht) {
-            if (! $leden->has($memberId) && $afdracht->member) {
-                $leden->put($memberId, $afdracht->member);
+            $member = $afdracht->member;
+            if (! $leden->has($memberId) && $member && ! $member->trashed() && $member->status === 'active') {
+                $leden->put($memberId, $member);
             }
         }
 
