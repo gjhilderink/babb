@@ -21,12 +21,15 @@ class Invoice extends Model
         'tax_amount',
         'total',
         'paid_at',
+        'sent_at',
+        'sent_to',
     ];
 
     protected $casts = [
         'issue_date' => 'date',
         'due_date'   => 'date',
         'paid_at'    => 'datetime',
+        'sent_at'    => 'datetime',
         'subtotal'   => 'decimal:2',
         'tax_amount' => 'decimal:2',
         'total'      => 'decimal:2',
@@ -50,6 +53,17 @@ class Invoice extends Model
     public function isOverdue(): bool
     {
         return $this->status === 'sent' && $this->due_date->isPast();
+    }
+
+    /** E-mailadres waar de factuur heen gaat: factuur-e-mail van het lid, anders het gewone adres. */
+    public function ontvangerEmail(): ?string
+    {
+        return $this->member?->factuur_email ?: $this->member?->email ?: null;
+    }
+
+    public function kanVerzonden(): bool
+    {
+        return $this->status !== 'cancelled' && $this->ontvangerEmail() !== null;
     }
 
     public function recalculateTotals(): void

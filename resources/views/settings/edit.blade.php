@@ -119,6 +119,36 @@
         <p class="text-xs text-gray-400 mt-1">Max. 1000 tekens.</p>
     </div>
 
+    {{-- Factuur e-mail --}}
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <h2 class="font-semibold text-gray-800 mb-4">Factuur e-mail</h2>
+        <p class="text-sm text-gray-500 mb-4">
+            Deze tekst wordt gebruikt bij het verzenden van facturen vanuit Facturen. De factuur gaat als PDF-bijlage mee.
+            Verzonden naar het factuur-e-mailadres van het lid, of anders het gewone e-mailadres.
+        </p>
+        <div class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Onderwerp</label>
+                <input type="text" name="invoice_mail_subject" value="{{ old('invoice_mail_subject', $invoice_mail_subject) }}" maxlength="255"
+                       class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-bb-green-600">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Tekst</label>
+                <textarea name="invoice_mail_body" rows="9" maxlength="5000"
+                          class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-bb-green-600">{{ old('invoice_mail_body', $invoice_mail_body) }}</textarea>
+            </div>
+            <div class="text-xs text-gray-500">
+                <div class="font-medium text-gray-600 mb-1">Beschikbare variabelen (worden per factuur ingevuld):</div>
+                <ul class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-0.5">
+                    @foreach ($invoice_mail_variabelen as $var => $uitleg)
+                        <li><code class="bg-gray-100 rounded px-1 text-gray-700">{{ $var }}</code> {{ $uitleg }}</li>
+                    @endforeach
+                </ul>
+                <p class="mt-2">Laat een veld leeg om de standaardtekst te gebruiken.</p>
+            </div>
+        </div>
+    </div>
+
     <div>
         <button type="submit" class="bg-bb-green-600 hover:bg-bb-green-700 text-white text-sm font-medium px-6 py-2 rounded-lg">
             Instellingen opslaan

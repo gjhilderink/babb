@@ -80,6 +80,8 @@ Route::middleware('auth')->group(function () {
         Route::resource('invoices', InvoiceController::class);
         Route::patch('invoices/{invoice}/mark-paid', [InvoiceController::class, 'markPaid'])->name('invoices.mark-paid');
         Route::get('invoices/{invoice}/pdf', [InvoiceController::class, 'pdf'])->name('invoices.pdf');
+        Route::post('invoices/{invoice}/send', [InvoiceController::class, 'send'])->name('invoices.send');
+        Route::post('invoices-verzenden', [InvoiceController::class, 'sendBulk'])->name('invoices.send-bulk');
 
         Route::patch('invoices/{invoice}/mark-sent', [InvoiceController::class, 'markSent'])
             ->name('invoices.mark-sent')

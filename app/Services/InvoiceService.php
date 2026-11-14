@@ -70,6 +70,24 @@ class InvoiceService
 
     public function generatePdf(Invoice $invoice): Response
     {
+        return $this->pdf($invoice)->download($this->pdfBestandsnaam($invoice));
+    }
+
+    public function pdfBestandsnaam(Invoice $invoice): string
+    {
+        return "factuur-{$invoice->invoice_number}.pdf";
+    }
+
+    /** Ruwe PDF-inhoud, bijvoorbeeld als bijlage voor een e-mail. */
+    public function pdfInhoud(Invoice $invoice): string
+    {
+        return $this->pdf($invoice)->output();
+    }
+
+    private function pdf(Invoice $invoice): \Barryvdh\DomPDF\PDF
+    {
+        $invoice->loadMissing(['member', 'items.product']);
+
         $invoiceLogoBase64 = null;
         $logoPath = Setting::get('invoice_logo');
         if ($logoPath) {
@@ -85,12 +103,10 @@ class InvoiceService
         $companyKvk      = Setting::get('company_kvk');
         $companyVat      = Setting::get('company_vat');
 
-        $pdf = Pdf::loadView('invoices.pdf', compact(
+        return Pdf::loadView('invoices.pdf', compact(
             'invoice', 'invoiceLogoBase64', 'invoiceFooter',
             'companyAddress', 'companyKvk', 'companyVat'
         ));
-
-        return $pdf->download("factuur-{$invoice->invoice_number}.pdf");
     }
 
     private function syncItems(Invoice $invoice, array $items): void

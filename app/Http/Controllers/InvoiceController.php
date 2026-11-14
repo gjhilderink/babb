@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\InvoiceMail;
 use App\Models\Invoice;
 use App\Models\Member;
 use App\Models\Product;
@@ -10,6 +11,7 @@ use App\Services\InvoiceService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
 
 class InvoiceController extends Controller
@@ -20,17 +22,122 @@ class InvoiceController extends Controller
     {
         abort_unless(AclService::allowed('invoices.view'), 403);
 
-        $invoices = Invoice::with('member')
-            ->when($request->search, fn ($q, $s) => $q->where('invoice_number', 'like', "%$s%")
+        $basis = Invoice::query()
+            ->when($request->search, fn ($q, $s) => $q->where(fn ($q) => $q->where('invoice_number', 'like', "%$s%")
                 ->orWhereHas('member', fn ($q) => $q->where('last_name', 'like', "%$s%")
-                    ->orWhere('company_name', 'like', "%$s%")))
-            ->when($request->status, fn ($q, $s) => $q->where('status', $s))
-            ->when($request->member_id, fn ($q, $id) => $q->where('member_id', $id))
+                    ->orWhere('company_name', 'like', "%$s%"))))
+            ->when($request->member_id, fn ($q, $id) => $q->where('member_id', $id));
+
+        // Aantallen per status voor de filterknoppen (binnen de zoekopdracht)
+        $aantallen = collect(array_keys(self::STATUSSEN))->mapWithKeys(fn ($s) => [
+            $s => $this->filterStatus(clone $basis, $s)->count(),
+        ])->put('', (clone $basis)->count());
+
+        $invoices = $this->filterStatus($basis->with('member'), $request->status)
             ->latest('issue_date')
             ->paginate(25)
             ->withQueryString();
 
-        return view('invoices.index', compact('invoices'));
+        $statussen = self::STATUSSEN;
+
+        return view('invoices.index', compact('invoices', 'aantallen', 'statussen'));
+    }
+
+    public const STATUSSEN = [
+        'draft'     => 'Concept',
+        'sent'      => 'Verstuurd',
+        'overdue'   => 'Verlopen',
+        'paid'      => 'Betaald',
+        'cancelled' => 'Geannuleerd',
+    ];
+
+    /** "Verlopen" = status verlopen, of verstuurd en de vervaldatum is verstreken (zoals in de lijst getoond). */
+    private function filterStatus($query, ?string $status)
+    {
+        return match ($status) {
+            null, ''  => $query,
+            'overdue' => $query->where(fn ($q) => $q->where('status', 'overdue')
+                ->orWhere(fn ($q) => $q->where('status', 'sent')->whereDate('due_date', '<', today()))),
+            'sent'    => $query->where('status', 'sent')->whereDate('due_date', '>=', today()),
+            default   => $query->where('status', $status),
+        };
+    }
+
+    /** Eén factuur per e-mail versturen, met de PDF als bijlage. */
+    public function send(Invoice $invoice): RedirectResponse
+    {
+        abort_unless(AclService::allowed('invoices.edit'), 403);
+
+        $invoice->load('member');
+
+        if (! $invoice->kanVerzonden()) {
+            return back()->with('error', $invoice->status === 'cancelled'
+                ? 'Een geannuleerde factuur kan niet worden verzonden.'
+                : "Lid {$invoice->member?->full_name} heeft geen e-mailadres.");
+        }
+
+        try {
+            $this->verzend($invoice);
+        } catch (\Throwable $e) {
+            report($e);
+
+            return back()->with('error', "Verzenden van factuur {$invoice->invoice_number} mislukt: {$e->getMessage()}");
+        }
+
+        return back()->with('success', "Factuur {$invoice->invoice_number} verzonden naar {$invoice->sent_to}.");
+    }
+
+    /** Meerdere geselecteerde facturen in één keer versturen. */
+    public function sendBulk(Request $request): RedirectResponse
+    {
+        abort_unless(AclService::allowed('invoices.edit'), 403);
+
+        $data = $request->validate([
+            'ids'   => 'required|array|min:1',
+            'ids.*' => 'integer',
+        ], ['ids.required' => 'Selecteer eerst een of meer facturen.']);
+
+        $verzonden = 0;
+        $overgeslagen = [];
+        $mislukt = [];
+
+        foreach (Invoice::with('member')->whereIn('id', $data['ids'])->orderBy('invoice_number')->get() as $invoice) {
+            if (! $invoice->kanVerzonden()) {
+                $overgeslagen[] = $invoice->invoice_number;
+
+                continue;
+            }
+
+            try {
+                $this->verzend($invoice);
+                $verzonden++;
+            } catch (\Throwable $e) {
+                report($e);
+                $mislukt[] = $invoice->invoice_number;
+            }
+        }
+
+        $melding = "{$verzonden} factuur/facturen verzonden.";
+        if ($overgeslagen) {
+            $melding .= ' Overgeslagen (geen e-mailadres of geannuleerd): '.implode(', ', $overgeslagen).'.';
+        }
+
+        return back()->with($mislukt ? 'error' : 'success', $mislukt
+            ? $melding.' Mislukt: '.implode(', ', $mislukt).'.'
+            : $melding);
+    }
+
+    private function verzend(Invoice $invoice): void
+    {
+        $naar = $invoice->ontvangerEmail();
+
+        Mail::to($naar)->send(new InvoiceMail($invoice));
+
+        $invoice->update([
+            'sent_at' => now(),
+            'sent_to' => $naar,
+            'status'  => $invoice->status === 'draft' ? 'sent' : $invoice->status,
+        ]);
     }
 
     public function create(Request $request): View

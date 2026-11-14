@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\InvoiceMail;
 use App\Models\Setting;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -19,6 +20,9 @@ class SettingController extends Controller
             'company_address' => Setting::get('company_address'),
             'company_kvk'     => Setting::get('company_kvk'),
             'company_vat'     => Setting::get('company_vat'),
+            'invoice_mail_subject' => Setting::get('invoice_mail_subject') ?: InvoiceMail::STANDAARD_ONDERWERP,
+            'invoice_mail_body'    => Setting::get('invoice_mail_body') ?: InvoiceMail::STANDAARD_TEKST,
+            'invoice_mail_variabelen' => InvoiceMail::VARIABELEN,
         ]);
     }
 
@@ -32,6 +36,8 @@ class SettingController extends Controller
             'company_address' => 'nullable|string|max:500',
             'company_kvk'     => 'nullable|string|max:20',
             'company_vat'     => 'nullable|string|max:30',
+            'invoice_mail_subject' => 'nullable|string|max:255',
+            'invoice_mail_body'    => 'nullable|string|max:5000',
         ]);
 
         if ($request->hasFile('logo')) {
@@ -71,6 +77,8 @@ class SettingController extends Controller
         Setting::set('company_address', $request->input('company_address') ?: null);
         Setting::set('company_kvk',     $request->input('company_kvk')     ?: null);
         Setting::set('company_vat',     $request->input('company_vat')     ?: null);
+        Setting::set('invoice_mail_subject', $request->input('invoice_mail_subject') ?: null);
+        Setting::set('invoice_mail_body',    $request->input('invoice_mail_body')    ?: null);
 
         return back()->with('success', 'Instellingen opgeslagen.');
     }

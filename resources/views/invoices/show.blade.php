@@ -19,6 +19,20 @@
            class="border border-gray-400 hover:bg-gray-100 text-gray-700 text-sm font-medium px-4 py-2 rounded-lg">
             PDF
         </a>
+        @if (\App\Services\AclService::allowed('invoices.edit') && $invoice->status !== 'cancelled')
+            @if ($invoice->ontvangerEmail())
+            <form method="POST" action="{{ route('invoices.send', $invoice) }}" class="inline"
+                  onsubmit="return confirm(@js('Factuur '.$invoice->invoice_number.' verzenden naar '.$invoice->ontvangerEmail().'?'))">
+                @csrf
+                <button class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg"
+                        title="{{ $invoice->sent_at ? 'Eerder gemaild op '.$invoice->sent_at->format('d-m-Y H:i').' naar '.$invoice->sent_to : 'Mail de factuur met PDF-bijlage' }}">
+                    {{ $invoice->sent_at ? 'Opnieuw verzenden' : 'Verzenden per e-mail' }}
+                </button>
+            </form>
+            @else
+            <span class="border border-gray-200 text-gray-400 text-sm px-4 py-2 rounded-lg cursor-not-allowed" title="Lid heeft geen e-mailadres">Verzenden per e-mail</span>
+            @endif
+        @endif
         @if ($invoice->status === 'draft' && \App\Services\AclService::allowed('invoices.edit'))
         @if(auth()->user()->isAdmin())
         <form method="POST" action="{{ route('invoices.mark-sent', $invoice) }}" class="inline">
