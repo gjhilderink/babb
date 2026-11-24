@@ -85,6 +85,11 @@ $verzendbaar = $invoices->getCollection()->filter->kanVerzonden()->pluck('id')->
             </span>
         </div>
         <div class="text-sm text-gray-700 font-medium">{{ $invoice->member->full_name }}</div>
+        @if ($naar = $invoice->sent_to ?: $invoice->ontvangerEmail())
+        <div class="text-xs text-gray-500 break-all">&#9993; {{ $naar }}</div>
+        @else
+        <div class="text-xs text-orange-500">geen e-mailadres</div>
+        @endif
         <div class="flex justify-between items-center mt-2 text-sm">
             <span class="text-gray-500">{{ $invoice->issue_date->format('d-m-Y') }}</span>
             <span class="font-semibold">&euro; {{ number_format($invoice->total, 2, ',', '.') }}</span>
@@ -147,9 +152,11 @@ $verzendbaar = $invoices->getCollection()->filter->kanVerzonden()->pluck('id')->
                     </td>
                     <td class="px-4 py-3 text-gray-800">
                         {{ $invoice->member->full_name }}
-                        @unless ($invoice->ontvangerEmail())
+                        @if ($naar = $invoice->sent_to ?: $invoice->ontvangerEmail())
+                        <div class="text-xs text-gray-500 break-all" title="{{ $invoice->sent_to ? 'Verzonden naar' : 'Wordt verzonden naar' }}">&#9993; {{ $naar }}</div>
+                        @else
                         <div class="text-xs text-orange-500">geen e-mailadres</div>
-                        @endunless
+                        @endif
                     </td>
                     <td class="px-4 py-3 text-gray-600 hidden md:table-cell">{{ $invoice->issue_date->format('d-m-Y') }}</td>
                     <td class="px-4 py-3 hidden lg:table-cell {{ $invoice->isOverdue() ? 'text-red-600 font-medium' : 'text-gray-600' }}">
