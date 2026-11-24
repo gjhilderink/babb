@@ -13,6 +13,7 @@ class Invoice extends Model
     protected $fillable = [
         'invoice_number',
         'member_id',
+        'referentie',
         'issue_date',
         'due_date',
         'status',

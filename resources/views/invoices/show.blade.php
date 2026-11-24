@@ -86,6 +86,12 @@
                     <dt class="text-gray-500 mb-1">Vervaldatum</dt>
                     <dd class="font-medium {{ $invoice->isOverdue() ? 'text-red-600' : '' }}">{{ $invoice->due_date->format('d-m-Y') }}</dd>
                 </div>
+                @if ($invoice->referentie)
+                <div>
+                    <dt class="text-gray-500 mb-1">Referentie</dt>
+                    <dd class="font-medium">{{ $invoice->referentie }}</dd>
+                </div>
+                @endif
                 @if ($invoice->paid_at)
                 <div>
                     <dt class="text-gray-500 mb-1">Betaald op</dt>

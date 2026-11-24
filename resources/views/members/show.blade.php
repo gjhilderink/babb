@@ -32,6 +32,9 @@
                 @if ($member->factuur_email)
                 <div><dt class="text-gray-500">Factuur e-mail</dt><dd class="font-medium">{{ $member->factuur_email }}</dd></div>
                 @endif
+                @if ($member->factuur_referentie)
+                <div><dt class="text-gray-500">Factuurreferentie</dt><dd class="font-medium">{{ $member->factuur_referentie }}</dd></div>
+                @endif
                 <div><dt class="text-gray-500">Telefoon</dt><dd class="font-medium">{{ $member->phone ?: '—' }}</dd></div>
                 <div><dt class="text-gray-500">Bedrijf</dt><dd class="font-medium">{{ $member->company_name ?: '—' }}</dd></div>
                 <div><dt class="text-gray-500">Stad</dt><dd class="font-medium">{{ $member->city ?: '—' }}</dd></div>

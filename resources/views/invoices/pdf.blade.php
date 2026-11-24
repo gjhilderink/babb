@@ -40,6 +40,9 @@
                 <div>{{ $invoice->invoice_number }}</div>
                 <div>Datum: {{ $invoice->issue_date->format('d-m-Y') }}</div>
                 <div>Vervaldatum: {{ $invoice->due_date->format('d-m-Y') }}</div>
+                @if ($invoice->referentie)
+                    <div>Referentie: {{ $invoice->referentie }}</div>
+                @endif
             </div>
             @if ($companyAddress || $companyKvk || $companyVat)
             <div class="company-details">

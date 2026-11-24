@@ -15,6 +15,11 @@ class InvoiceService
 {
     public function create(array $data): Invoice
     {
+        // Zonder opgegeven referentie (bijv. bij bulkfacturatie) die van het lid overnemen
+        if (! array_key_exists('referentie', $data)) {
+            $data['referentie'] = Member::find($data['member_id'])?->factuur_referentie;
+        }
+
         // Tijdelijke korting van het lid als extra (negatieve) factuurregel toevoegen
         if (! empty($data['apply_discount'])) {
             $member = Member::find($data['member_id']);
@@ -33,6 +38,7 @@ class InvoiceService
                     $invoice = Invoice::create([
                         'invoice_number' => $this->nextInvoiceNumber(),
                         'member_id'      => $data['member_id'],
+                        'referentie'     => $data['referentie'] ?: null,
                         'issue_date'     => $data['issue_date'],
                         'due_date'       => $data['due_date'],
                         'notes'          => $data['notes'] ?? null,
@@ -56,6 +62,7 @@ class InvoiceService
     {
         $invoice->update([
             'member_id'  => $data['member_id'],
+            'referentie' => $data['referentie'] ?? null,
             'issue_date' => $data['issue_date'],
             'due_date'   => $data['due_date'],
             'notes'      => $data['notes'] ?? null,

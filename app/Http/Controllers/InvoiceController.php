@@ -168,7 +168,11 @@ class InvoiceController extends Controller
             'tot'    => $m->korting_tot?->format('Y-m-d'),
         ]]);
 
-        return view('invoices.create', compact('members', 'products', 'member', 'discounts', 'memberships'));
+        // Vaste factuurreferentie per lid, om het referentieveld automatisch te vullen
+        $referenties = $members->filter(fn (Member $m) => filled($m->factuur_referentie))
+            ->mapWithKeys(fn (Member $m) => [$m->id => $m->factuur_referentie]);
+
+        return view('invoices.create', compact('members', 'products', 'member', 'discounts', 'memberships', 'referenties'));
     }
 
     public function store(Request $request): RedirectResponse
@@ -177,6 +181,7 @@ class InvoiceController extends Controller
 
         $data = $request->validate([
             'member_id'  => 'required|exists:members,id',
+            'referentie' => 'nullable|string|max:255',
             'issue_date' => 'required|date',
             'due_date'   => 'required|date|after_or_equal:issue_date',
             'notes'      => 'nullable|string',
@@ -222,6 +227,7 @@ class InvoiceController extends Controller
 
         $data = $request->validate([
             'member_id'  => 'required|exists:members,id',
+            'referentie' => 'nullable|string|max:255',
             'issue_date' => 'required|date',
             'due_date'   => 'required|date|after_or_equal:issue_date',
             'notes'      => 'nullable|string',

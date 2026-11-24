@@ -37,6 +37,11 @@
                                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
                     </div>
                     <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Referentie</label>
+                        <input type="text" name="referentie" value="{{ old('referentie', $invoice->referentie) }}" maxlength="255"
+                               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                    </div>
+                    <div class="md:col-span-2">
                         <label class="block text-sm font-medium text-gray-700 mb-1">Notities</label>
                         <textarea name="notes" rows="2"
                                   class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">{{ old('notes', $invoice->notes) }}</textarea>

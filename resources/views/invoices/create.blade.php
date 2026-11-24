@@ -51,6 +51,12 @@
                                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
                     </div>
                     <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Referentie</label>
+                        <input type="text" name="referentie" x-model="referentie" maxlength="255"
+                               placeholder="Wordt overgenomen van het lid"
+                               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                    </div>
+                    <div class="md:col-span-2">
                         <label class="block text-sm font-medium text-gray-700 mb-1">Notities</label>
                         <textarea name="notes" rows="2" x-model="notes"
                                   class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"></textarea>
@@ -207,7 +213,15 @@ function invoiceForm() {
         memberships: @json($memberships),
         autoNote: null,
         membership() { return this.memberships[this.memberId] || null; },
+        // Factuurreferentie van het lid overnemen (tenzij handmatig aangepast)
+        referentie: @js(old('referentie', $member?->factuur_referentie ?? '')),
+        referenties: @json($referenties),
+        syncReferentie(oud) {
+            const vorige = this.referenties[oud] || '';
+            if (!this.referentie || this.referentie === vorige) this.referentie = this.referenties[this.memberId] || '';
+        },
         init() {
+            this.$watch('memberId', (nieuw, oud) => this.syncReferentie(oud));
             this.$watch('memberId', () => this.syncMembership());
             this.$watch('isMembership', () => this.syncMembership());
             this.$watch('issueDate', () => this.syncMembership());
