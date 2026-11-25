@@ -87,6 +87,9 @@ $verzendbaar = $invoices->getCollection()->filter->kanVerzonden()->pluck('id')->
         <div class="text-sm text-gray-700 font-medium">{{ $invoice->member->full_name }}</div>
         @if ($naar = $invoice->sent_to ?: $invoice->ontvangerEmail())
         <div class="text-xs text-gray-500 break-all">&#9993; {{ $naar }}</div>
+        @if ($invoice->sent_to && $invoice->ontvangerEmail() && $invoice->ontvangerEmail() !== $invoice->sent_to)
+        <div class="text-xs text-amber-600 break-all">nu: {{ $invoice->ontvangerEmail() }}</div>
+        @endif
         @else
         <div class="text-xs text-orange-500">geen e-mailadres</div>
         @endif
@@ -154,6 +157,9 @@ $verzendbaar = $invoices->getCollection()->filter->kanVerzonden()->pluck('id')->
                         {{ $invoice->member->full_name }}
                         @if ($naar = $invoice->sent_to ?: $invoice->ontvangerEmail())
                         <div class="text-xs text-gray-500 break-all" title="{{ $invoice->sent_to ? 'Verzonden naar' : 'Wordt verzonden naar' }}">&#9993; {{ $naar }}</div>
+                        @if ($invoice->sent_to && $invoice->ontvangerEmail() && $invoice->ontvangerEmail() !== $invoice->sent_to)
+                        <div class="text-xs text-amber-600 break-all" title="Het factuur-e-mailadres van het lid is gewijzigd sinds het verzenden">nu: {{ $invoice->ontvangerEmail() }}</div>
+                        @endif
                         @else
                         <div class="text-xs text-orange-500">geen e-mailadres</div>
                         @endif

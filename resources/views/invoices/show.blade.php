@@ -20,18 +20,35 @@
             PDF
         </a>
         @if (\App\Services\AclService::allowed('invoices.edit') && $invoice->status !== 'cancelled')
-            @if ($invoice->ontvangerEmail())
-            <form method="POST" action="{{ route('invoices.send', $invoice) }}" class="inline"
-                  onsubmit="return confirm(@js('Factuur '.$invoice->invoice_number.' verzenden naar '.$invoice->ontvangerEmail().'?'))">
-                @csrf
-                <button class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg"
-                        title="{{ $invoice->sent_at ? 'Eerder gemaild op '.$invoice->sent_at->format('d-m-Y H:i').' naar '.$invoice->sent_to : 'Mail de factuur met PDF-bijlage' }}">
+            {{-- Verzenden: adres is aan te passen, bijv. naar een later toegevoegd administratie-adres --}}
+            <div class="relative" x-data="{ open: @js($errors->has('naar')) }" @keydown.escape="open = false">
+                <button type="button" @click="open = !open"
+                        class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg">
                     {{ $invoice->sent_at ? 'Opnieuw verzenden' : 'Verzenden per e-mail' }}
                 </button>
-            </form>
-            @else
-            <span class="border border-gray-200 text-gray-400 text-sm px-4 py-2 rounded-lg cursor-not-allowed" title="Lid heeft geen e-mailadres">Verzenden per e-mail</span>
-            @endif
+                <form x-show="open" x-cloak style="display: none" @click.outside="open = false"
+                      method="POST" action="{{ route('invoices.send', $invoice) }}"
+                      class="absolute right-0 mt-2 z-30 w-80 bg-white border border-gray-200 rounded-xl shadow-lg p-4 space-y-3">
+                    @csrf
+                    @if ($invoice->sent_at)
+                    <p class="text-xs text-gray-500">
+                        Eerder gemaild op {{ $invoice->sent_at->format('d-m-Y H:i') }} naar <span class="font-medium text-gray-700 break-all">{{ $invoice->sent_to }}</span>.
+                    </p>
+                    @endif
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Verzenden naar</label>
+                        <input type="email" name="naar" required value="{{ old('naar', $invoice->ontvangerEmail()) }}"
+                               placeholder="naam@bedrijf.nl"
+                               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                        @error('naar')<p class="text-xs text-red-600 mt-1">{{ $message }}</p>@enderror
+                        <p class="text-xs text-gray-400 mt-1">Standaard het factuur-e-mailadres van het lid.</p>
+                    </div>
+                    <div class="flex justify-end gap-2">
+                        <button type="button" @click="open = false" class="text-sm text-gray-500 hover:text-gray-800 px-3 py-2">Annuleren</button>
+                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg">Verzenden</button>
+                    </div>
+                </form>
+            </div>
         @endif
         @if ($invoice->status === 'draft' && \App\Services\AclService::allowed('invoices.edit'))
         @if(auth()->user()->isAdmin())

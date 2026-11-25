@@ -64,20 +64,24 @@ class InvoiceController extends Controller
     }
 
     /** Eén factuur per e-mail versturen, met de PDF als bijlage. */
-    public function send(Invoice $invoice): RedirectResponse
+    public function send(Request $request, Invoice $invoice): RedirectResponse
     {
         abort_unless(AclService::allowed('invoices.edit'), 403);
 
+        // Optioneel een ander adres opgeven (bijv. een later toegevoegd administratie-adres)
+        $naar = $request->validate(['naar' => 'nullable|email|max:255'])['naar'] ?? null;
+
         $invoice->load('member');
 
-        if (! $invoice->kanVerzonden()) {
-            return back()->with('error', $invoice->status === 'cancelled'
-                ? 'Een geannuleerde factuur kan niet worden verzonden.'
-                : "Lid {$invoice->member?->full_name} heeft geen e-mailadres.");
+        if ($invoice->status === 'cancelled') {
+            return back()->with('error', 'Een geannuleerde factuur kan niet worden verzonden.');
+        }
+        if (! $naar && ! $invoice->ontvangerEmail()) {
+            return back()->with('error', "Lid {$invoice->member?->full_name} heeft geen e-mailadres.");
         }
 
         try {
-            $this->verzend($invoice);
+            $this->verzend($invoice, $naar);
         } catch (\Throwable $e) {
             report($e);
 
@@ -127,9 +131,9 @@ class InvoiceController extends Controller
             : $melding);
     }
 
-    private function verzend(Invoice $invoice): void
+    private function verzend(Invoice $invoice, ?string $naar = null): void
     {
-        $naar = $invoice->ontvangerEmail();
+        $naar = $naar ?: $invoice->ontvangerEmail();
 
         Mail::to($naar)->send(new InvoiceMail($invoice));
 
